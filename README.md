@@ -33,10 +33,11 @@ src/
     graph.ts          logique pure : positionnement du graphe, agrégats d'état par domaine
     url.ts            lecture, écriture et réduction de l'état de navigation
     useAtlasState.ts  état de navigation adossé à l'historique du navigateur
-    github.ts         client REST GitHub : métadonnées, arborescence, commits
+    github.ts         client REST GitHub : métadonnées, arborescence, commits, fichiers
     verify.ts         croisement des fichiers déclarés avec l'arborescence réelle
+    context.ts        lecture de CLAUDE.md, plan.md et README.md : règles, interdits, phases
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        53 tests Vitest sur ces quatre modules
+    __tests__/        88 tests Vitest sur ces cinq modules
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -46,6 +47,9 @@ src/
     GitHubView.tsx    06 Dépôt réel — métadonnées GitHub, commits, écarts de fichiers
   components/
     ui.tsx            primitives partagées (bouton à survol, sur-titre mono)
+    SourceBadge.tsx   bandeau de provenance : dépôt lu, ou description figée
+CLAUDE.md             contexte, conventions et interdits du projet
+plan.md               les phases, avec leur statut et leurs cases à cocher
 design/               maquette Claude Design d'origine, source de vérité visuelle
 ```
 
@@ -73,6 +77,25 @@ Le jeton personnel GitHub est facultatif : sans lui, seuls les dépôts publics 
 dans la limite de soixante requêtes par heure. Il est gardé dans le `localStorage` du
 navigateur, n'est envoyé qu'à `api.github.com`, et un bouton l'efface.
 
+## Lecture des fichiers de contexte
+
+Une fois le dépôt connecté, `CLAUDE.md`, `plan.md` et `README.md` y sont lus et analysés :
+
+- les **règles** et les **interdits** viennent des sections de `CLAUDE.md` qui en parlent,
+  les seconds étant reconnus par leur titre ou par leur formulation ;
+- les **phases** viennent des titres de `plan.md`, avec leur statut lu dans le titre ou
+  juste en dessous — un « ✅ », un « (fait) », un « en cours » ;
+- les **cases à cocher** de `plan.md` sont reprises telles quelles.
+
+Ces fichiers sont écrits pour des humains, sans schéma garanti : l'analyse est « au mieux »
+et ne devine rien. Ce qui n'est pas reconnu est laissé de côté, un titre pris dans un bloc
+de code est ignoré, et un fichier absent est signalé sans faire échouer la lecture. Le
+dépôt ne remplace que ce qu'il porte vraiment : un `CLAUDE.md` sans section d'interdits
+laisse en place ceux de la description.
+
+Chaque vue concernée affiche d'où vient ce qu'elle montre — « lu dans le dépôt », en
+citant le fichier, ou « description figée ».
+
 ## Direction artistique
 
 Tout le style vient de `src/data/themes.ts` : un thème par dépôt, avec sa palette, ses
@@ -89,8 +112,8 @@ Eleven-Fields il est repris de la maquette, pour Atlas il décrit ce dépôt. C'
 description figée, pas une lecture du code — d'où la vue « Dépôt réel », qui sert
 justement à mesurer l'écart.
 
-Reste à brancher : les domaines et fonctionnalités déduits de l'arborescence, les phases
-lues dans `plan.md`, les règles lues dans `CLAUDE.md`, et l'historique de sessions qui
-vit dans `~/.claude/projects/`, hors dépôt.
+Les règles, les interdits et les phases sont désormais relus dans le dépôt quand il est
+connecté. Reste à brancher : les domaines et fonctionnalités déduits de l'arborescence, et
+l'historique de sessions qui vit dans `~/.claude/projects/`, hors dépôt.
 
 Voir `design/github.md` pour la correspondance entre chaque écran et ses fichiers source.
