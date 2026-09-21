@@ -34,9 +34,11 @@ export function ContextView({ t, repo, live }: Props) {
         from={fromFiles}
       />
 
-      {live && live.absent.length > 0 && (
+      {live && (live.absent.length > 0 || live.unreadable.length > 0) && (
         <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft, marginTop: -18 }}>
-          Absent du dépôt : {live.absent.join(', ')}.
+          {live.absent.length > 0 && `Absent du dépôt : ${live.absent.join(', ')}. `}
+          {live.unreadable.length > 0 &&
+            `Non lu cette fois : ${live.unreadable.join(', ')}.`}
         </span>
       )}
 

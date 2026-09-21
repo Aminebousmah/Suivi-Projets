@@ -1,9 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { RepoData } from '../data/types';
-import type { LiveContext } from './context';
+import type { CacheStore } from './cache';
+import { ageMinutes, localStorageStore } from './cache';
+import type { FileResult, LiveContext } from './context';
 import { CONTEXT_FILES, buildLiveContext } from './context';
-import type { CommitInfo, RepoMeta, RepoTree } from './github';
-import { fetchCommits, fetchRepoMeta, fetchTextFile, fetchTree, parseSlug } from './github';
+import type { CommitInfo, Origin, RateInfo, RepoMeta, RepoTree } from './github';
+import {
+  createClient,
+  fetchCommits,
+  fetchRepoMeta,
+  fetchTextFile,
+  fetchTree,
+  parseSlug,
+} from './github';
 import type { RepoCheck } from './verify';
 import { checkRepo } from './verify';
 
@@ -52,6 +61,30 @@ export interface GitHubData {
   commits: CommitInfo[];
   check: RepoCheck;
   context: LiveContext;
+  /** Ce que GitHub dit du quota au dernier contact. */
+  rate: RateInfo | null;
+  /** Provenance de chacune des réponses de ce chargement. */
+  origins: Origin[];
+  /** Âge de la plus vieille réponse servie, en minutes. */
+  age: number;
+}
+
+/** Le cache survit aux rendus : une seule instance pour toute l'application. */
+const store: CacheStore = localStorageStore();
+
+export function cacheStore(): CacheStore {
+  return store;
+}
+
+/** Résume la provenance d'un chargement en une phrase affichable. */
+export function describeOrigins(origins: Origin[], age: number): string {
+  const n = (o: Origin) => origins.filter((x) => x === o).length;
+  const parts: string[] = [];
+  if (n('réseau')) parts.push(`${n('réseau')} téléchargée(s)`);
+  if (n('inchangé')) parts.push(`${n('inchangé')} revalidée(s) sans coût de quota`);
+  if (n('cache')) parts.push(`${n('cache')} servie(s) depuis le cache`);
+  const suffix = age > 0 ? `, la plus ancienne confirmée il y a ${age} min` : '';
+  return parts.length ? parts.join(', ') + suffix + '.' : 'Aucune réponse.';
 }
 
 export type LoadState =
@@ -83,16 +116,24 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
     let cancelled = false;
     setState({ status: 'loading' });
 
-    const auth = token || null;
+    const client = createClient(token || null, store);
     Promise.all([
-      fetchRepoMeta(ref, auth),
-      fetchTree(ref, auth),
-      fetchCommits(ref, auth),
-      // Un fichier de contexte absent n'est pas une panne : on note l'absence.
-      ...CONTEXT_FILES.map((path) => fetchTextFile(ref, path, auth)),
+      fetchRepoMeta(ref, client),
+      fetchTree(ref, client),
+      fetchCommits(ref, client),
+      // Les fichiers de contexte sont facultatifs : ni leur absence ni leur
+      // échec de lecture ne doit empêcher d'afficher le dépôt.
+      ...CONTEXT_FILES.map((path) =>
+        fetchTextFile(ref, path, client).catch((): FileResult => ({ failed: true })),
+      ),
     ])
       .then(([meta, tree, commits, ...files]) => {
         if (cancelled) return;
+        const oldest = store
+          .keys()
+          .map((k) => store.read(k))
+          .reduce((max, e) => (e ? Math.max(max, ageMinutes(e)) : max), 0);
+
         setState({
           status: 'ready',
           data: {
@@ -101,6 +142,9 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
             commits,
             check: checkRepo(repo, tree.entries),
             context: buildLiveContext(files),
+            rate: client.rate,
+            origins: client.origins,
+            age: oldest,
           },
         });
       })

@@ -10,17 +10,17 @@ Vite, React 19 et TypeScript strict. Cinq vues fidèles au prototype, deux dép�
 
 État de navigation porté dans l'URL avec historique navigateur, et tests Vitest sur le layout du graphe, les agrégats d'état et l'aller-retour d'URL.
 
-## Phase 3 — Pont GitHub 🚧
+## Phase 3 — Pont GitHub ✅
 
-Client REST, vue « Dépôt réel », confrontation des fichiers cités à l'arborescence, puis lecture des fichiers de contexte du dépôt.
+Client REST, vue « Dépôt réel », confrontation des fichiers cités à l'arborescence, lecture des fichiers de contexte, et cache qui épargne le quota.
 
 - [x] Client REST : métadonnées, arborescence, commits
 - [x] Croisement des fichiers déclarés avec l'arborescence réelle
 - [x] Jeton facultatif gardé dans le navigateur
 - [x] Lecture de CLAUDE.md, plan.md et README.md
-- [ ] Mise en cache des réponses pour épargner le quota
+- [x] Mise en cache des réponses pour épargner le quota
 
-## Phase 4 — Données vivantes ⏳
+## Phase 4 — Données vivantes 🚧
 
 Déduire les domaines et les fonctionnalités de l'arborescence réelle, et brancher les sessions sur l'historique local de Claude Code.
 

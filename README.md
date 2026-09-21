@@ -34,10 +34,11 @@ src/
     url.ts            lecture, écriture et réduction de l'état de navigation
     useAtlasState.ts  état de navigation adossé à l'historique du navigateur
     github.ts         client REST GitHub : métadonnées, arborescence, commits, fichiers
+    cache.ts          cache des réponses, fenêtre de fraîcheur et purge du stockage plein
     verify.ts         croisement des fichiers déclarés avec l'arborescence réelle
     context.ts        lecture de CLAUDE.md, plan.md et README.md : règles, interdits, phases
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        88 tests Vitest sur ces cinq modules
+    __tests__/        116 tests Vitest sur ces six modules
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -77,6 +78,28 @@ Le jeton personnel GitHub est facultatif : sans lui, seuls les dépôts publics 
 dans la limite de soixante requêtes par heure. Il est gardé dans le `localStorage` du
 navigateur, n'est envoyé qu'à `api.github.com`, et un bouton l'efface.
 
+## Cache et quota
+
+L'API GitHub plafonne à soixante requêtes par heure sans jeton, cinq mille avec. Les
+réponses sont donc gardées dans le `localStorage`, à deux niveaux :
+
+1. pendant **cinq minutes**, une réponse est servie sans qu'aucune requête ne parte ;
+2. au-delà, la requête est **conditionnelle** : l'ETag est renvoyé à GitHub, qui répond
+   `304 Not Modified` — et un `304` ne décompte pas du quota.
+
+La vue « Dépôt réel » affiche le quota restant, l'heure de sa remise à zéro, et d'où
+vient chaque réponse du chargement : téléchargée, revalidée sans coût, ou servie depuis
+le cache. Un bouton vide le cache.
+
+Le cache est une optimisation, jamais une source : un stockage refusé, plein ou corrompu
+n'empêche rien. Quand le stockage sature, les entrées confirmées le plus anciennement
+sont sacrifiées. Et quand GitHub ne répond pas — hors ligne, quota épuisé, requête trop
+lente — une donnée périmée est servie plutôt qu'une page vide.
+
+Chaque requête a un **délai maximal de quinze secondes** : sans lui, une seule requête
+pendante gèle la vue entière. Les fichiers de contexte étant facultatifs, leur échec de
+lecture est signalé mais n'empêche pas d'afficher le dépôt.
+
 ## Lecture des fichiers de contexte
 
 Une fois le dépôt connecté, `CLAUDE.md`, `plan.md` et `README.md` y sont lus et analysés :
@@ -112,8 +135,8 @@ Eleven-Fields il est repris de la maquette, pour Atlas il décrit ce dépôt. C'
 description figée, pas une lecture du code — d'où la vue « Dépôt réel », qui sert
 justement à mesurer l'écart.
 
-Les règles, les interdits et les phases sont désormais relus dans le dépôt quand il est
-connecté. Reste à brancher : les domaines et fonctionnalités déduits de l'arborescence, et
+Les règles, les interdits et les phases sont relus dans le dépôt quand il est connecté.
+Reste à brancher : les domaines et fonctionnalités déduits de l'arborescence, et
 l'historique de sessions qui vit dans `~/.claude/projects/`, hors dépôt.
 
 Voir `design/github.md` pour la correspondance entre chaque écran et ses fichiers source.

@@ -226,8 +226,24 @@ describe('buildLiveContext', () => {
     const ctx = buildLiveContext([null, null, null]);
     expect(ctx.found).toEqual([]);
     expect(ctx.absent).toEqual(['CLAUDE.md', 'plan.md', 'README.md']);
+    expect(ctx.unreadable).toEqual([]);
     expect(ctx.ctxFiles).toEqual([]);
     expect(ctx.phases).toEqual([]);
     expect(ctx.ctxRules).toEqual([]);
+  });
+
+  it('distingue un fichier absent d’un fichier non lu', () => {
+    const ctx = buildLiveContext([
+      { path: 'CLAUDE.md', text: CLAUDE, bytes: 900 },
+      { failed: true },
+      null,
+    ]);
+
+    expect(ctx.found).toEqual(['CLAUDE.md']);
+    expect(ctx.unreadable).toEqual(['plan.md']);
+    expect(ctx.absent).toEqual(['README.md']);
+    // Un plan non lu ne doit pas faire croire à un projet sans phases décrites.
+    expect(ctx.phases).toEqual([]);
+    expect(ctx.ctxRules.length).toBeGreaterThan(0);
   });
 });

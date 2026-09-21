@@ -578,19 +578,19 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '27', k: 'fonctions' }, { v: '88', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '29', k: 'fonctions' }, { v: '116', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
       "Porte une direction artistique par dépôt, dérivée des tokens CSS du dépôt décrit.",
       "Inscrit toute la navigation dans l'URL : chaque sélection est un permalien, le bouton précédent la rejoue.",
       "Interroge l'API GitHub et confronte les fichiers cités par les fonctionnalités à l'arborescence réelle du dépôt.",
-      "Relit CLAUDE.md, plan.md et README.md dans le dépôt pour en tirer les règles, les interdits et les phases."
+      "Relit CLAUDE.md, plan.md et README.md dans le dépôt pour en tirer les règles, les interdits et les phases.",
+      "Garde les réponses GitHub en cache et les revalide par ETag, pour ne pas épuiser le quota à chaque visite."
     ],
     todo: [
       "Déduire les domaines et les fonctionnalités de l'arborescence réelle au lieu de les écrire à la main.",
       "Alimenter la vue Sessions depuis ~/.claude/projects/ plutôt que depuis un résumé figé.",
-      "Mettre en cache les réponses GitHub pour ne pas retomber sur le quota à chaque visite.",
       "Rendre le graphe navigable au clavier et le panneau lisible sur mobile.",
       "Publier le build : le dépôt n'est déployé nulle part pour l'instant."
     ],
@@ -601,17 +601,17 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant." },
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
-      { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com." },
-      { cat: 'Tests', v: 'Vitest', note: "88 tests sur le graphe, l'état d'URL, le croisement des fichiers et la lecture des Markdown." },
+      { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
+      { cat: 'Tests', v: 'Vitest', note: "116 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown et le cache." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "88", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "116", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
-      { k: "Données lues depuis GitHub", v: "partiel", target: "complet", pct: '60%', tone: 'wip' },
+      { k: "Données lues depuis GitHub", v: "partiel", target: "complet", pct: '70%', tone: 'wip' },
       { k: "Sessions réelles branchées", v: "non", target: "oui", pct: '0%', tone: 'frozen' },
       { k: "Application déployée", v: "non", target: "oui", pct: '0%', tone: 'frozen' }
     ],
@@ -687,8 +687,14 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Lecture des fichiers de contexte", status: 'live', what: "Lit CLAUDE.md, plan.md et README.md dans le dépôt et en tire règles, interdits, phases et cases à cocher.",
             files: ['src/lib/context.ts', 'src/lib/github.ts — fetchTextFile'],
             notes: ["Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné", "Un fichier absent est une information affichée, pas une panne", "Les titres pris dans un bloc de code sont ignorés"] },
-          { name: "Cache des réponses", status: 'idea', what: "Garder les réponses GitHub pour ne pas consommer le quota à chaque visite.",
-            files: ['src/lib/useGitHub.ts'] }
+          { name: "Cache des réponses", status: 'live', what: "Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne coûte rien au quota.",
+            files: ['src/lib/cache.ts', 'src/lib/github.ts — request'],
+            notes: ["Cinq minutes de fraîcheur pendant lesquelles aucune requête n'est émise", "Au-delà, requête conditionnelle : GitHub répond 304 sans décompter le quota", "Le stockage plein fait place nette en sacrifiant les entrées les plus anciennes", "Un stockage refusé n'empêche rien : le cache est une optimisation, pas une source"] },
+          { name: "Quota et provenance affichés", status: 'live', what: "Le compteur de quota, l'heure de remise à zéro, et l'origine de chaque réponse du chargement.",
+            files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts — describeOrigins'] },
+          { name: "Délai maximal et repli", status: 'live', what: "Une requête qui ne répond pas est abandonnée ; un fichier de contexte illisible n'empêche pas d'afficher le dépôt.",
+            files: ['src/lib/github.ts — TIMEOUT_MS', 'src/lib/useGitHub.ts'],
+            notes: ["Sans délai maximal, une seule requête pendante gelait la vue entière", "Hors ligne ou quota épuisé, une donnée périmée est servie plutôt qu'une page vide", "Un fichier non lu est distingué d'un fichier absent"] }
         ] },
       { key: 'quality', num: '05', name: 'Qualité et outillage', tone: 'd',
         role: "Ce qui empêche la régression silencieuse.",
@@ -720,7 +726,11 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'session', date: 'Contexte', turns: 'lecture', tone: 'c',
         prompt: "Enchaîne sur la lecture des fichiers de contexte.",
         reply: "CLAUDE.md, plan.md et README.md lus dans le dépôt et analysés : règles, interdits, phases et cases à cocher alimentent désormais les vues Contexte Claude et Avancement, chacune indiquant d'où vient ce qu'elle affiche. Atlas s'est doté de ses propres CLAUDE.md et plan.md.",
-        outcome: 'live', touched: ['src/lib/context.ts', 'CLAUDE.md', 'plan.md'] }
+        outcome: 'live', touched: ['src/lib/context.ts', 'CLAUDE.md', 'plan.md'] },
+      { num: 'session', date: 'Cache', turns: 'quota', tone: 'b',
+        prompt: "Fais le cache des réponses GitHub.",
+        reply: "Cache à deux niveaux : cinq minutes de fraîcheur sans aucune requête, puis revalidation par ETag qui ne décompte pas du quota. Quota et provenance affichés, bouton pour vider. En chemin, un défaut trouvé en conditions réelles : une requête pendante gelait la vue — délai maximal posé, et les fichiers de contexte ne bloquent plus le chargement.",
+        outcome: 'live', touched: ['src/lib/cache.ts', 'src/lib/github.ts', 'src/views/GitHubView.tsx'] }
     ],
     memories: [
       { file: 'CLAUDE.md — à ne jamais faire', rule: "Ne jamais inventer un statut qu'aucune source ne porte : une absence se signale, elle ne se comble pas." },
@@ -759,9 +769,9 @@ export const REPOS: Record<string, RepoData> = {
         detail: "Vite, React 19, TypeScript strict. Cinq vues fidèles au prototype, deux dépôts, thèmes et données extraits tels quels, logique de graphe isolée." },
       { num: 'Phase 2', status: 'fait', title: "Navigation et filet de tests", tone: 'live',
         detail: "État de navigation porté dans l'URL avec historique navigateur, 53 tests Vitest sur le graphe, l'URL et le croisement des chemins." },
-      { num: 'Phase 3', status: 'en cours', title: "Pont GitHub", tone: 'wip',
-        detail: "Client REST, vue Dépôt réel, confrontation des fichiers cités à l'arborescence, lecture de CLAUDE.md, plan.md et README.md. Reste la mise en cache des réponses." },
-      { num: 'Phase 4', status: 'à venir', title: "Données vivantes", tone: 'frozen',
+      { num: 'Phase 3', status: 'fait', title: "Pont GitHub", tone: 'live',
+        detail: "Client REST, vue Dépôt réel, confrontation des fichiers cités à l'arborescence, lecture de CLAUDE.md, plan.md et README.md, et cache qui épargne le quota." },
+      { num: 'Phase 4', status: 'en cours', title: "Données vivantes", tone: 'wip',
         detail: "Déduire domaines, phases et règles du dépôt lui-même ; brancher les sessions sur l'historique local de Claude Code." },
       { num: 'Phase 5', status: 'idées', title: "Finition", tone: 'idea',
         detail: "Navigation au clavier dans le graphe, mise en page mobile du panneau, tests de rendu par vue, publication du build." }

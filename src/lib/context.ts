@@ -261,23 +261,37 @@ export interface LiveContext {
   found: string[];
   /** Fichiers cherchés et absents du dépôt. */
   absent: string[];
+  /** Fichiers présents peut-être, mais que GitHub n'a pas rendus. */
+  unreadable: string[];
 }
 
 export const CONTEXT_FILES = ['CLAUDE.md', 'plan.md', 'README.md'];
 const TONES: ToneKey[] = ['a', 'b', 'd'];
 
+/** Ce qu'une tentative de lecture a donné : le fichier, son absence, ou un échec. */
+export type FileResult = TextFile | null | { failed: true };
+
+function isFile(r: FileResult): r is TextFile {
+  return !!r && !('failed' in r);
+}
+
 /** Assemble ce que les fichiers de contexte disent du projet. */
-export function buildLiveContext(files: (TextFile | null)[]): LiveContext {
-  const [claude, plan, readme] = files;
+export function buildLiveContext(files: FileResult[]): LiveContext {
+  const claude = isFile(files[0]) ? files[0] : null;
+  const plan = isFile(files[1]) ? files[1] : null;
+  const readme = isFile(files[2]) ? files[2] : null;
 
   const ctxFiles: CtxFile[] = [];
   const found: string[] = [];
   const absent: string[] = [];
+  const unreadable: string[] = [];
 
   files.forEach((f, i) => {
-    if (f) {
+    if (isFile(f)) {
       ctxFiles.push(describeFile(f, TONES[i] ?? 'd'));
       found.push(f.path);
+    } else if (f && 'failed' in f) {
+      unreadable.push(CONTEXT_FILES[i]);
     } else {
       absent.push(CONTEXT_FILES[i]);
     }
@@ -295,5 +309,6 @@ export function buildLiveContext(files: (TextFile | null)[]): LiveContext {
     todo: checklist.todo,
     found,
     absent,
+    unreadable,
   };
 }

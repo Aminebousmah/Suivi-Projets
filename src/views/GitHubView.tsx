@@ -4,7 +4,7 @@ import type { RepoData, Theme } from '../data/types';
 import type { MatchKind } from '../lib/verify';
 import { isResolved } from '../lib/verify';
 import type { LoadState } from '../lib/useGitHub';
-import { writeToken } from '../lib/useGitHub';
+import { cacheStore, describeOrigins, writeToken } from '../lib/useGitHub';
 
 interface Props {
   t: Theme;
@@ -50,6 +50,7 @@ export function GitHubView({
   onDisconnect,
 }: Props) {
   const [draft, setDraft] = useState(token);
+  const [cleared, setCleared] = useState(0);
 
   const card = {
     border: `1px solid ${t.line}`,
@@ -101,7 +102,8 @@ export function GitHubView({
           Les autres vues décrivent le projet tel qu'il a été documenté. Celle-ci interroge
           l'API GitHub et confronte cette description au dépôt réel. Le jeton reste dans ce
           navigateur et n'est envoyé qu'à api.github.com ; sans lui, seuls les dépôts publics
-          répondent, dans la limite de soixante requêtes par heure.
+          répondent, dans la limite de soixante requêtes par heure. Les réponses sont gardées
+          en cache et revalidées par ETag : une réponse inchangée ne coûte rien au quota.
         </span>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <input
@@ -130,6 +132,12 @@ export function GitHubView({
           >
             {state.status === 'ready' ? 'Recharger' : 'Interroger GitHub'}
           </button>
+          <button
+            onClick={() => setCleared(cacheStore().clear() || -1)}
+            style={button(false)}
+          >
+            Vider le cache
+          </button>
           {connected && (
             <button
               onClick={() => {
@@ -143,6 +151,13 @@ export function GitHubView({
             </button>
           )}
         </div>
+        {cleared !== 0 && (
+          <span style={{ fontSize: 12, color: t.inkSoft }}>
+            {cleared > 0
+              ? `${cleared} réponse(s) oubliée(s). Le prochain chargement repart de GitHub.`
+              : 'Le cache était déjà vide.'}
+          </span>
+        )}
       </div>
 
       {state.status === 'loading' && (
@@ -166,6 +181,40 @@ export function GitHubView({
 
       {state.status === 'ready' && (
         <>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 14,
+              flexWrap: 'wrap',
+              padding: '10px 14px',
+              borderRadius: 9,
+              border: `1px solid ${t.line}`,
+              background: t.surface,
+            }}
+          >
+            <Kicker color={t.inkFaint} size={9.5}>
+              quota
+            </Kicker>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 700 }}>
+              {state.data.rate
+                ? `${state.data.rate.remaining} / ${state.data.rate.limit}`
+                : '—'}
+            </span>
+            {state.data.rate && (
+              <span style={{ fontFamily: MONO, fontSize: 10.5, color: t.inkFaint }}>
+                remis à zéro à{' '}
+                {new Date(state.data.rate.resetAt).toLocaleTimeString('fr-FR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+            )}
+            <span style={{ fontSize: 12, lineHeight: 1.5, color: t.inkSoft }}>
+              {describeOrigins(state.data.origins, state.data.age)}
+            </span>
+          </div>
+
           <div
             style={{
               display: 'grid',
@@ -293,6 +342,26 @@ export function GitHubView({
                   </span>
                   <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
                     {f.role}
+                  </span>
+                </div>
+              ))}
+              {state.data.context.unreadable.map((name) => (
+                <div
+                  key={name}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '150px minmax(0, 1fr)',
+                    gap: 14,
+                    padding: '11px 16px',
+                    borderBottom: `1px solid ${t.line}`,
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <span style={{ fontFamily: MONO, fontSize: 11.5, color: t.warnFg }}>
+                    {name}
+                  </span>
+                  <span style={{ fontSize: 12.5, color: t.inkSoft }}>
+                    non lu — GitHub n'a pas répondu pour ce fichier ; rechargez pour réessayer
                   </span>
                 </div>
               ))}
