@@ -3,7 +3,7 @@ import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { THEMES } from './data/themes';
 import { useAtlasState } from './lib/useAtlasState';
-import { readToken } from './lib/useGitHub';
+import { readConnected, readToken, useGitHub, writeConnected } from './lib/useGitHub';
 import { ArchView } from './views/ArchView';
 import { ContextView } from './views/ContextView';
 import { GitHubView } from './views/GitHubView';
@@ -16,10 +16,27 @@ const MONO = "'JetBrains Mono', monospace";
 export default function App() {
   const [state, navigate] = useAtlasState();
   const [token, setToken] = useState(readToken);
+  const [connected, setConnected] = useState(readConnected);
   const { repo: repoKey, view, viz, domain: domainKey, feat: featName, zoom } = state;
 
   const t = THEMES[repoKey];
   const repo = REPOS[repoKey];
+
+  // Un seul chargement du dépôt pour toutes les vues qui en dépendent.
+  const { state: source, reload } = useGitHub(repo, token, connected);
+  const live = source.status === 'ready' ? source.data.context : null;
+
+  const connect = (nextToken: string) => {
+    setToken(nextToken);
+    setConnected(true);
+    writeConnected(true);
+    if (connected) reload();
+  };
+
+  const disconnect = () => {
+    setConnected(false);
+    writeConnected(false);
+  };
 
   useEffect(() => {
     document.title = `Atlas — ${repo.label}`;
@@ -285,10 +302,18 @@ export default function App() {
         />
       )}
       {view === 'sessions' && <SessionsView t={t} repo={repo} repoKey={repoKey} />}
-      {view === 'context' && <ContextView t={t} repo={repo} />}
-      {view === 'progress' && <ProgressView t={t} repo={repo} />}
+      {view === 'context' && <ContextView t={t} repo={repo} live={live} />}
+      {view === 'progress' && <ProgressView t={t} repo={repo} live={live} />}
       {view === 'github' && (
-        <GitHubView key={repoKey} t={t} repo={repo} token={token} setToken={setToken} />
+        <GitHubView
+          t={t}
+          repo={repo}
+          token={token}
+          source={source}
+          connected={connected}
+          onConnect={connect}
+          onDisconnect={disconnect}
+        />
       )}
     </div>
   );

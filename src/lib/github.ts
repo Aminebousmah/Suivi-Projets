@@ -139,6 +139,46 @@ export async function fetchTree(ref: RepoRef, token: string | null): Promise<Rep
   };
 }
 
+export interface TextFile {
+  path: string;
+  text: string;
+  bytes: number;
+}
+
+/**
+ * Lit un fichier texte du dépôt. Renvoie null quand il n'existe pas : l'absence
+ * d'un CLAUDE.md n'est pas une panne, c'est une information.
+ */
+export async function fetchTextFile(
+  ref: RepoRef,
+  path: string,
+  token: string | null,
+): Promise<TextFile | null> {
+  const headers: Record<string, string> = { Accept: 'application/vnd.github.raw' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const url =
+    `${API}/repos/${ref.owner}/${ref.repo}/contents/${path}` +
+    `?ref=${encodeURIComponent(ref.branch)}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, { headers });
+  } catch {
+    throw new GitHubError('Impossible de joindre api.github.com — connexion réseau ?', 0);
+  }
+
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new GitHubError(
+      explain(res.status, path, res.headers.get('x-ratelimit-remaining')),
+      res.status,
+    );
+  }
+
+  const text = await res.text();
+  return { path, text, bytes: new TextEncoder().encode(text).length };
+}
+
 export async function fetchCommits(
   ref: RepoRef,
   token: string | null,

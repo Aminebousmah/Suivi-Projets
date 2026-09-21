@@ -578,18 +578,18 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '26', k: 'fonctions' }, { v: '53', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '27', k: 'fonctions' }, { v: '88', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
       "Porte une direction artistique par dépôt, dérivée des tokens CSS du dépôt décrit.",
       "Inscrit toute la navigation dans l'URL : chaque sélection est un permalien, le bouton précédent la rejoue.",
-      "Interroge l'API GitHub et confronte les fichiers cités par les fonctionnalités à l'arborescence réelle du dépôt."
+      "Interroge l'API GitHub et confronte les fichiers cités par les fonctionnalités à l'arborescence réelle du dépôt.",
+      "Relit CLAUDE.md, plan.md et README.md dans le dépôt pour en tirer les règles, les interdits et les phases."
     ],
     todo: [
       "Déduire les domaines et les fonctionnalités de l'arborescence réelle au lieu de les écrire à la main.",
       "Alimenter la vue Sessions depuis ~/.claude/projects/ plutôt que depuis un résumé figé.",
-      "Lire les phases directement dans plan.md et les statuts dans CLAUDE.md.",
       "Mettre en cache les réponses GitHub pour ne pas retomber sur le quota à chaque visite.",
       "Rendre le graphe navigable au clavier et le panneau lisible sur mobile.",
       "Publier le build : le dépôt n'est déployé nulle part pour l'instant."
@@ -600,18 +600,18 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Build', v: 'Vite 8', note: "Build de production en moins d'une seconde, un seul bundle." },
       { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant." },
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
-      { cat: 'Données', v: 'Modules TypeScript statiques', note: "src/data/repos.ts décrit chaque dépôt ; rien n'est encore lu depuis GitHub." },
+      { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com." },
-      { cat: 'Tests', v: 'Vitest', note: "53 tests sur le layout du graphe, l'état d'URL et le croisement des fichiers." },
+      { cat: 'Tests', v: 'Vitest', note: "88 tests sur le graphe, l'état d'URL, le croisement des fichiers et la lecture des Markdown." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "53", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "88", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
-      { k: "Données lues depuis GitHub", v: "partiel", target: "complet", pct: '35%', tone: 'wip' },
+      { k: "Données lues depuis GitHub", v: "partiel", target: "complet", pct: '60%', tone: 'wip' },
       { k: "Sessions réelles branchées", v: "non", target: "oui", pct: '0%', tone: 'frozen' },
       { k: "Application déployée", v: "non", target: "oui", pct: '0%', tone: 'frozen' }
     ],
@@ -646,13 +646,16 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/views/ArchView.tsx'] },
           { name: "Sessions", status: 'wip', what: "Demandes et réponses session par session, mémoires écrites ensuite.",
             files: ['src/views/SessionsView.tsx'],
-            notes: ["Le contenu est un résumé figé dans les données", "Reste à brancher sur ~/.claude/projects/"] },
+            notes: ["Le contenu est un résumé figé dans les données", "C'est la dernière vue qui ne lit rien du dépôt", "Reste à brancher sur ~/.claude/projects/"] },
           { name: "Contexte Claude", status: 'live', what: "Fichiers lus avant d'agir, règles actives, interdits, décisions ouvertes.",
             files: ['src/views/ContextView.tsx'] },
           { name: "Avancement", status: 'live', what: "Les phases du projet avec leur statut.",
             files: ['src/views/ProgressView.tsx'] },
-          { name: "Dépôt réel", status: 'live', what: "Métadonnées GitHub, derniers commits, et écarts entre les fichiers cités et l'arborescence.",
-            files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts'] }
+          { name: "Dépôt réel", status: 'live', what: "Métadonnées GitHub, derniers commits, fichiers de contexte lus, et écarts entre les fichiers cités et l'arborescence.",
+            files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts'] },
+          { name: "Bandeau de provenance", status: 'live', what: "Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figée.",
+            files: ['src/components/SourceBadge.tsx'],
+            notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place"] }
         ] },
       { key: 'model', num: '03', name: 'Modèle et données', tone: 'c',
         role: "Ce qui décrit un dépôt, et d'où viennent les couleurs.",
@@ -681,8 +684,9 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Jeton en local", status: 'live', what: "Saisi dans la vue, gardé dans le navigateur, effaçable d'un bouton.",
             files: ['src/lib/useGitHub.ts — readToken, writeToken'],
             notes: ["Jamais envoyé ailleurs qu'à api.github.com", "Le stockage refusé en navigation privée ne bloque pas la vue"] },
-          { name: "Lecture des fichiers de contexte", status: 'idea', what: "Lire CLAUDE.md, plan.md et README.md dans le dépôt pour en déduire règles et phases.",
-            files: ['src/lib/github.ts'] },
+          { name: "Lecture des fichiers de contexte", status: 'live', what: "Lit CLAUDE.md, plan.md et README.md dans le dépôt et en tire règles, interdits, phases et cases à cocher.",
+            files: ['src/lib/context.ts', 'src/lib/github.ts — fetchTextFile'],
+            notes: ["Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné", "Un fichier absent est une information affichée, pas une panne", "Les titres pris dans un bloc de code sont ignorés"] },
           { name: "Cache des réponses", status: 'idea', what: "Garder les réponses GitHub pour ne pas consommer le quota à chaque visite.",
             files: ['src/lib/useGitHub.ts'] }
         ] },
@@ -712,19 +716,23 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'session', date: 'Suite', turns: 'permaliens', tone: 'b',
         prompt: "Continue le dev.",
         reply: "Navigation portée dans l'URL avec historique navigateur, 53 tests Vitest, client GitHub et vue Dépôt réel qui confronte les fichiers cités à l'arborescence. Atlas ajouté comme troisième dépôt pour se décrire lui-même.",
-        outcome: 'live', touched: ['src/lib/url.ts', 'src/lib/github.ts', 'src/views/GitHubView.tsx'] }
+        outcome: 'live', touched: ['src/lib/url.ts', 'src/lib/github.ts', 'src/views/GitHubView.tsx'] },
+      { num: 'session', date: 'Contexte', turns: 'lecture', tone: 'c',
+        prompt: "Enchaîne sur la lecture des fichiers de contexte.",
+        reply: "CLAUDE.md, plan.md et README.md lus dans le dépôt et analysés : règles, interdits, phases et cases à cocher alimentent désormais les vues Contexte Claude et Avancement, chacune indiquant d'où vient ce qu'elle affiche. Atlas s'est doté de ses propres CLAUDE.md et plan.md.",
+        outcome: 'live', touched: ['src/lib/context.ts', 'CLAUDE.md', 'plan.md'] }
     ],
     memories: [
-      { file: 'README.md', rule: "Les données de src/data/repos.ts sont figées : toute affirmation sur un dépôt doit être vérifiable dans la vue Dépôt réel." },
-      { file: 'design/', rule: "La maquette d'origine reste la source de vérité visuelle : on la corrige dans les données, pas dans les composants." }
+      { file: 'CLAUDE.md — à ne jamais faire', rule: "Ne jamais inventer un statut qu'aucune source ne porte : une absence se signale, elle ne se comble pas." },
+      { file: 'CLAUDE.md — conventions', rule: "La logique pure va dans src/lib et arrive avec ses tests ; les composants ne calculent pas." }
     ],
     ctxFiles: [
-      { name: 'README.md', size: '2,4 ko', tone: 'a', role: "Démarrage, arborescence commentée, direction artistique, état des données.",
-        chips: ['install', 'architecture', 'données'] },
-      { name: 'design/github.md', size: '1,1 ko', tone: 'b', role: "Correspondance entre chaque écran de la maquette et ses fichiers source.",
-        chips: ['écrans', 'sources'] },
-      { name: 'design/Project Atlas.dc.html', size: '110 ko', tone: 'd', role: "Le prototype d'origine : structure, styles et données de référence.",
-        chips: ['maquette', 'palettes', 'données'] }
+      { name: 'CLAUDE.md', size: '2,3 ko', tone: 'a', role: "Contexte produit, architecture, conventions de code, interdits, workflow attendu.",
+        chips: ['architecture', 'conventions', 'interdits', 'workflow'] },
+      { name: 'plan.md', size: '1,5 ko', tone: 'b', role: "Les cinq phases avec leur statut, et les cases à cocher de la phase en cours.",
+        chips: ['5 phases', 'cases à cocher'] },
+      { name: 'README.md', size: '4,7 ko', tone: 'd', role: "Démarrage, arborescence commentée, permaliens, vue Dépôt réel, état des données.",
+        chips: ['install', 'architecture', 'permaliens', 'données'] }
     ],
     ctxRules: [
       "Lire la maquette sous design/ avant de toucher à l'apparence d'une vue.",
@@ -752,7 +760,7 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'Phase 2', status: 'fait', title: "Navigation et filet de tests", tone: 'live',
         detail: "État de navigation porté dans l'URL avec historique navigateur, 53 tests Vitest sur le graphe, l'URL et le croisement des chemins." },
       { num: 'Phase 3', status: 'en cours', title: "Pont GitHub", tone: 'wip',
-        detail: "Client REST, vue Dépôt réel, confrontation des fichiers cités à l'arborescence. Reste à lire les fichiers de contexte et à mettre les réponses en cache." },
+        detail: "Client REST, vue Dépôt réel, confrontation des fichiers cités à l'arborescence, lecture de CLAUDE.md, plan.md et README.md. Reste la mise en cache des réponses." },
       { num: 'Phase 4', status: 'à venir', title: "Données vivantes", tone: 'frozen',
         detail: "Déduire domaines, phases et règles du dépôt lui-même ; brancher les sessions sur l'historique local de Claude Code." },
       { num: 'Phase 5', status: 'idées', title: "Finition", tone: 'idea',

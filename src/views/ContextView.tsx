@@ -1,12 +1,23 @@
+import { SourceBadge } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
+import type { LiveContext } from '../lib/context';
 
 interface Props {
   t: Theme;
   repo: RepoData;
+  live: LiveContext | null;
 }
 
-export function ContextView({ t, repo }: Props) {
+export function ContextView({ t, repo, live }: Props) {
+  // Le dépôt a le dernier mot quand il a été lu — mais seulement sur ce qu'il
+  // porte vraiment : un CLAUDE.md sans section « à ne jamais faire » ne doit pas
+  // effacer les interdits déjà décrits.
+  const ctxFiles = live?.ctxFiles.length ? live.ctxFiles : repo.ctxFiles;
+  const ctxRules = live?.ctxRules.length ? live.ctxRules : repo.ctxRules;
+  const ctxNever = live?.ctxNever.length ? live.ctxNever : repo.ctxNever;
+  const fromFiles = live?.found.length ? live.found.join(', ') : 'CLAUDE.md et README.md';
+
   return (
     <section
       style={{
@@ -16,6 +27,19 @@ export function ContextView({ t, repo }: Props) {
         gap: 30,
       }}
     >
+      <SourceBadge
+        t={t}
+        live={!!live?.found.length}
+        what="Les fichiers, règles et interdits"
+        from={fromFiles}
+      />
+
+      {live && live.absent.length > 0 && (
+        <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft, marginTop: -18 }}>
+          Absent du dépôt : {live.absent.join(', ')}.
+        </span>
+      )}
+
       <div
         style={{
           display: 'grid',
@@ -23,7 +47,7 @@ export function ContextView({ t, repo }: Props) {
           gap: 10,
         }}
       >
-        {repo.ctxFiles.map((f) => {
+        {ctxFiles.map((f) => {
           const tn = t.tones[f.tone];
           return (
             <div
@@ -87,7 +111,7 @@ export function ContextView({ t, repo }: Props) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
           <Kicker color={t.inkFaint}>Règles actives</Kicker>
-          {repo.ctxRules.map((r) => (
+          {ctxRules.map((r) => (
             <div
               key={r}
               style={{
@@ -126,7 +150,7 @@ export function ContextView({ t, repo }: Props) {
             }}
           >
             <Kicker color={t.warnFg}>À ne jamais faire</Kicker>
-            {repo.ctxNever.map((n) => (
+            {ctxNever.map((n) => (
               <span key={n} style={{ fontSize: 12.5, lineHeight: 1.5, color: t.ink }}>
                 {n}
               </span>

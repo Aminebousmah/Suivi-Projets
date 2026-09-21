@@ -3,13 +3,17 @@ import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { MatchKind } from '../lib/verify';
 import { isResolved } from '../lib/verify';
-import { useGitHub, writeToken } from '../lib/useGitHub';
+import type { LoadState } from '../lib/useGitHub';
+import { writeToken } from '../lib/useGitHub';
 
 interface Props {
   t: Theme;
   repo: RepoData;
   token: string;
-  setToken: (v: string) => void;
+  source: LoadState;
+  connected: boolean;
+  onConnect: (token: string) => void;
+  onDisconnect: () => void;
 }
 
 const KIND_HINT: Record<MatchKind, string> = {
@@ -36,10 +40,16 @@ function humanSize(bytes: number): string {
   return bytes + ' o';
 }
 
-export function GitHubView({ t, repo, token, setToken }: Props) {
+export function GitHubView({
+  t,
+  repo,
+  token,
+  source: state,
+  connected,
+  onConnect,
+  onDisconnect,
+}: Props) {
   const [draft, setDraft] = useState(token);
-  const [connect, setConnect] = useState(false);
-  const { state, reload } = useGitHub(repo, token, connect);
 
   const card = {
     border: `1px solid ${t.line}`,
@@ -113,25 +123,23 @@ export function GitHubView({ t, repo, token, setToken }: Props) {
           />
           <button
             onClick={() => {
-              setToken(draft);
               writeToken(draft);
-              setConnect(true);
-              if (connect) reload();
+              onConnect(draft);
             }}
             style={button(true)}
           >
             {state.status === 'ready' ? 'Recharger' : 'Interroger GitHub'}
           </button>
-          {token && (
+          {connected && (
             <button
               onClick={() => {
                 setDraft('');
-                setToken('');
                 writeToken('');
+                onDisconnect();
               }}
               style={button(false)}
             >
-              Oublier le jeton
+              Se déconnecter
             </button>
           )}
         </div>
@@ -253,6 +261,70 @@ export function GitHubView({ t, repo, token, setToken }: Props) {
                   : `${state.data.check.missing} chemin(s) cité(s) n'existent pas ou plus — à corriger dans les données, ou à créer dans le dépôt.`}
               </span>
             </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+            <Kicker color={t.inkFaint}>Fichiers de contexte</Kicker>
+            <div
+              style={{
+                border: `1px solid ${t.line}`,
+                borderRadius: 12,
+                overflow: 'hidden',
+                background: t.surface,
+              }}
+            >
+              {state.data.context.ctxFiles.map((f) => (
+                <div
+                  key={f.name}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '150px 84px minmax(0, 1fr)',
+                    gap: 14,
+                    padding: '11px 16px',
+                    borderBottom: `1px solid ${t.line}`,
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 700 }}>
+                    {f.name}
+                  </span>
+                  <span style={{ fontFamily: MONO, fontSize: 10.5, color: t.inkFaint }}>
+                    {f.size}
+                  </span>
+                  <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
+                    {f.role}
+                  </span>
+                </div>
+              ))}
+              {state.data.context.absent.map((name) => (
+                <div
+                  key={name}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '150px minmax(0, 1fr)',
+                    gap: 14,
+                    padding: '11px 16px',
+                    borderBottom: `1px solid ${t.line}`,
+                    alignItems: 'baseline',
+                  }}
+                >
+                  <span
+                    style={{ fontFamily: MONO, fontSize: 11.5, color: t.inkFaint }}
+                  >
+                    {name}
+                  </span>
+                  <span style={{ fontSize: 12.5, color: t.inkSoft }}>
+                    absent du dépôt — les vues correspondantes gardent la description figée
+                  </span>
+                </div>
+              ))}
+            </div>
+            <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
+              {state.data.context.phases.length} phase(s) lue(s) dans plan.md,{' '}
+              {state.data.context.ctxRules.length} règle(s) et{' '}
+              {state.data.context.ctxNever.length} interdit(s) — repris tels quels par les vues
+              Contexte Claude et Avancement.
+            </span>
           </div>
 
           {state.data.check.missing > 0 && (
