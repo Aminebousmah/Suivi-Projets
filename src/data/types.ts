@@ -131,7 +131,6 @@ export interface RepoData {
   domains: Domain[];
   goldenRule: string;
   hubName: string;
-  hubCount: string;
   hubUnit: string;
   sessions: Session[];
   memories: Memory[];

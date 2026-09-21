@@ -54,7 +54,7 @@ export const REPOS: Record<string, RepoData> = {
       { k: "Réseaux sociaux", v: "aucun compte", target: "ouverts", pct: '0%', tone: 'idea' }
     ],
     goldenRule: "Aucun composant ne contient de hex, de nom de marque ou de prix codé en dur. Tout passe par src/config/*.",
-    hubName: 'Sole Citron', hubCount: '40', hubUnit: 'fonctionnalités',
+    hubName: 'Sole Citron', hubUnit: 'fonctionnalités',
     domains: [
       { key: 'nav', num: '01', name: 'Navigation & parcours', tone: 'a',
         role: "L'ossature de circulation : menu, portes, pied de page, recherche.",
@@ -343,7 +343,7 @@ export const REPOS: Record<string, RepoData> = {
       { k: "Déploiement", v: "local", target: "public", pct: '0%', tone: 'idea' }
     ],
     goldenRule: "data/loader.py est le seul fichier qui lit des CSV. data/processor.py est pur : jamais d'appel st.* dedans.",
-    hubName: 'ElevenField', hubCount: '42', hubUnit: 'fonctionnalités',
+    hubName: 'ElevenField', hubUnit: 'fonctionnalités',
     domains: [
       { key: 'player', num: '01', name: 'Analyse joueur', tone: 'a',
         role: "Le module le plus travaillé : profil, scouting, rapports de match.",

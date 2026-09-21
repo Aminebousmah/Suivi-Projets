@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { THEMES } from './data/themes';
-import type { ViewId, VizMode } from './data/types';
+import { useAtlasState } from './lib/useAtlasState';
 import { ArchView } from './views/ArchView';
 import { ContextView } from './views/ContextView';
 import { ProgressView } from './views/ProgressView';
@@ -12,21 +12,15 @@ import { SheetView } from './views/SheetView';
 const MONO = "'JetBrains Mono', monospace";
 
 export default function App() {
-  const [repoKey, setRepoKey] = useState<string>('sole');
-  const [view, setView] = useState<ViewId>('sheet');
-  const [viz, setViz] = useState<VizMode>('graph');
-  const [domainKey, setDomainKey] = useState<string | null>(null);
-  const [featName, setFeatName] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(0.62);
+  const [state, navigate] = useAtlasState();
+  const { repo: repoKey, view, viz, domain: domainKey, feat: featName, zoom } = state;
 
   const t = THEMES[repoKey];
   const repo = REPOS[repoKey];
 
-  const selectRepo = (k: string) => {
-    setRepoKey(k);
-    setDomainKey(null);
-    setFeatName(null);
-  };
+  useEffect(() => {
+    document.title = `Atlas — ${repo.label}`;
+  }, [repo.label]);
 
   const repoTabs = useMemo(
     () =>
@@ -75,7 +69,7 @@ export default function App() {
         {repoTabs.map((r) => (
           <button
             key={r.key}
-            onClick={() => selectRepo(r.key)}
+            onClick={() => navigate({ repo: r.key })}
             style={{
               appearance: 'none',
               cursor: 'pointer',
@@ -237,7 +231,7 @@ export default function App() {
           {VIEWS.map((v) => (
             <button
               key={v.id}
-              onClick={() => setView(v.id)}
+              onClick={() => navigate({ view: v.id })}
               style={{
                 appearance: 'none',
                 cursor: 'pointer',
@@ -281,13 +275,10 @@ export default function App() {
           t={t}
           repo={repo}
           viz={viz}
-          setViz={setViz}
           domainKey={domainKey}
           featName={featName}
-          setDomainKey={setDomainKey}
-          setFeatName={setFeatName}
           zoom={zoom}
-          setZoom={setZoom}
+          navigate={navigate}
         />
       )}
       {view === 'sessions' && <SessionsView t={t} repo={repo} repoKey={repoKey} />}

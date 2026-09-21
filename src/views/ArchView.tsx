@@ -2,34 +2,20 @@ import { HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
 import type { RepoData, Theme, VizMode } from '../data/types';
 import { CANVAS_WIDTH, buildMap, buildOverview } from '../lib/graph';
-
-const ZOOM_STEPS = [0.45, 0.62, 0.85, 1.15];
+import type { AtlasState } from '../lib/url';
+import { ZOOM_STEPS } from '../lib/url';
 
 interface Props {
   t: Theme;
   repo: RepoData;
   viz: VizMode;
-  setViz: (v: VizMode) => void;
   domainKey: string | null;
   featName: string | null;
-  setDomainKey: (k: string | null) => void;
-  setFeatName: (n: string | null) => void;
   zoom: number;
-  setZoom: (z: number) => void;
+  navigate: (patch: Partial<AtlasState>) => void;
 }
 
-export function ArchView({
-  t,
-  repo,
-  viz,
-  setViz,
-  domainKey,
-  featName,
-  setDomainKey,
-  setFeatName,
-  zoom,
-  setZoom,
-}: Props) {
+export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: Props) {
   const domains = repo.domains;
   const domain = domainKey ? domains.find((d) => d.key === domainKey) ?? null : null;
   const feat = domain && featName ? domain.features.find((f) => f.name === featName) ?? null : null;
@@ -38,20 +24,12 @@ export function ArchView({
   const map = buildMap(domains, t, domainKey, featName);
   const { overview, projectSegs, projectCounts } = buildOverview(domains, t, domainKey);
 
-  const openDomain = (k: string) => {
-    setDomainKey(k);
-    setFeatName(null);
-  };
-  const openFeat = (k: string, name: string) => {
-    setDomainKey(k);
-    setFeatName(name);
-  };
-  const reset = () => {
-    setDomainKey(null);
-    setFeatName(null);
-  };
+  const openDomain = (k: string) => navigate({ domain: k, feat: null });
+  const openFeat = (k: string, name: string) => navigate({ domain: k, feat: name });
+  const reset = () => navigate({ domain: null, feat: null });
 
   const hubTone = t.tones.a;
+  const hubCount = domains.reduce((a, d) => a + d.features.length, 0);
   const isGraph = viz === 'graph';
   const isList = viz === 'list' && !domain;
   const inDomain = viz === 'list' && !!domain;
@@ -67,7 +45,7 @@ export function ArchView({
         },
         {
           label: domain.name,
-          onClick: () => setFeatName(null),
+          onClick: () => navigate({ feat: null }),
           weight: 700,
           color: t.tones[domain.tone].dot,
           sep: feat ? '/' : '',
@@ -188,7 +166,7 @@ export function ArchView({
             ).map((m) => (
               <button
                 key={m.id}
-                onClick={() => setViz(m.id)}
+                onClick={() => navigate({ viz: m.id })}
                 style={{
                   appearance: 'none',
                   cursor: 'pointer',
@@ -385,7 +363,7 @@ export function ArchView({
                   return (
                     <button
                       key={z}
-                      onClick={() => setZoom(z)}
+                      onClick={() => navigate({ zoom: z })}
                       style={{
                         appearance: 'none',
                         cursor: 'pointer',
@@ -490,7 +468,7 @@ export function ArchView({
                           lineHeight: 1,
                         }}
                       >
-                        {repo.hubCount}
+                        {hubCount}
                       </span>
                       <Kicker color={hubTone.inkSoft} size={9.5}>
                         {repo.hubUnit}
@@ -735,7 +713,7 @@ export function ArchView({
               return (
                 <HoverButton
                   key={f.name}
-                  onClick={() => setFeatName(f.name)}
+                  onClick={() => navigate({ feat: f.name })}
                   hoverBackground={t.surfaceAlt}
                   style={{
                     appearance: 'none',
