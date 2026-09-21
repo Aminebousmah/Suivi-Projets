@@ -147,5 +147,5 @@ export interface ViewDef {
   label: string;
 }
 
-export type ViewId = 'sheet' | 'arch' | 'sessions' | 'context' | 'progress';
+export type ViewId = 'sheet' | 'arch' | 'sessions' | 'context' | 'progress' | 'github';
 export type VizMode = 'graph' | 'list';

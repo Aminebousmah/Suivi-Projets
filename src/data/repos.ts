@@ -571,5 +571,192 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'Phase 6', status: 'idées', title: "Tests et déploiement", tone: 'idea',
         detail: "pytest sur les trois fonctions critiques de processor.py, fixture CSV minimale, choix d'hébergement." }
     ]
+  },
+
+  atlas: {
+    label: 'Atlas',
+    slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
+    titleA: 'Atlas se lit ', titleB: 'lui-même',
+    tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '26', k: 'fonctions' }, { v: '53', k: 'tests' } ],
+    does: [
+      "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
+      "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
+      "Porte une direction artistique par dépôt, dérivée des tokens CSS du dépôt décrit.",
+      "Inscrit toute la navigation dans l'URL : chaque sélection est un permalien, le bouton précédent la rejoue.",
+      "Interroge l'API GitHub et confronte les fichiers cités par les fonctionnalités à l'arborescence réelle du dépôt."
+    ],
+    todo: [
+      "Déduire les domaines et les fonctionnalités de l'arborescence réelle au lieu de les écrire à la main.",
+      "Alimenter la vue Sessions depuis ~/.claude/projects/ plutôt que depuis un résumé figé.",
+      "Lire les phases directement dans plan.md et les statuts dans CLAUDE.md.",
+      "Mettre en cache les réponses GitHub pour ne pas retomber sur le quota à chaque visite.",
+      "Rendre le graphe navigable au clavier et le panneau lisible sur mobile.",
+      "Publier le build : le dépôt n'est déployé nulle part pour l'instant."
+    ],
+    stack: [
+      { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
+      { cat: 'Framework', v: 'React 19', note: "Composants de fonction, aucun state manager : l'état de navigation vit dans l'URL." },
+      { cat: 'Build', v: 'Vite 8', note: "Build de production en moins d'une seconde, un seul bundle." },
+      { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant." },
+      { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
+      { cat: 'Données', v: 'Modules TypeScript statiques', note: "src/data/repos.ts décrit chaque dépôt ; rien n'est encore lu depuis GitHub." },
+      { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com." },
+      { cat: 'Tests', v: 'Vitest', note: "53 tests sur le layout du graphe, l'état d'URL et le croisement des fichiers." },
+      { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
+      { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
+    ],
+    tracking: [
+      { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "53", target: "—", pct: '100%', tone: 'live' },
+      { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
+      { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
+      { k: "Données lues depuis GitHub", v: "partiel", target: "complet", pct: '35%', tone: 'wip' },
+      { k: "Sessions réelles branchées", v: "non", target: "oui", pct: '0%', tone: 'frozen' },
+      { k: "Application déployée", v: "non", target: "oui", pct: '0%', tone: 'frozen' }
+    ],
+    domains: [
+      { key: 'shell', num: '01', name: 'Coque et navigation', tone: 'a',
+        role: "La barre de dépôts, l'en-tête, les onglets de vue et l'état partagé.",
+        detail: "Tout ce qui encadre les vues et décide de ce qui est affiché. L'état de navigation n'est pas dans React : il est dans l'URL, React le relit.",
+        features: [
+          { name: "Barre de dépôts", status: 'live', what: "Bascule entre les dépôts décrits, chacun avec sa palette et sa typographie.",
+            files: ['src/App.tsx', 'src/data/themes.ts'],
+            notes: ["Changer de dépôt remet la sélection à zéro", "La source de la palette est affichée à droite de la barre"] },
+          { name: "Onglets de vue", status: 'live', what: "Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.",
+            files: ['src/data/labels.ts — VIEWS, BLURBS', 'src/App.tsx'] },
+          { name: "État dans l'URL", status: 'live', what: "Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres.",
+            files: ['src/lib/url.ts', 'src/lib/useAtlasState.ts'],
+            notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée"] },
+          { name: "Historique navigateur", status: 'live', what: "Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépôt.",
+            files: ['src/lib/useAtlasState.ts — popstate', 'src/App.tsx'] },
+          { name: "Navigation au clavier", status: 'idea', what: "Parcourir le graphe aux flèches et ouvrir une fonctionnalité à l'entrée.",
+            files: ['src/views/ArchView.tsx'] }
+        ] },
+      { key: 'views', num: '02', name: 'Les six vues', tone: 'b',
+        role: "Ce que chaque onglet montre du projet décrit.",
+        detail: "Cinq vues reprises de la maquette, plus la vue Dépôt réel ajoutée pour confronter la description au dépôt.",
+        features: [
+          { name: "Fiche projet", status: 'live', what: "Ce que le projet fait, ce qu'il reste à faire, la pile poste par poste, la feuille de suivi.",
+            files: ['src/views/SheetView.tsx'] },
+          { name: "Graphe des fonctionnalités", status: 'live', what: "Arbre projet → domaine → fonctionnalité, tracé en courbes de Bézier, avec quatre paliers de zoom.",
+            files: ['src/views/ArchView.tsx', 'src/lib/graph.ts — buildMap'],
+            notes: ["Tout est dessiné d'un coup : on navigue au zoom et au défilement", "La feuille sélectionnée épaissit son arête", "Le panneau de droite suit la sélection"] },
+          { name: "Vue liste", status: 'live', what: "Les mêmes domaines en cartes, puis le tableau des fonctionnalités du domaine ouvert.",
+            files: ['src/views/ArchView.tsx'] },
+          { name: "Sessions", status: 'wip', what: "Demandes et réponses session par session, mémoires écrites ensuite.",
+            files: ['src/views/SessionsView.tsx'],
+            notes: ["Le contenu est un résumé figé dans les données", "Reste à brancher sur ~/.claude/projects/"] },
+          { name: "Contexte Claude", status: 'live', what: "Fichiers lus avant d'agir, règles actives, interdits, décisions ouvertes.",
+            files: ['src/views/ContextView.tsx'] },
+          { name: "Avancement", status: 'live', what: "Les phases du projet avec leur statut.",
+            files: ['src/views/ProgressView.tsx'] },
+          { name: "Dépôt réel", status: 'live', what: "Métadonnées GitHub, derniers commits, et écarts entre les fichiers cités et l'arborescence.",
+            files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts'] }
+        ] },
+      { key: 'model', num: '03', name: 'Modèle et données', tone: 'c',
+        role: "Ce qui décrit un dépôt, et d'où viennent les couleurs.",
+        detail: "Une description par dépôt, un thème par dépôt. Les composants ne connaissent aucune couleur : ils lisent le thème actif.",
+        features: [
+          { name: "Types du modèle", status: 'live', what: "Theme, RepoData, Domain, Feature, Session, Phase — le contrat que toute source devra respecter.",
+            files: ['src/data/types.ts'] },
+          { name: "Description des dépôts", status: 'wip', what: "Domaines, fonctionnalités, sessions, phases et feuille de suivi de chaque dépôt.",
+            files: ['src/data/repos.ts'],
+            notes: ["Écrit à la main, repris de la maquette", "C'est ce fichier que la vue Dépôt réel confronte à GitHub"] },
+          { name: "Thèmes par dépôt", status: 'live', what: "Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.",
+            files: ['src/data/themes.ts'] },
+          { name: "Libellés et vues", status: 'live', what: "Statuts en français, définition des six vues, accroches.",
+            files: ['src/data/labels.ts'] }
+        ] },
+      { key: 'github', num: '04', name: 'Pont GitHub', tone: 'a',
+        role: "La lecture du dépôt réel et sa confrontation à la description.",
+        detail: "Un client REST minimal et un croisement de chemins. C'est la seule partie de l'application qui parle au réseau.",
+        features: [
+          { name: "Client REST", status: 'live', what: "Métadonnées, arborescence récursive et derniers commits, jeton facultatif.",
+            files: ['src/lib/github.ts'],
+            notes: ["Chaque statut HTTP est traduit en message actionnable", "Sans jeton : dépôts publics seulement, soixante requêtes par heure"] },
+          { name: "Croisement des chemins", status: 'live', what: "Confronte chaque fichier cité à l'arborescence : exact, partiel, dossier, motif, déplacé ou absent.",
+            files: ['src/lib/verify.ts'],
+            notes: ["Les déclarations sont écrites pour un lecteur humain : préfixe src/ omis, annotation après un tiret", "Un fichier retrouvé ailleurs est signalé comme déplacé, pas comme présent"] },
+          { name: "Jeton en local", status: 'live', what: "Saisi dans la vue, gardé dans le navigateur, effaçable d'un bouton.",
+            files: ['src/lib/useGitHub.ts — readToken, writeToken'],
+            notes: ["Jamais envoyé ailleurs qu'à api.github.com", "Le stockage refusé en navigation privée ne bloque pas la vue"] },
+          { name: "Lecture des fichiers de contexte", status: 'idea', what: "Lire CLAUDE.md, plan.md et README.md dans le dépôt pour en déduire règles et phases.",
+            files: ['src/lib/github.ts'] },
+          { name: "Cache des réponses", status: 'idea', what: "Garder les réponses GitHub pour ne pas consommer le quota à chaque visite.",
+            files: ['src/lib/useGitHub.ts'] }
+        ] },
+      { key: 'quality', num: '05', name: 'Qualité et outillage', tone: 'd',
+        role: "Ce qui empêche la régression silencieuse.",
+        detail: "Tests sur la logique pure, typage strict, lint, et la maquette d'origine conservée comme référence visuelle.",
+        features: [
+          { name: "Tests du graphe", status: 'live', what: "Positionnement, arêtes, sélection et agrégats d'état par branche.",
+            files: ['src/lib/__tests__/graph.test.ts'] },
+          { name: "Tests de l'état d'URL", status: 'live', what: "Aller-retour, paramètres inconnus, purge de la sélection invalide.",
+            files: ['src/lib/__tests__/url.test.ts'] },
+          { name: "Tests du croisement", status: 'live', what: "Chaque forme de correspondance de chemin, et le décompte par domaine.",
+            files: ['src/lib/__tests__/verify.test.ts'] },
+          { name: "Maquette de référence", status: 'live', what: "Le prototype Claude Design d'origine, gardé intact comme source de vérité visuelle.",
+            files: ['design/Project Atlas.dc.html', 'design/github.md'] },
+          { name: "Tests de rendu", status: 'idea', what: "Un test de bout en bout par vue, plutôt qu'un script de vérification manuel.",
+            files: ['src/views/'] }
+        ] }
+    ],
+    goldenRule: "Aucun composant ne code une couleur en dur : tout passe par le thème du dépôt affiché. Et rien n'est affirmé sur un dépôt qui ne soit lisible dans ses données ou dans GitHub.",
+    hubName: 'Atlas', hubUnit: 'fonctionnalités',
+    sessions: [
+      { num: 'session', date: 'Reprise', turns: 'maquette', tone: 'a',
+        prompt: "Commence le projet Atlas à partir du handoff Claude Design.",
+        reply: "Maquette lue en entier, portée en React 19, Vite et TypeScript strict. Cinq vues, deux dépôts, graphe explorable. Données et thèmes extraits tels quels du prototype, logique de graphe isolée dans src/lib.",
+        outcome: 'live', touched: ['src/App.tsx', 'src/data/*', 'src/views/*'] },
+      { num: 'session', date: 'Suite', turns: 'permaliens', tone: 'b',
+        prompt: "Continue le dev.",
+        reply: "Navigation portée dans l'URL avec historique navigateur, 53 tests Vitest, client GitHub et vue Dépôt réel qui confronte les fichiers cités à l'arborescence. Atlas ajouté comme troisième dépôt pour se décrire lui-même.",
+        outcome: 'live', touched: ['src/lib/url.ts', 'src/lib/github.ts', 'src/views/GitHubView.tsx'] }
+    ],
+    memories: [
+      { file: 'README.md', rule: "Les données de src/data/repos.ts sont figées : toute affirmation sur un dépôt doit être vérifiable dans la vue Dépôt réel." },
+      { file: 'design/', rule: "La maquette d'origine reste la source de vérité visuelle : on la corrige dans les données, pas dans les composants." }
+    ],
+    ctxFiles: [
+      { name: 'README.md', size: '2,4 ko', tone: 'a', role: "Démarrage, arborescence commentée, direction artistique, état des données.",
+        chips: ['install', 'architecture', 'données'] },
+      { name: 'design/github.md', size: '1,1 ko', tone: 'b', role: "Correspondance entre chaque écran de la maquette et ses fichiers source.",
+        chips: ['écrans', 'sources'] },
+      { name: 'design/Project Atlas.dc.html', size: '110 ko', tone: 'd', role: "Le prototype d'origine : structure, styles et données de référence.",
+        chips: ['maquette', 'palettes', 'données'] }
+    ],
+    ctxRules: [
+      "Lire la maquette sous design/ avant de toucher à l'apparence d'une vue.",
+      "Toute couleur passe par le thème du dépôt : aucun hex dans un composant.",
+      "La logique pure va dans src/lib et arrive avec ses tests ; les composants ne calculent pas.",
+      "L'état de navigation vit dans l'URL, pas dans un state React parallèle.",
+      "Une affirmation sur un dépôt doit être vérifiable : données citées ou lecture GitHub.",
+      "Réponses et libellés en français, y compris les messages d'erreur."
+    ],
+    ctxNever: [
+      "Ne jamais inventer un statut de fonctionnalité qu'aucune source ne porte.",
+      "Ne jamais envoyer le jeton GitHub ailleurs qu'à api.github.com.",
+      "Ne pas modifier les fichiers de design/ : c'est la référence, pas du code applicatif.",
+      "Pas de dépendance ajoutée sans usage réel dans le code."
+    ],
+    ctxOpen: [
+      "Déduire les domaines de l'arborescence réelle, ou continuer à les écrire à la main ?",
+      "Où héberger le build : Vercel, GitHub Pages, ou rien pour l'instant ?",
+      "Comment lire ~/.claude/projects/ depuis un navigateur — import de fichier, ou petit service local ?",
+      "Faut-il un mode hors-ligne quand le quota GitHub est épuisé ?"
+    ],
+    phases: [
+      { num: 'Phase 1', status: 'fait', title: "Portage de la maquette", tone: 'live',
+        detail: "Vite, React 19, TypeScript strict. Cinq vues fidèles au prototype, deux dépôts, thèmes et données extraits tels quels, logique de graphe isolée." },
+      { num: 'Phase 2', status: 'fait', title: "Navigation et filet de tests", tone: 'live',
+        detail: "État de navigation porté dans l'URL avec historique navigateur, 53 tests Vitest sur le graphe, l'URL et le croisement des chemins." },
+      { num: 'Phase 3', status: 'en cours', title: "Pont GitHub", tone: 'wip',
+        detail: "Client REST, vue Dépôt réel, confrontation des fichiers cités à l'arborescence. Reste à lire les fichiers de contexte et à mettre les réponses en cache." },
+      { num: 'Phase 4', status: 'à venir', title: "Données vivantes", tone: 'frozen',
+        detail: "Déduire domaines, phases et règles du dépôt lui-même ; brancher les sessions sur l'historique local de Claude Code." },
+      { num: 'Phase 5', status: 'idées', title: "Finition", tone: 'idea',
+        detail: "Navigation au clavier dans le graphe, mise en page mobile du panneau, tests de rendu par vue, publication du build." }
+    ]
   }
 };

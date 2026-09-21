@@ -23,6 +23,7 @@ export const VIEWS: ViewDef[] = [
   { id: 'sessions', num: '03', label: 'Sessions' },
   { id: 'context', num: '04', label: 'Contexte Claude' },
   { id: 'progress', num: '05', label: 'Avancement' },
+  { id: 'github', num: '06', label: 'Dépôt réel' },
 ];
 
 export const BLURBS: Record<ViewId, string> = {
@@ -33,4 +34,6 @@ export const BLURBS: Record<ViewId, string> = {
   context:
     "Ce que Claude Code lit avant d'agir : fichiers de contexte, règles actives, interdits, décisions en suspens.",
   progress: "Les phases telles qu'elles sont écrites dans plan.md, avec leur statut réel.",
+  github:
+    "Le dépôt tel qu'il est vraiment : métadonnées GitHub, derniers commits, et confrontation des fichiers cités ici à l'arborescence réelle.",
 };

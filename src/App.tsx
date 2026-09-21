@@ -1,10 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { THEMES } from './data/themes';
 import { useAtlasState } from './lib/useAtlasState';
+import { readToken } from './lib/useGitHub';
 import { ArchView } from './views/ArchView';
 import { ContextView } from './views/ContextView';
+import { GitHubView } from './views/GitHubView';
 import { ProgressView } from './views/ProgressView';
 import { SessionsView } from './views/SessionsView';
 import { SheetView } from './views/SheetView';
@@ -13,6 +15,7 @@ const MONO = "'JetBrains Mono', monospace";
 
 export default function App() {
   const [state, navigate] = useAtlasState();
+  const [token, setToken] = useState(readToken);
   const { repo: repoKey, view, viz, domain: domainKey, feat: featName, zoom } = state;
 
   const t = THEMES[repoKey];
@@ -284,6 +287,9 @@ export default function App() {
       {view === 'sessions' && <SessionsView t={t} repo={repo} repoKey={repoKey} />}
       {view === 'context' && <ContextView t={t} repo={repo} />}
       {view === 'progress' && <ProgressView t={t} repo={repo} />}
+      {view === 'github' && (
+        <GitHubView key={repoKey} t={t} repo={repo} token={token} setToken={setToken} />
+      )}
     </div>
   );
 }
