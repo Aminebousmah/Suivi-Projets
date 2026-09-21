@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  background: #101014;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+button {
+  font: inherit;
+}
