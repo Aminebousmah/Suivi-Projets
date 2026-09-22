@@ -8,13 +8,15 @@ interface Props {
   what: string;
   /** Où c'est lu quand c'est live : « plan.md », « CLAUDE.md »… */
   from?: string;
+  /** Comment obtenir la version réelle, quand ce n'est pas la connexion GitHub. */
+  hint?: string;
 }
 
 /**
  * Dit d'où vient ce qu'on lit à l'écran. Une vue alimentée par le dépôt et une
  * vue alimentée par la description figée ne se valent pas : le bandeau tranche.
  */
-export function SourceBadge({ t, live, what, from }: Props) {
+export function SourceBadge({ t, live, what, from, hint }: Props) {
   return (
     <div
       style={{
@@ -41,8 +43,11 @@ export function SourceBadge({ t, live, what, from }: Props) {
       </span>
       <span style={{ fontSize: 12, lineHeight: 1.5, color: t.inkSoft }}>
         {live
-          ? `${what} viennent de ${from} sur la branche décrite.`
-          : `${what} sont écrits dans src/data/repos.ts. Connectez le dépôt depuis la vue « Dépôt réel » pour lire ${from ?? 'les fichiers de contexte'}.`}
+          ? `${what} : lu dans ${from} sur la branche décrite.`
+          : `${what} : écrit à la main dans src/data/repos.ts. ${
+              hint ??
+              `Connectez le dépôt depuis la vue « Dépôt réel » pour lire ${from ?? 'les fichiers de contexte'}.`
+            }`}
       </span>
     </div>
   );

@@ -37,8 +37,11 @@ src/
     cache.ts          cache des réponses, fenêtre de fraîcheur et purge du stockage plein
     verify.ts         croisement des fichiers déclarés avec l'arborescence réelle
     context.ts        lecture de CLAUDE.md, plan.md et README.md : règles, interdits, phases
+    tree.ts           l'arborescence réelle regroupée en dossiers et fichiers
+    activity.ts       ce que les derniers commits ont touché, en constats datés
+    sessions.ts       lecture des fichiers .jsonl de session Claude Code
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        116 tests Vitest sur ces six modules
+    __tests__/        160 tests Vitest sur ces neuf modules
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -100,6 +103,35 @@ Chaque requête a un **délai maximal de quinze secondes** : sans lui, une seule
 pendante gèle la vue entière. Les fichiers de contexte étant facultatifs, leur échec de
 lecture est signalé mais n'empêche pas d'afficher le dépôt.
 
+## L'arbre : décrit, ou réel
+
+La vue Fonctionnalités bascule entre deux lectures du même projet :
+
+- **Décrit** — les domaines et fonctionnalités écrits dans `src/data/repos.ts`, avec leur
+  état d'avancement ;
+- **Dépôt** — l'arborescence réelle, regroupée par dossier. Un dossier trop gros pour se
+  lire d'un coup d'œil est éclaté en ses sous-dossiers ; un dossier démesuré est tronqué
+  et le reste résumé.
+
+**L'arbre du dépôt ne porte aucun statut**, et c'est délibéré : rien dans une arborescence
+ne dit qu'une chose est en cours ou gelée. Chaque feuille porte des faits — son poids, et
+ce que les derniers commits y ont fait. L'activité git est obtenue en **une seule requête**
+de comparaison de plage, là où la demander fichier par fichier en coûterait une par
+fichier. Elle non plus ne devient jamais un statut : un fichier modifié hier n'est pas
+« en cours », un fichier ancien n'est pas « gelé ».
+
+## Sessions
+
+L'historique des sessions Claude Code vit dans `~/.claude/projects/<projet>/*.jsonl`, sur
+la machine et hors dépôt : **un navigateur ne peut pas aller l'y chercher**. La vue
+Sessions accepte donc que ces fichiers y soient déposés — ils sont lus dans la page et ne
+partent nulle part.
+
+Le format est du JSON Lines qu'aucun contrat ne garantit, la lecture est donc tolérante :
+une ligne illisible est comptée et ignorée, le raisonnement interne n'est pas affiché, et
+un résultat d'outil revenu sous le rôle « user » n'est pas pris pour une demande — sans
+quoi la moitié des « prompts » affichés seraient des sorties de commandes.
+
 ## Lecture des fichiers de contexte
 
 Une fois le dépôt connecté, `CLAUDE.md`, `plan.md` et `README.md` y sont lus et analysés :
@@ -135,8 +167,9 @@ Eleven-Fields il est repris de la maquette, pour Atlas il décrit ce dépôt. C'
 description figée, pas une lecture du code — d'où la vue « Dépôt réel », qui sert
 justement à mesurer l'écart.
 
-Les règles, les interdits et les phases sont relus dans le dépôt quand il est connecté.
-Reste à brancher : les domaines et fonctionnalités déduits de l'arborescence, et
-l'historique de sessions qui vit dans `~/.claude/projects/`, hors dépôt.
+Les règles, les interdits et les phases sont relus dans le dépôt quand il est connecté,
+l'arborescence et l'activité git viennent de GitHub, et les sessions des fichiers déposés.
+Ce qui reste écrit à la main, ce sont les domaines fonctionnels et leur avancement : c'est
+du sens, et aucune source mécanique ne le porte.
 
 Voir `design/github.md` pour la correspondance entre chaque écran et ses fichiers source.

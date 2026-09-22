@@ -20,13 +20,15 @@ Client REST, vue « Dépôt réel », confrontation des fichiers cités à l'arb
 - [x] Lecture de CLAUDE.md, plan.md et README.md
 - [x] Mise en cache des réponses pour épargner le quota
 
-## Phase 4 — Données vivantes 🚧
+## Phase 4 — Données vivantes ✅
 
-Déduire les domaines et les fonctionnalités de l'arborescence réelle, et brancher les sessions sur l'historique local de Claude Code.
+Les domaines se déduisent de l'arborescence réelle, l'activité git décore les fichiers, et les sessions se lisent depuis les fichiers déposés dans la page.
 
-- [ ] Domaines déduits de l'arborescence
-- [ ] Sessions lues depuis ~/.claude/projects/
-- [ ] Statuts croisés avec l'activité git
+- [x] Domaines déduits de l'arborescence
+- [x] Sessions lues depuis ~/.claude/projects/
+- [x] Activité git croisée avec l'arborescence
+
+Un navigateur ne lit pas le disque : les fichiers de session sont déposés dans la page, pas lus automatiquement. Et l'activité git ne devient pas un statut — aucune source ne dit qu'un fichier modifié hier est « en cours ».
 
 ## Phase 5 — Finition 💡
 
