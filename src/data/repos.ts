@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '34', k: 'fonctions' }, { v: '192', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '35', k: 'fonctions' }, { v: '215', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -588,11 +588,11 @@ export const REPOS: Record<string, RepoData> = {
       "Relit CLAUDE.md, plan.md et README.md dans le dépôt pour en tirer les règles, les interdits et les phases.",
       "Garde les réponses GitHub en cache et les revalide par ETag, pour ne pas épuiser le quota à chaque visite.",
       "Montre l'arborescence réelle du dépôt, décorée de ce que les derniers commits ont touché.",
-      "Lit vos fichiers de session Claude Code déposés dans la page, sans qu'ils quittent le navigateur."
+      "Lit vos fichiers de session Claude Code déposés dans la page, sans qu'ils quittent le navigateur.",
+      "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit."
     ],
     todo: [
       "Activer GitHub Pages dans les réglages du dépôt : le workflow est prêt, la source reste à choisir.",
-      "Rapprocher l'arbre décrit et l'arbre du dépôt : dire quel fichier sert quelle fonctionnalité."
     ],
     stack: [
       { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
@@ -602,16 +602,17 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "192 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "215 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "192", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "215", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
-      { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '90%', tone: 'wip' },
+      { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
+      { k: "Fichiers du dépôt décrits", v: "34 / 59", target: "—", pct: '58%', tone: 'wip' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
       { k: "Application déployée", v: "workflow prêt", target: "en ligne", pct: '80%', tone: 'wip' }
     ],
@@ -688,6 +689,9 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Client REST", status: 'live', what: "Métadonnées, arborescence récursive et derniers commits, jeton facultatif.",
             files: ['src/lib/github.ts'],
             notes: ["Chaque statut HTTP est traduit en message actionnable", "Sans jeton : dépôts publics seulement, soixante requêtes par heure"] },
+          { name: "Croisement des deux arbres", status: 'live', what: "Rapproche les fichiers cités par les fonctionnalités et ceux du dépôt, dans les deux sens.",
+            files: ['src/lib/coverage.ts'],
+            notes: ["Un fichier du dépôt dit quelles fonctionnalités il sert", "Une fonctionnalité dit où ses chemins atterrissent vraiment", "Chaque dossier annonce sa part décrite, et la vue Dépôt réel celle du projet", "Un fichier que rien ne cite n'est ni mort ni superflu : il est seulement non décrit"] },
           { name: "Croisement des chemins", status: 'live', what: "Confronte chaque fichier cité à l'arborescence : exact, partiel, dossier, motif, déplacé ou absent.",
             files: ['src/lib/verify.ts'],
             notes: ["Les déclarations sont écrites pour un lecteur humain : préfixe src/ omis, annotation après un tiret", "Un fichier retrouvé ailleurs est signalé comme déplacé, pas comme présent"] },
@@ -755,7 +759,11 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'session', date: 'Finition', turns: 'phase 5', tone: 'd',
         prompt: "Fais la phase 5.",
         reply: "Arbre parcourable au clavier avec focus visible, mise en page repliée sous 720 px, tests de rendu par vue en jsdom, et workflow de publication sur GitHub Pages. Le test de rendu a montré que l'arbre n'était atteignable au clavier qu'après un clic dedans.",
-        outcome: 'live', touched: ['src/lib/keyboard.ts', 'src/views/__tests__/render.test.tsx', '.github/workflows/pages.yml'] }
+        outcome: 'live', touched: ['src/lib/keyboard.ts', 'src/views/__tests__/render.test.tsx', '.github/workflows/pages.yml'] },
+      { num: 'session', date: 'Croisement', turns: 'phase 6', tone: 'c',
+        prompt: "Fais le croisement des deux arbres.",
+        reply: "Les deux lectures se répondent enfin : un fichier du dépôt nomme les fonctionnalités qu'il sert, une fonctionnalité montre où ses chemins atterrissent, et chaque dossier annonce sa part décrite. 34 des 59 fichiers d'Atlas sont rattachés à une fonctionnalité.",
+        outcome: 'live', touched: ['src/lib/coverage.ts', 'src/lib/tree.ts', 'src/views/GitHubView.tsx'] }
     ],
     memories: [
       { file: 'CLAUDE.md — à ne jamais faire', rule: "Ne jamais inventer un statut qu'aucune source ne porte : une absence se signale, elle ne se comble pas." },
@@ -784,7 +792,7 @@ export const REPOS: Record<string, RepoData> = {
       "Pas de dépendance ajoutée sans usage réel dans le code."
     ],
     ctxOpen: [
-      "Faut-il rapprocher l'arbre déduit et l'arbre décrit, ou les laisser côte à côte ?",
+      "Que faire des fichiers qu'aucune fonctionnalité ne décrit : les décrire, ou l'assumer ?",
       "Où héberger le build : Vercel, GitHub Pages, ou rien pour l'instant ?",
       "Faut-il garder les sessions déposées d'une visite à l'autre, ou les oublier à chaque fois ?",
       "Faut-il un mode hors-ligne quand le quota GitHub est épuisé ?"

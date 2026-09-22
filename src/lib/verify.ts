@@ -32,6 +32,13 @@ export function extractPath(declared: string): string {
   return declared.split('—')[0].trim();
 }
 
+export interface Resolution {
+  path: string;
+  kind: MatchKind;
+  /** Tous les chemins réels correspondants, sans troncature. */
+  paths: string[];
+}
+
 /**
  * Confronte un chemin déclaré à l'arborescence réelle.
  *
@@ -40,16 +47,14 @@ export function extractPath(declared: string): string {
  * caractère générique. On accepte donc, dans l'ordre : l'égalité, le dossier, le
  * motif, le suffixe de chemin, puis le simple nom de fichier — ce dernier cas
  * signalant un fichier déplacé plutôt que retrouvé.
+ *
+ * La résolution est complète : c'est `checkPath` qui tronque, pour l'affichage.
+ * Le croisement des deux arbres, lui, a besoin de tous les chemins.
  */
-export function checkPath(declared: string, paths: Set<string>): FileCheck {
+export function resolvePath(declared: string, paths: Set<string>): Resolution {
   const path = extractPath(declared);
   const all = [...paths];
-  const hit = (kind: MatchKind, matches: string[]): FileCheck => ({
-    declared,
-    path,
-    kind,
-    matches: matches.slice(0, 3),
-  });
+  const hit = (kind: MatchKind, matches: string[]): Resolution => ({ path, kind, paths: matches });
 
   if (paths.has(path)) return hit('exact', [path]);
 
@@ -76,6 +81,12 @@ export function checkPath(declared: string, paths: Set<string>): FileCheck {
   }
 
   return hit('absent', []);
+}
+
+/** Même confrontation, résumée pour l'affichage : trois correspondances au plus. */
+export function checkPath(declared: string, paths: Set<string>): FileCheck {
+  const { path, kind, paths: matches } = resolvePath(declared, paths);
+  return { declared, path, kind, matches: matches.slice(0, 3) };
 }
 
 /** Vrai dès qu'un chemin réel du dépôt a été trouvé pour la déclaration. */

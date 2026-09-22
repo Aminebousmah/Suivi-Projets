@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { RepoData } from '../data/types';
+import type { Coverage } from './coverage';
+import { buildCoverage } from './coverage';
 import type { CacheStore } from './cache';
 import { ageMinutes, localStorageStore } from './cache';
 import type { FileResult, LiveContext } from './context';
@@ -68,6 +70,8 @@ export interface GitHubData {
   context: LiveContext;
   /** Domaines déduits de l'arborescence réelle, sans statut inventé. */
   treeDomains: Domain[];
+  /** Croisement entre ce que la description cite et ce que le dépôt contient. */
+  coverage: Coverage;
   /** Ce qui a bougé entre le plus ancien et le plus récent commit chargé. */
   activity: ActivitySummary;
   /** Ce que GitHub dit du quota au dernier contact. */
@@ -142,6 +146,7 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
         // L'activité s'obtient en une requête pour toute la plage de commits :
         // la demander fichier par fichier en coûterait une par fichier. Si la
         // comparaison échoue, l'arbre reste affichable, sans les constats.
+        const coverage = buildCoverage(repo, tree.entries);
         const range = windowFrom(commits);
         const changed = range
           ? await fetchCompare(ref, range.base, range.head, client).catch(() => [])
@@ -160,8 +165,10 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
             commits,
             check: checkRepo(repo, tree.entries),
             context: buildLiveContext(files),
+            coverage,
             treeDomains: buildDomainsFromTree(tree.entries, {
               activity: activityIndex(changed),
+              coverage,
             }),
             activity: summarize(changed, range),
             rate: client.rate,

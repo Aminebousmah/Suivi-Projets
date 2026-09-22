@@ -38,12 +38,13 @@ src/
     verify.ts         croisement des fichiers déclarés avec l'arborescence réelle
     context.ts        lecture de CLAUDE.md, plan.md et README.md : règles, interdits, phases
     tree.ts           l'arborescence réelle regroupée en dossiers et fichiers
+    coverage.ts       croisement des deux arbres : ce qu'un fichier sert, ce que rien ne décrit
     activity.ts       ce que les derniers commits ont touché, en constats datés
     sessions.ts       lecture des fichiers .jsonl de session Claude Code
     keyboard.ts       déplacement dans l'arbre au clavier
     useMediaQuery.ts  ce que les composants savent de la place disponible
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        192 tests Vitest sur ces onze modules
+    __tests__/        215 tests Vitest sur ces douze modules
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -146,6 +147,23 @@ ce que les derniers commits y ont fait. L'activité git est obtenue en **une seu
 de comparaison de plage, là où la demander fichier par fichier en coûterait une par
 fichier. Elle non plus ne devient jamais un statut : un fichier modifié hier n'est pas
 « en cours », un fichier ancien n'est pas « gelé ».
+
+## Le croisement des deux arbres
+
+Les deux lectures se répondent. Chacune sait ce que l'autre ignore :
+
+- **Un fichier du dépôt** nomme les fonctionnalités qui le citent — « Les six vues →
+  Graphe des fonctionnalités » — ou dit qu'aucune ne le fait.
+- **Une fonctionnalité** montre où ses chemins atterrissent réellement : `exact`,
+  `partiel`, `dossier`, `déplacé`, ou `absent` quand le fichier n'existe plus.
+- **Chaque dossier** annonce sa part décrite (`1/13 décrit(s)`), et la vue « Dépôt réel »
+  celle du projet entier, avec les dossiers classés du moins décrit au plus décrit.
+
+Le rapprochement se fait sur le chemin, jamais sur la déclaration brute, car deux
+fonctionnalités qui citent le même fichier partagent un seul résultat. Et il ne juge
+rien : **un fichier que rien ne cite n'est ni mort ni superflu — il est seulement non
+décrit.** C'est l'inverse des écarts, qui pointent des chemins cités mais absents du
+dépôt.
 
 ## Sessions
 

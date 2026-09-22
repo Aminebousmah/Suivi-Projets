@@ -1,5 +1,7 @@
 import type { Domain, Feature, ToneKey } from '../data/types';
 import { formatSize } from './context';
+import type { Coverage } from './coverage';
+import { describeRefs } from './coverage';
 import type { TreeEntry } from './github';
 
 /**
@@ -94,6 +96,8 @@ export function groupByFolder(files: TreeEntry[], depth = 0, prefix = ''): Group
 export interface TreeOptions {
   /** Chemins touchés par l'activité git récente, avec leur résumé. */
   activity?: Map<string, string>;
+  /** Croisement avec l'arbre décrit : ce que chaque fichier sert. */
+  coverage?: Coverage;
 }
 
 /** Transforme un groupe de fichiers en domaine affichable. */
@@ -101,11 +105,22 @@ function toDomain(group: Group, index: number, options: TreeOptions): Domain {
   const bytes = group.files.reduce((a, f) => a + f.size, 0);
   const name = group.prefix ? group.prefix.replace(/\/$/, '') : 'racine';
 
+  // Part du dossier que la description couvre — sur les fichiers montrés ici,
+  // pas sur ceux d'un sous-dossier qui a son propre groupe.
+  const described = options.coverage
+    ? group.files.filter((f) => options.coverage?.byPath.has(f.path)).length
+    : null;
+  const summary =
+    `${group.files.length} fichier(s) · ${formatSize(bytes)}` +
+    (described === null ? '' : ` · ${described}/${group.files.length} décrit(s)`);
+
   const sorted = [...group.files].sort((a, b) => a.path.localeCompare(b.path, 'fr'));
   const shown = sorted.slice(0, MAX_LEAVES);
 
   const features: Feature[] = shown.map((f) => {
     const touched = options.activity?.get(f.path);
+    const refs = options.coverage?.byPath.get(f.path);
+
     return {
       name: f.path.slice(group.prefix.length),
       what: f.path,
@@ -115,6 +130,7 @@ function toDomain(group: Group, index: number, options: TreeOptions): Domain {
         `Chemin complet : ${f.path}`,
         `Poids : ${formatSize(f.size)}`,
         touched ? `Activité récente : ${touched}` : 'Aucune activité dans les derniers commits lus.',
+        ...(options.coverage ? ['—', ...describeRefs(refs)] : []),
       ],
     };
   });
@@ -135,8 +151,8 @@ function toDomain(group: Group, index: number, options: TreeOptions): Domain {
     num: String(index + 1).padStart(2, '0'),
     name,
     tone: TONES[index % TONES.length],
-    role: `${group.files.length} fichier(s) · ${formatSize(bytes)}`,
-    detail: `${group.files.length} fichier(s) · ${formatSize(bytes)}`,
+    role: summary,
+    detail: summary,
     features,
   };
 }

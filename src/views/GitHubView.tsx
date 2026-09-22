@@ -398,6 +398,136 @@ export function GitHubView({
             </span>
           </div>
 
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+            <Kicker color={t.inkFaint}>Croisement des deux arbres</Kicker>
+            <div style={{ ...card, gap: 11 }}>
+              <span style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+                <span
+                  style={{
+                    fontFamily: t.display,
+                    fontWeight: Number(t.displayWeight),
+                    fontSize: 38,
+                    lineHeight: 1,
+                    color: t.ink,
+                  }}
+                >
+                  {state.data.coverage.described}/{state.data.coverage.total}
+                </span>
+                <span style={{ fontSize: 12.5, color: t.inkSoft }}>
+                  fichiers du dépôt rattachés à une fonctionnalité décrite
+                </span>
+              </span>
+              <span
+                style={{
+                  height: 8,
+                  borderRadius: 4,
+                  background: t.surfaceAlt,
+                  overflow: 'hidden',
+                  border: `1px solid ${t.line}`,
+                }}
+              >
+                <span
+                  style={{
+                    display: 'block',
+                    height: '100%',
+                    width:
+                      (state.data.coverage.total
+                        ? (state.data.coverage.described / state.data.coverage.total) * 100
+                        : 0) + '%',
+                    background: t.statusFg.live,
+                  }}
+                />
+              </span>
+              <span style={{ fontSize: 12.5, lineHeight: 1.55, color: t.inkSoft }}>
+                Un fichier que rien ne cite n'est ni mort ni superflu : il est seulement non
+                décrit. C'est l'inverse des écarts ci-dessus, qui pointent des chemins cités
+                mais absents du dépôt.
+              </span>
+            </div>
+
+            <div
+              style={{
+                border: `1px solid ${t.line}`,
+                borderRadius: 12,
+                overflow: 'hidden',
+                background: t.surface,
+              }}
+            >
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: narrow ? 'minmax(0, 1fr) 92px' : 'minmax(0, 1fr) 120px 130px',
+                  gap: 14,
+                  padding: '10px 16px',
+                  borderBottom: `1px solid ${t.line}`,
+                  fontFamily: MONO,
+                  fontSize: 9.5,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: t.inkFaint,
+                }}
+              >
+                <span>Dossier</span>
+                <span style={{ textAlign: 'right' }}>Décrits</span>
+                {!narrow && <span>Part</span>}
+              </div>
+              {state.data.coverage.byFolder.slice(0, 10).map((f) => (
+                <div
+                  key={f.folder}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: narrow
+                      ? 'minmax(0, 1fr) 92px'
+                      : 'minmax(0, 1fr) 120px 130px',
+                    gap: 14,
+                    padding: '10px 16px',
+                    borderBottom: `1px solid ${t.line}`,
+                    alignItems: 'center',
+                  }}
+                >
+                  <span style={{ fontFamily: MONO, fontSize: 11.5, wordBreak: 'break-word' }}>
+                    {f.folder}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: MONO,
+                      fontSize: 11.5,
+                      textAlign: 'right',
+                      color: f.described ? t.ink : t.inkFaint,
+                    }}
+                  >
+                    {f.described} / {f.files}
+                  </span>
+                  {!narrow && (
+                    <span
+                      style={{
+                        height: 8,
+                        borderRadius: 4,
+                        background: t.surfaceAlt,
+                        overflow: 'hidden',
+                        border: `1px solid ${t.line}`,
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'block',
+                          height: '100%',
+                          width: (f.described / f.files) * 100 + '%',
+                          background: f.described ? t.statusFg.live : 'transparent',
+                        }}
+                      />
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+            {state.data.coverage.byFolder.length > 10 && (
+              <span style={{ fontSize: 12, color: t.inkFaint }}>
+                Les dix dossiers les moins décrits, sur {state.data.coverage.byFolder.length}.
+              </span>
+            )}
+          </div>
+
           {state.data.check.missing > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
               <Kicker color={t.inkFaint}>Écarts entre la description et le dépôt</Kicker>

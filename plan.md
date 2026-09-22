@@ -40,3 +40,13 @@ Navigation au clavier dans le graphe, mise en page adaptée aux écrans étroits
 - [x] Workflow GitHub Pages, publication sur poussée vers `main`
 
 La publication demande une action dans les réglages du dépôt — Settings, Pages, source « GitHub Actions » — que le dépôt seul ne peut pas faire.
+
+## Phase 6 — Croisement des deux arbres ✅
+
+Les fichiers cités par les fonctionnalités et les fichiers du dépôt sont rapprochés, dans les deux sens.
+
+- [x] Un fichier du dépôt dit quelles fonctionnalités il sert
+- [x] Une fonctionnalité dit où ses chemins atterrissent vraiment
+- [x] Chaque dossier annonce sa part décrite, et la vue Dépôt réel la part du projet
+
+Le rapprochement ne juge rien : un fichier que rien ne cite n'est ni mort ni superflu, il est seulement non décrit.

@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
+import { resolvedFor } from '../lib/coverage';
+import type { RepoCheck } from '../lib/verify';
 import { CANVAS_WIDTH, buildMap, buildOverview } from '../lib/graph';
 import { HANDLED, nextSelection, nodeId } from '../lib/keyboard';
 import { useNarrow } from '../lib/useMediaQuery';
@@ -15,6 +17,8 @@ interface Props {
   src: TreeSource;
   /** Domaines déduits du dépôt, absents tant qu'il n'est pas connecté. */
   treeDomains: Domain[] | null;
+  /** Confrontation des fichiers cités à l'arborescence, si le dépôt est lu. */
+  check: RepoCheck | null;
   domainKey: string | null;
   featName: string | null;
   zoom: number;
@@ -27,6 +31,7 @@ export function ArchView({
   viz,
   src,
   treeDomains,
+  check,
   domainKey,
   featName,
   zoom,
@@ -113,11 +118,14 @@ export function ArchView({
     pillFg: string;
     pillBorder: string;
     files: string[];
+    /** Ce que les chemins cités donnent réellement dans le dépôt. */
+    real: string[];
     notesLabel: string;
     notes: string[];
   };
   if (feat && domain) {
     const p = pill(feat.status);
+    const resolved = resolvedFor(check, domain.key, feat.files);
     panel = {
       kicker: (fromRepo ? 'Fichier · ' : 'Fonctionnalité · ') + domain.name,
       title: feat.name,
@@ -129,6 +137,7 @@ export function ArchView({
       pillFg: p.fg,
       pillBorder: p.border,
       files: feat.files,
+      real: resolved,
       notesLabel: "Ce qu'il faut savoir",
       notes: feat.notes ?? [],
     };
@@ -144,6 +153,7 @@ export function ArchView({
       pillFg: t.inkSoft,
       pillBorder: t.line,
       files: [],
+      real: [],
       notesLabel: domain.features.some((f) => f.status) ? 'Fonctionnalités' : 'Contenu',
       notes: domain.features.map((f) => f.name + ' — ' + badge(f)),
     };
@@ -161,6 +171,7 @@ export function ArchView({
       pillFg: t.inkSoft,
       pillBorder: t.line,
       files: [],
+      real: [],
       notesLabel: fromRepo ? 'Groupes' : 'Domaines',
       notes: domains.map(
         (d) => d.name + ' — ' + d.features.length + (fromRepo ? ' élément(s)' : ' fonctionnalités'),
@@ -974,6 +985,32 @@ export function ArchView({
                 }}
               >
                 {f}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {panel.real.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Kicker color={t.inkFaint} size={9.5}>
+              Dans le dépôt
+            </Kicker>
+            {panel.real.map((r) => (
+              <span
+                key={r}
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 11,
+                  lineHeight: 1.45,
+                  padding: '7px 10px',
+                  borderRadius: 6,
+                  background: t.surface,
+                  border: `1px solid ${r.startsWith('absent') ? t.warnBorder : t.line}`,
+                  color: r.startsWith('absent') ? t.warnFg : t.inkSoft,
+                  wordBreak: 'break-word',
+                }}
+              >
+                {r}
               </span>
             ))}
           </div>

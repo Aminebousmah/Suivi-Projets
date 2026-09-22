@@ -302,6 +302,7 @@ export default function App() {
           viz={viz}
           src={state.src}
           treeDomains={source.status === 'ready' ? source.data.treeDomains : null}
+          check={source.status === 'ready' ? source.data.check : null}
           domainKey={domainKey}
           featName={featName}
           zoom={zoom}
