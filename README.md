@@ -165,6 +165,10 @@ rien : **un fichier que rien ne cite n'est ni mort ni superflu — il est seulem
 décrit.** C'est l'inverse des écarts, qui pointent des chemins cités mais absents du
 dépôt.
 
+Atlas se décrit lui-même en entier : les 61 fichiers du dépôt sont rattachés à une
+fonctionnalité. Un test le vérifie à chaque exécution et nomme les fichiers oubliés, de
+sorte que la description ne peut plus prendre du retard en silence.
+
 ## Sessions
 
 L'historique des sessions Claude Code vit dans `~/.claude/projects/<projet>/*.jsonl`, sur

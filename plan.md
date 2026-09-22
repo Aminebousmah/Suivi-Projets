@@ -48,5 +48,7 @@ Les fichiers cités par les fonctionnalités et les fichiers du dépôt sont rap
 - [x] Un fichier du dépôt dit quelles fonctionnalités il sert
 - [x] Une fonctionnalité dit où ses chemins atterrissent vraiment
 - [x] Chaque dossier annonce sa part décrite, et la vue Dépôt réel la part du projet
+- [x] Les fichiers qu'aucune fonctionnalité ne citait sont décrits : 61 sur 61
+- [x] Un test échoue dès qu'un fichier ajouté n'est décrit nulle part
 
 Le rapprochement ne juge rien : un fichier que rien ne cite n'est ni mort ni superflu, il est seulement non décrit.
