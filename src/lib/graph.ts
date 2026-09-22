@@ -84,12 +84,14 @@ export function buildMap(
     d.features.forEach((f, i) => {
       const cy = y + i * LEAF_PITCH + LEAF_PITCH / 2;
       const on = selectedFeat === f.name;
-      const sfg = t.statusFg[f.status] || t.inkSoft;
+      // Sans statut — un fichier du dépôt — la feuille porte un fait, pas une
+      // pastille : la couleur revient au ton du domaine.
+      const sfg = f.status ? t.statusFg[f.status] || t.inkSoft : tn.dot;
       mapLeaves.push({
         key: d.key + '/' + f.name,
         domainKey: d.key,
         name: f.name,
-        status: LABELS[f.status],
+        status: f.status ? LABELS[f.status] : (f.meta ?? ''),
         statusFg: on ? tn.ink : sfg,
         left: X_LEAF + 'px',
         top: cy - LEAF_H / 2 + 'px',
@@ -112,12 +114,15 @@ export function buildMap(
     });
 
     const onD = selectedDomain === d.key;
+    // Un dossier contient des éléments, pas des fonctionnalités : c'est la
+    // présence d'un statut qui distingue une description d'une arborescence.
+    const described = d.features.some((f) => f.status);
     mapDomains.push({
       key: d.key,
       num: d.num,
       name: d.name,
       role: d.role,
-      count: k + ' fonctionnalités',
+      count: k + (described ? ' fonctionnalités' : ' élément(s)'),
       left: X_DOM + 'px',
       top: domCy - 47 + 'px',
       w: W_DOM + 'px',
@@ -208,27 +213,37 @@ export function buildOverview(
 
   const overview = domains.map((d) => {
     const c: Counts = { live: 0, wip: 0, frozen: 0, idea: 0 };
+    let statuses = 0;
     d.features.forEach((f) => {
+      if (!f.status) return;
+      statuses++;
       c[f.status]++;
       tally[f.status]++;
     });
     const total = d.features.length;
-    const st = stateOf(c, total);
+
+    // Un domaine déduit du dépôt n'a pas d'état d'avancement : on annonce ce
+    // qu'on sait — combien d'éléments il contient.
+    const described = statuses > 0;
+    const st = described ? stateOf(c, statuses) : '';
+
     return {
       key: d.key,
       num: d.num,
       name: d.name,
       total: total + '',
       dot: t.tones[d.tone].dot,
-      state: STATE_LABEL[st],
-      stateFg: t.statusFg[st] || t.inkSoft,
+      state: described ? STATE_LABEL[st] : d.detail,
+      stateFg: described ? t.statusFg[st] || t.inkSoft : t.inkFaint,
       rowBg: selectedDomain === d.key ? t.surfaceAlt : 'transparent',
-      segs: ORDER.filter((s) => c[s] > 0).map((s) => ({
-        key: s,
-        w: (c[s] / total) * 100 + '%',
-        bg: t.statusFg[s],
-        label: c[s] + ' ' + LABELS[s],
-      })),
+      segs: described
+        ? ORDER.filter((s) => c[s] > 0).map((s) => ({
+            key: s,
+            w: (c[s] / statuses) * 100 + '%',
+            bg: t.statusFg[s],
+            label: c[s] + ' ' + LABELS[s],
+          }))
+        : [],
     };
   });
 
@@ -239,9 +254,12 @@ export function buildOverview(
     bg: t.statusFg[s],
     label: tally[s] + ' ' + LABELS[s],
   }));
-  const projectCounts = ORDER.filter((s) => tally[s] > 0)
-    .map((s) => tally[s] + ' ' + LABELS[s])
-    .join(' · ');
+  const counted = domains.reduce((a, d) => a + d.features.length, 0);
+  const projectCounts = grandTotal
+    ? ORDER.filter((s) => tally[s] > 0)
+        .map((s) => tally[s] + ' ' + LABELS[s])
+        .join(' · ')
+    : `${counted} élément(s) dans ${domains.length} groupe(s)`;
 
   return { overview, projectSegs, projectCounts };
 }

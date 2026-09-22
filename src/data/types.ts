@@ -50,10 +50,16 @@ export interface Theme {
 
 export interface Feature {
   name: string;
-  status: Status;
+  /**
+   * Absent pour ce qui est déduit du dépôt : un fichier ne porte aucun statut,
+   * et aucune source ne permet de lui en inventer un. C'est `meta` qui parle
+   * alors, avec des faits — taille, activité récente.
+   */
+  status?: Status;
   what: string;
   files: string[];
   notes?: string[];
+  meta?: string;
 }
 
 export interface Domain {
@@ -149,3 +155,4 @@ export interface ViewDef {
 
 export type ViewId = 'sheet' | 'arch' | 'sessions' | 'context' | 'progress' | 'github';
 export type VizMode = 'graph' | 'list';
+export type TreeSource = 'described' | 'repo';

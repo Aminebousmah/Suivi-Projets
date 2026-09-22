@@ -1,6 +1,6 @@
 import { HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
-import type { RepoData, Theme, VizMode } from '../data/types';
+import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { CANVAS_WIDTH, buildMap, buildOverview } from '../lib/graph';
 import type { AtlasState } from '../lib/url';
 import { ZOOM_STEPS } from '../lib/url';
@@ -9,18 +9,36 @@ interface Props {
   t: Theme;
   repo: RepoData;
   viz: VizMode;
+  src: TreeSource;
+  /** Domaines déduits du dépôt, absents tant qu'il n'est pas connecté. */
+  treeDomains: Domain[] | null;
   domainKey: string | null;
   featName: string | null;
   zoom: number;
   navigate: (patch: Partial<AtlasState>) => void;
 }
 
-export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: Props) {
-  const domains = repo.domains;
+export function ArchView({
+  t,
+  repo,
+  viz,
+  src,
+  treeDomains,
+  domainKey,
+  featName,
+  zoom,
+  navigate,
+}: Props) {
+  const fromRepo = src === 'repo';
+  const domains = fromRepo ? (treeDomains ?? []) : repo.domains;
+  const hasStatuses = domains.some((d) => d.features.some((f) => f.status));
   const domain = domainKey ? domains.find((d) => d.key === domainKey) ?? null : null;
   const feat = domain && featName ? domain.features.find((f) => f.name === featName) ?? null : null;
 
-  const pill = (s: string) => t.pills[s] || t.pills.idea;
+  const pill = (s: string | undefined) => (s && t.pills[s]) || t.pills.idea;
+  /** Un élément sans statut affiche le fait qu'on connaît de lui. */
+  const badge = (f: { status?: string; meta?: string }) =>
+    f.status ? LABELS[f.status as keyof typeof LABELS] : (f.meta ?? '—');
   const map = buildMap(domains, t, domainKey, featName);
   const { overview, projectSegs, projectCounts } = buildOverview(domains, t, domainKey);
 
@@ -73,12 +91,12 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
   if (feat && domain) {
     const p = pill(feat.status);
     panel = {
-      kicker: 'Fonctionnalité · ' + domain.name,
+      kicker: (fromRepo ? 'Fichier · ' : 'Fonctionnalité · ') + domain.name,
       title: feat.name,
       role: feat.what,
       titleColor: t.ink,
       hasStatus: true,
-      status: LABELS[feat.status],
+      status: badge(feat),
       pillBg: p.bg,
       pillFg: p.fg,
       pillBorder: p.border,
@@ -88,7 +106,7 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
     };
   } else if (domain) {
     panel = {
-      kicker: 'Domaine ' + domain.num,
+      kicker: (fromRepo ? 'Dossier ' : 'Domaine ') + domain.num,
       title: domain.name,
       role: domain.detail,
       titleColor: t.tones[domain.tone].dot,
@@ -98,14 +116,16 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
       pillFg: t.inkSoft,
       pillBorder: t.line,
       files: [],
-      notesLabel: 'Fonctionnalités',
-      notes: domain.features.map((f) => f.name + ' — ' + LABELS[f.status]),
+      notesLabel: domain.features.some((f) => f.status) ? 'Fonctionnalités' : 'Contenu',
+      notes: domain.features.map((f) => f.name + ' — ' + badge(f)),
     };
   } else {
     panel = {
-      kicker: 'Projet',
+      kicker: fromRepo ? 'Arborescence' : 'Projet',
       title: repo.label,
-      role: repo.tagline,
+      role: fromRepo
+        ? `Dossiers et fichiers du dépôt, tels qu'ils y sont. ${domains.length} groupe(s).`
+        : repo.tagline,
       titleColor: t.accent,
       hasStatus: false,
       status: '',
@@ -113,8 +133,10 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
       pillFg: t.inkSoft,
       pillBorder: t.line,
       files: [],
-      notesLabel: 'Domaines',
-      notes: domains.map((d) => d.name + ' — ' + d.features.length + ' fonctionnalités'),
+      notesLabel: fromRepo ? 'Groupes' : 'Domaines',
+      notes: domains.map(
+        (d) => d.name + ' — ' + d.features.length + (fromRepo ? ' élément(s)' : ' fonctionnalités'),
+      ),
     };
   }
 
@@ -160,6 +182,33 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {(
               [
+                { id: 'described', label: 'Décrit' },
+                { id: 'repo', label: 'Dépôt' },
+              ] as const
+            ).map((m) => (
+              <button
+                key={m.id}
+                onClick={() => navigate({ src: m.id })}
+                style={{
+                  appearance: 'none',
+                  cursor: 'pointer',
+                  fontFamily: MONO,
+                  fontSize: 10.5,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  padding: '7px 14px',
+                  borderRadius: 999,
+                  border: `1px solid ${m.id === src ? t.ink : t.line}`,
+                  background: m.id === src ? t.ink : 'transparent',
+                  color: m.id === src ? t.page : t.inkSoft,
+                }}
+              >
+                {m.label}
+              </button>
+            ))}
+            <span style={{ width: 10 }} />
+            {(
+              [
                 { id: 'graph', label: 'Graphe' },
                 { id: 'list', label: 'Liste' },
               ] as const
@@ -187,7 +236,29 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
           </span>
         </div>
 
-        {isGraph && (
+        {fromRepo && domains.length === 0 && (
+          <div
+            style={{
+              border: `1px dashed ${t.line}`,
+              borderRadius: 12,
+              background: t.surfaceAlt,
+              padding: '18px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <Kicker color={t.inkFaint}>Arbre du dépôt</Kicker>
+            <span style={{ fontSize: 13, lineHeight: 1.6, color: t.inkSoft }}>
+              Cet arbre est construit depuis l'arborescence réelle : dossiers et fichiers, avec
+              leur poids et ce que les derniers commits ont touché. Aucun statut n'y figure —
+              rien dans une arborescence ne dit qu'une chose est en cours ou gelée. Connectez le
+              dépôt depuis la vue « Dépôt réel » pour le voir.
+            </span>
+          </div>
+        )}
+
+        {isGraph && domains.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div
               style={{
@@ -326,22 +397,35 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
               <span
                 style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}
               >
-                <Kicker color={t.inkSoft} size={9.5}>
-                  état
-                </Kicker>
-                {ORDER.map((s) => (
-                  <span key={s} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <span
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        background: t.statusFg[s],
-                      }}
-                    />
-                    <span style={{ fontSize: 11.5, color: t.inkSoft }}>{LABELS[s]}</span>
-                  </span>
-                ))}
+                {hasStatuses ? (
+                  <>
+                    <Kicker color={t.inkSoft} size={9.5}>
+                      état
+                    </Kicker>
+                    {ORDER.map((s) => (
+                      <span key={s} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            background: t.statusFg[s],
+                          }}
+                        />
+                        <span style={{ fontSize: 11.5, color: t.inkSoft }}>{LABELS[s]}</span>
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <Kicker color={t.inkSoft} size={9.5}>
+                      lecture
+                    </Kicker>
+                    <span style={{ fontSize: 11.5, color: t.inkSoft }}>
+                      chaque feuille porte son poids, ou ce que les derniers commits y ont fait
+                    </span>
+                  </>
+                )}
               </span>
               <span
                 style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}
@@ -471,7 +555,7 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
                         {hubCount}
                       </span>
                       <Kicker color={hubTone.inkSoft} size={9.5}>
-                        {repo.hubUnit}
+                        {fromRepo ? 'éléments' : repo.hubUnit}
                       </Kicker>
                     </span>
                   </button>
@@ -604,7 +688,7 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
           </div>
         )}
 
-        {isList && (
+        {isList && domains.length > 0 && (
           <div
             style={{
               display: 'grid',
@@ -703,9 +787,11 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
                 color: t.inkFaint,
               }}
             >
-              <span>Fonctionnalité</span>
-              <span>Ce qu'elle fait</span>
-              <span style={{ textAlign: 'right' }}>Statut</span>
+              <span>{domain.features.some((f) => f.status) ? 'Fonctionnalité' : 'Élément'}</span>
+              <span>{domain.features.some((f) => f.status) ? "Ce qu'elle fait" : 'Chemin'}</span>
+              <span style={{ textAlign: 'right' }}>
+                {domain.features.some((f) => f.status) ? 'Statut' : 'Poids'}
+              </span>
             </div>
             {domain.features.map((f) => {
               const on = featName === f.name;
@@ -759,13 +845,13 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
                       textTransform: 'uppercase',
                       padding: '4px 7px',
                       borderRadius: 999,
-                      background: p.bg,
-                      color: p.fg,
-                      border: `1px solid ${p.border}`,
+                      background: f.status ? p.bg : 'transparent',
+                      color: f.status ? p.fg : t.inkSoft,
+                      border: `1px solid ${f.status ? p.border : t.line}`,
                       textAlign: 'center',
                     }}
                   >
-                    {LABELS[f.status]}
+                    {badge(f)}
                   </span>
                 </HoverButton>
               );
@@ -818,7 +904,7 @@ export function ArchView({ t, repo, viz, domainKey, featName, zoom, navigate }: 
         {panel.files.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <Kicker color={t.inkFaint} size={9.5}>
-              Implémentée par
+              {fromRepo ? 'Chemin dans le dépôt' : 'Implémentée par'}
             </Kicker>
             {panel.files.map((f) => (
               <span

@@ -4,15 +4,20 @@ import type { CacheStore } from './cache';
 import { ageMinutes, localStorageStore } from './cache';
 import type { FileResult, LiveContext } from './context';
 import { CONTEXT_FILES, buildLiveContext } from './context';
+import type { ActivitySummary } from './activity';
+import { activityIndex, summarize, windowFrom } from './activity';
 import type { CommitInfo, Origin, RateInfo, RepoMeta, RepoTree } from './github';
 import {
   createClient,
   fetchCommits,
+  fetchCompare,
   fetchRepoMeta,
   fetchTextFile,
   fetchTree,
   parseSlug,
 } from './github';
+import type { Domain } from '../data/types';
+import { buildDomainsFromTree } from './tree';
 import type { RepoCheck } from './verify';
 import { checkRepo } from './verify';
 
@@ -61,6 +66,10 @@ export interface GitHubData {
   commits: CommitInfo[];
   check: RepoCheck;
   context: LiveContext;
+  /** Domaines déduits de l'arborescence réelle, sans statut inventé. */
+  treeDomains: Domain[];
+  /** Ce qui a bougé entre le plus ancien et le plus récent commit chargé. */
+  activity: ActivitySummary;
   /** Ce que GitHub dit du quota au dernier contact. */
   rate: RateInfo | null;
   /** Provenance de chacune des réponses de ce chargement. */
@@ -127,7 +136,16 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
         fetchTextFile(ref, path, client).catch((): FileResult => ({ failed: true })),
       ),
     ])
-      .then(([meta, tree, commits, ...files]) => {
+      .then(async ([meta, tree, commits, ...files]) => {
+        if (cancelled) return;
+
+        // L'activité s'obtient en une requête pour toute la plage de commits :
+        // la demander fichier par fichier en coûterait une par fichier. Si la
+        // comparaison échoue, l'arbre reste affichable, sans les constats.
+        const range = windowFrom(commits);
+        const changed = range
+          ? await fetchCompare(ref, range.base, range.head, client).catch(() => [])
+          : [];
         if (cancelled) return;
         const oldest = store
           .keys()
@@ -142,6 +160,10 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
             commits,
             check: checkRepo(repo, tree.entries),
             context: buildLiveContext(files),
+            treeDomains: buildDomainsFromTree(tree.entries, {
+              activity: activityIndex(changed),
+            }),
+            activity: summarize(changed, range),
             rate: client.rate,
             origins: client.origins,
             age: oldest,

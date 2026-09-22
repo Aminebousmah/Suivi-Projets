@@ -19,6 +19,7 @@ describe('parseState', () => {
       repo: 'sole',
       view: 'arch',
       viz: 'list',
+      src: 'described',
       domain: firstDomain.key,
       feat: firstFeat.name,
       zoom: 0.85,
@@ -56,6 +57,7 @@ describe('buildSearch', () => {
       repo: 'eleven',
       view: 'arch' as const,
       viz: 'list' as const,
+      src: 'described' as const,
       domain: REPOS.eleven.domains[1].key,
       feat: REPOS.eleven.domains[1].features[0].name,
       zoom: 1.15,
@@ -66,6 +68,34 @@ describe('buildSearch', () => {
   it('omet les paramètres restés au défaut', () => {
     const search = buildSearch({ ...DEFAULTS, view: 'progress' });
     expect(search).toBe('?view=progress');
+  });
+});
+
+describe('source de l’arbre', () => {
+  it('relit la source dans l’URL et ignore une valeur inconnue', () => {
+    expect(parseState('?src=repo').src).toBe('repo');
+    expect(parseState('?src=néant').src).toBe('described');
+  });
+
+  it('n’écrit la source que lorsqu’elle change', () => {
+    expect(buildSearch({ ...DEFAULTS, src: 'described' })).toBe('');
+    expect(buildSearch({ ...DEFAULTS, src: 'repo' })).toBe('?src=repo');
+  });
+
+  it('garde la sélection de l’arbre du dépôt, dont les clés lui sont propres', () => {
+    const next = reduceState(
+      { ...DEFAULTS, src: 'repo' },
+      { domain: 'src/lib/', feat: 'graph.ts' },
+    );
+    expect(next).toMatchObject({ domain: 'src/lib/', feat: 'graph.ts' });
+  });
+
+  it('vide la sélection en changeant de source', () => {
+    const prev = { ...DEFAULTS, src: 'repo' as const, domain: 'src/lib/', feat: 'graph.ts' };
+    expect(reduceState(prev, { src: 'described' })).toMatchObject({
+      domain: null,
+      feat: null,
+    });
   });
 });
 

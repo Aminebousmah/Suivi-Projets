@@ -1,6 +1,6 @@
 import { REPOS } from '../data/repos';
 import { VIEWS } from '../data/labels';
-import type { ViewId, VizMode } from '../data/types';
+import type { TreeSource, ViewId, VizMode } from '../data/types';
 
 export const ZOOM_STEPS = [0.45, 0.62, 0.85, 1.15];
 
@@ -8,6 +8,7 @@ export const DEFAULTS = {
   repo: 'sole',
   view: 'sheet' as ViewId,
   viz: 'graph' as VizMode,
+  src: 'described' as TreeSource,
   domain: null as string | null,
   feat: null as string | null,
   zoom: 0.62,
@@ -17,6 +18,8 @@ export interface AtlasState {
   repo: string;
   view: ViewId;
   viz: VizMode;
+  /** L'arbre montre la description écrite, ou l'arborescence du dépôt. */
+  src: TreeSource;
   domain: string | null;
   feat: string | null;
   zoom: number;
@@ -39,6 +42,9 @@ export function parseState(search: string): AtlasState {
   const viz = q.get('viz');
   const safeViz: VizMode = viz === 'graph' || viz === 'list' ? viz : DEFAULTS.viz;
 
+  const src = q.get('src');
+  const safeSrc: TreeSource = src === 'repo' ? 'repo' : DEFAULTS.src;
+
   const domains = REPOS[safeRepo].domains;
   const domainKey = q.get('domain');
   const domain = domains.find((d) => d.key === domainKey) ?? null;
@@ -53,6 +59,7 @@ export function parseState(search: string): AtlasState {
     repo: safeRepo,
     view: safeView,
     viz: safeViz,
+    src: safeSrc,
     domain: domain ? domain.key : null,
     feat: feat ? feat.name : null,
     zoom,
@@ -65,6 +72,7 @@ export function buildSearch(s: AtlasState): string {
   if (s.repo !== DEFAULTS.repo) q.set('repo', s.repo);
   if (s.view !== DEFAULTS.view) q.set('view', s.view);
   if (s.viz !== DEFAULTS.viz) q.set('viz', s.viz);
+  if (s.src !== DEFAULTS.src) q.set('src', s.src);
   if (s.domain) q.set('domain', s.domain);
   if (s.feat) q.set('feat', s.feat);
   if (Math.abs(s.zoom - DEFAULTS.zoom) > 0.001) q.set('zoom', String(s.zoom));
@@ -76,10 +84,17 @@ export function buildSearch(s: AtlasState): string {
 export function reduceState(prev: AtlasState, patch: Partial<AtlasState>): AtlasState {
   const next = { ...prev, ...patch };
 
-  if (patch.repo !== undefined && patch.repo !== prev.repo) {
+  if (
+    (patch.repo !== undefined && patch.repo !== prev.repo) ||
+    (patch.src !== undefined && patch.src !== prev.src)
+  ) {
     next.domain = patch.domain ?? null;
     next.feat = patch.feat ?? null;
   }
+
+  // L'arbre du dépôt a ses propres clés, qu'on ne peut pas valider ici : seule
+  // la description écrite est vérifiable contre les données.
+  if (next.src === 'repo') return next;
 
   const domain = REPOS[next.repo].domains.find((d) => d.key === next.domain) ?? null;
   if (!domain) {

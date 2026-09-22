@@ -41,6 +41,14 @@ export interface RepoTree {
   sha: string;
 }
 
+/** Un fichier touché entre deux commits, tel que GitHub le rapporte. */
+export interface ChangedFile {
+  path: string;
+  /** added, modified, removed, renamed… tel quel. */
+  status: string;
+  changes: number;
+}
+
 export interface CommitInfo {
   sha: string;
   shortSha: string;
@@ -272,6 +280,33 @@ export async function fetchTextFile(
     if (e instanceof GitHubError && e.status === 404) return null;
     throw e;
   }
+}
+
+/**
+ * Fichiers touchés entre deux commits, en une seule requête.
+ *
+ * Demander l'activité fichier par fichier coûterait une requête par fichier ;
+ * une comparaison de plage en coûte une pour tout l'intervalle.
+ */
+export async function fetchCompare(
+  ref: RepoRef,
+  base: string,
+  head: string,
+  client: Client,
+): Promise<ChangedFile[]> {
+  const raw = await getJson<{
+    files?: { filename: string; status: string; changes?: number }[];
+  }>(
+    `/repos/${ref.owner}/${ref.repo}/compare/${base}...${head}`,
+    client,
+    `la comparaison ${base.slice(0, 7)}…${head.slice(0, 7)}`,
+  );
+
+  return (raw.files ?? []).map((f) => ({
+    path: f.filename,
+    status: f.status,
+    changes: f.changes ?? 0,
+  }));
 }
 
 export async function fetchCommits(

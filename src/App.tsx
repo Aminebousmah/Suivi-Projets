@@ -295,6 +295,8 @@ export default function App() {
           t={t}
           repo={repo}
           viz={viz}
+          src={state.src}
+          treeDomains={source.status === 'ready' ? source.data.treeDomains : null}
           domainKey={domainKey}
           featName={featName}
           zoom={zoom}
