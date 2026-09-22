@@ -4,7 +4,8 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
     "types": [
       "vite/client",
-      "node"
+      "node",
+      "@testing-library/jest-dom"
     ],
     "lib": [
       "ES2023",
@@ -13,7 +14,8 @@
   },
   "include": [
     "src/**/__tests__/**/*.ts",
-    "src/**/__tests__/**/*.tsx"
+    "src/**/__tests__/**/*.tsx",
+    "src/setupTests.ts"
   ],
   "exclude": []
 }

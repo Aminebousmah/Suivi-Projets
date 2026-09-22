@@ -4,6 +4,7 @@ import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { ParsedSession } from '../lib/sessions';
 import { clamp, parseSessionFiles, shortDate } from '../lib/sessions';
+import { useNarrow } from '../lib/useMediaQuery';
 
 interface Props {
   t: Theme;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function SessionsView({ t, repo, repoKey }: Props) {
+  const narrow = useNarrow();
   const [imported, setImported] = useState<ParsedSession[]>([]);
   const [unreadable, setUnreadable] = useState<string[]>([]);
   const [over, setOver] = useState(false);
@@ -135,7 +137,7 @@ export function SessionsView({ t, repo, repoKey }: Props) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '132px minmax(0, 1fr)',
+                gridTemplateColumns: narrow ? '1fr' : '132px minmax(0, 1fr)',
                 alignItems: 'stretch',
               }}
             >
@@ -256,8 +258,8 @@ export function SessionsView({ t, repo, repoKey }: Props) {
             key={m.file}
             style={{
               display: 'grid',
-              gridTemplateColumns: '200px minmax(0, 1fr)',
-              gap: 14,
+              gridTemplateColumns: narrow ? '1fr' : '200px minmax(0, 1fr)',
+              gap: narrow ? 4 : 14,
               alignItems: 'baseline',
             }}
           >
@@ -288,6 +290,7 @@ interface ImportedProps {
 
 /** Les sessions telles qu'elles se lisent dans les fichiers déposés. */
 function ImportedSessions({ t, sessions, unreadable, onReset }: ImportedProps) {
+  const narrow = useNarrow();
   const exchanges = sessions.reduce((a, s) => a + s.exchanges.length, 0);
   const skipped = sessions.reduce((a, s) => a + s.skipped, 0);
 
@@ -354,7 +357,7 @@ function ImportedSessions({ t, sessions, unreadable, onReset }: ImportedProps) {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '132px minmax(0, 1fr)',
+              gridTemplateColumns: narrow ? '1fr' : '132px minmax(0, 1fr)',
               alignItems: 'stretch',
             }}
           >

@@ -1,7 +1,10 @@
+import { useEffect, useRef } from 'react';
 import { HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { CANVAS_WIDTH, buildMap, buildOverview } from '../lib/graph';
+import { HANDLED, nextSelection, nodeId } from '../lib/keyboard';
+import { useNarrow } from '../lib/useMediaQuery';
 import type { AtlasState } from '../lib/url';
 import { ZOOM_STEPS } from '../lib/url';
 
@@ -29,6 +32,7 @@ export function ArchView({
   zoom,
   navigate,
 }: Props) {
+  const narrow = useNarrow();
   const fromRepo = src === 'repo';
   const domains = fromRepo ? (treeDomains ?? []) : repo.domains;
   const hasStatuses = domains.some((d) => d.features.some((f) => f.status));
@@ -41,6 +45,30 @@ export function ArchView({
     f.status ? LABELS[f.status as keyof typeof LABELS] : (f.meta ?? '—');
   const map = buildMap(domains, t, domainKey, featName);
   const { overview, projectSegs, projectCounts } = buildOverview(domains, t, domainKey);
+
+  const canvas = useRef<HTMLDivElement>(null);
+  /** Vrai tant que la dernière sélection vient du clavier : sinon, pas de vol de focus. */
+  const fromKeyboard = useRef(false);
+
+  // Le focus suit la sélection, et le nœud choisi est amené dans la vue.
+  useEffect(() => {
+    if (!fromKeyboard.current) return;
+    fromKeyboard.current = false;
+    const el = canvas.current?.querySelector<HTMLElement>(
+      `[data-noeud="${CSS.escape(nodeId({ domain: domainKey, feat: featName }))}"]`,
+    );
+    el?.focus();
+    el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [domainKey, featName]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (!HANDLED.includes(e.key)) return;
+    const next = nextSelection(domains, { domain: domainKey, feat: featName }, e.key);
+    if (!next) return;
+    e.preventDefault();
+    fromKeyboard.current = true;
+    navigate(next);
+  };
 
   const openDomain = (k: string) => navigate({ domain: k, feat: null });
   const openFeat = (k: string, name: string) => navigate({ domain: k, feat: name });
@@ -320,8 +348,10 @@ export function ArchView({
                       background: o.rowBg,
                       padding: '7px 9px',
                       display: 'grid',
-                      gridTemplateColumns: 'minmax(0, 1fr) minmax(90px, 150px) 132px 34px',
-                      gap: 14,
+                      gridTemplateColumns: narrow
+                        ? 'minmax(0, 1fr) 54px'
+                        : 'minmax(0, 1fr) minmax(90px, 150px) 132px 34px',
+                      gap: narrow ? 10 : 14,
                       alignItems: 'center',
                       color: t.ink,
                     }}
@@ -350,34 +380,38 @@ export function ArchView({
                         {o.name}
                       </span>
                     </span>
-                    <span
-                      style={{
-                        display: 'flex',
-                        height: 8,
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                        gap: 2,
-                      }}
-                    >
-                      {o.segs.map((s) => (
-                        <span
-                          key={s.key}
-                          title={s.label}
-                          style={{ width: s.w, background: s.bg }}
-                        />
-                      ))}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: MONO,
-                        fontSize: 10.5,
-                        letterSpacing: '0.06em',
-                        textTransform: 'uppercase',
-                        color: o.stateFg,
-                      }}
-                    >
-                      {o.state}
-                    </span>
+                    {!narrow && (
+                      <span
+                        style={{
+                          display: 'flex',
+                          height: 8,
+                          borderRadius: 4,
+                          overflow: 'hidden',
+                          gap: 2,
+                        }}
+                      >
+                        {o.segs.map((s) => (
+                          <span
+                            key={s.key}
+                            title={s.label}
+                            style={{ width: s.w, background: s.bg }}
+                          />
+                        ))}
+                      </span>
+                    )}
+                    {!narrow && (
+                      <span
+                        style={{
+                          fontFamily: MONO,
+                          fontSize: 10.5,
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                          color: o.stateFg,
+                        }}
+                      >
+                        {o.state}
+                      </span>
+                    )}
                     <span
                       style={{
                         fontFamily: MONO,
@@ -468,6 +502,13 @@ export function ArchView({
             </div>
 
             <div
+              ref={canvas}
+              onKeyDown={onKeyDown}
+              role="tree"
+              // Sans point d'entrée au clavier, l'arbre ne se pilote qu'après
+              // avoir cliqué dedans : la tabulation doit pouvoir y mener.
+              tabIndex={0}
+              aria-label={`Arbre ${fromRepo ? 'du dépôt' : 'des fonctionnalités'} — flèches pour naviguer`}
               style={{
                 border: `1px solid ${t.line}`,
                 borderRadius: 14,
@@ -519,6 +560,8 @@ export function ArchView({
 
                   <button
                     onClick={reset}
+                    data-noeud={nodeId({ domain: null, feat: null })}
+                    aria-label={`Projet ${repo.hubName}`}
                     style={{
                       position: 'absolute',
                       left: map.rootLeft,
@@ -564,6 +607,8 @@ export function ArchView({
                     <button
                       key={d.key}
                       onClick={() => openDomain(d.key)}
+                      data-noeud={nodeId({ domain: d.key, feat: null })}
+                      aria-expanded={domainKey === d.key}
                       style={{
                         position: 'absolute',
                         left: d.left,
@@ -625,6 +670,8 @@ export function ArchView({
                     <button
                       key={l.key}
                       onClick={() => openFeat(l.domainKey, l.name)}
+                      data-noeud={nodeId({ domain: l.domainKey, feat: l.name })}
+                      aria-current={featName === l.name}
                       style={{
                         position: 'absolute',
                         left: l.left,
@@ -776,8 +823,8 @@ export function ArchView({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '250px minmax(0, 1fr) 100px',
-                gap: 16,
+                gridTemplateColumns: narrow ? 'minmax(0, 1fr) 92px' : '250px minmax(0, 1fr) 100px',
+                gap: narrow ? 10 : 16,
                 padding: '10px 16px',
                 borderBottom: `1px solid ${t.line}`,
                 fontFamily: MONO,
@@ -788,7 +835,9 @@ export function ArchView({
               }}
             >
               <span>{domain.features.some((f) => f.status) ? 'Fonctionnalité' : 'Élément'}</span>
-              <span>{domain.features.some((f) => f.status) ? "Ce qu'elle fait" : 'Chemin'}</span>
+              {!narrow && (
+                <span>{domain.features.some((f) => f.status) ? "Ce qu'elle fait" : 'Chemin'}</span>
+              )}
               <span style={{ textAlign: 'right' }}>
                 {domain.features.some((f) => f.status) ? 'Statut' : 'Poids'}
               </span>
@@ -812,8 +861,10 @@ export function ArchView({
                     borderBottom: `1px solid ${t.line}`,
                     padding: '12px 16px',
                     display: 'grid',
-                    gridTemplateColumns: '250px minmax(0, 1fr) 100px',
-                    gap: 16,
+                    gridTemplateColumns: narrow
+                      ? 'minmax(0, 1fr) 92px'
+                      : '250px minmax(0, 1fr) 100px',
+                    gap: narrow ? 10 : 16,
                     alignItems: 'baseline',
                     color: t.ink,
                   }}
@@ -834,9 +885,11 @@ export function ArchView({
                       {f.name}
                     </span>
                   </span>
-                  <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
-                    {f.what}
-                  </span>
+                  {!narrow && (
+                    <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
+                      {f.what}
+                    </span>
+                  )}
                   <span
                     style={{
                       fontFamily: MONO,
@@ -862,13 +915,14 @@ export function ArchView({
 
       <aside
         style={{
-          borderLeft: `1px solid ${t.line}`,
+          borderLeft: narrow ? 'none' : `1px solid ${t.line}`,
+          borderTop: narrow ? `1px solid ${t.line}` : 'none',
           background: t.surfaceAlt,
-          padding: '22px 22px 44px',
+          padding: narrow ? '20px clamp(18px, 3.5vw, 38px) 36px' : '22px 22px 44px',
           display: 'flex',
           flexDirection: 'column',
           gap: 20,
-          minHeight: '68vh',
+          minHeight: narrow ? 0 : '68vh',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

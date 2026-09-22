@@ -2,6 +2,7 @@ import { SourceBadge } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { LiveContext } from '../lib/context';
+import { useNarrow } from '../lib/useMediaQuery';
 
 interface Props {
   t: Theme;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function ProgressView({ t, repo, live }: Props) {
+  const narrow = useNarrow();
   const phases = live?.phases.length ? live.phases : repo.phases;
   const isLive = !!live?.phases.length;
 
@@ -36,8 +38,8 @@ export function ProgressView({ t, repo, live }: Props) {
               background: t.surface,
               padding: '17px 20px',
               display: 'grid',
-              gridTemplateColumns: '116px minmax(0, 1fr)',
-              gap: 20,
+              gridTemplateColumns: narrow ? '1fr' : '116px minmax(0, 1fr)',
+              gap: narrow ? 10 : 20,
               alignItems: 'start',
             }}
           >

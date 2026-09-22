@@ -5,6 +5,7 @@ import type { MatchKind } from '../lib/verify';
 import { isResolved } from '../lib/verify';
 import type { LoadState } from '../lib/useGitHub';
 import { cacheStore, describeOrigins, writeToken } from '../lib/useGitHub';
+import { useNarrow } from '../lib/useMediaQuery';
 
 interface Props {
   t: Theme;
@@ -49,6 +50,7 @@ export function GitHubView({
   onConnect,
   onDisconnect,
 }: Props) {
+  const narrow = useNarrow();
   const [draft, setDraft] = useState(token);
   const [cleared, setCleared] = useState(0);
 
@@ -244,8 +246,8 @@ export function GitHubView({
                   key={k as string}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '150px minmax(0, 1fr)',
-                    gap: 12,
+                    gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)',
+                    gap: narrow ? 4 : 12,
                     alignItems: 'baseline',
                   }}
                 >
@@ -327,7 +329,7 @@ export function GitHubView({
                   key={f.name}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '150px 84px minmax(0, 1fr)',
+                    gridTemplateColumns: narrow ? '1fr' : '150px 84px minmax(0, 1fr)',
                     gap: 14,
                     padding: '11px 16px',
                     borderBottom: `1px solid ${t.line}`,
@@ -350,8 +352,8 @@ export function GitHubView({
                   key={name}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '150px minmax(0, 1fr)',
-                    gap: 14,
+                    gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)',
+                    gap: narrow ? 4 : 14,
                     padding: '11px 16px',
                     borderBottom: `1px solid ${t.line}`,
                     alignItems: 'baseline',
@@ -370,8 +372,8 @@ export function GitHubView({
                   key={name}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '150px minmax(0, 1fr)',
-                    gap: 14,
+                    gridTemplateColumns: narrow ? '1fr' : '150px minmax(0, 1fr)',
+                    gap: narrow ? 4 : 14,
                     padding: '11px 16px',
                     borderBottom: `1px solid ${t.line}`,
                     alignItems: 'baseline',
@@ -417,7 +419,9 @@ export function GitHubView({
                           key={d.key + c.declared}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) 150px',
+                            gridTemplateColumns: narrow
+                      ? 'minmax(0, 1fr) 110px'
+                      : 'minmax(0, 1fr) minmax(0, 1fr) 150px',
                             gap: 14,
                             padding: '11px 16px',
                             borderBottom: `1px solid ${t.line}`,
@@ -427,7 +431,9 @@ export function GitHubView({
                           <span style={{ fontFamily: MONO, fontSize: 11.5, wordBreak: 'break-word' }}>
                             {c.path}
                           </span>
-                          <span style={{ fontSize: 12, color: t.inkSoft }}>{d.name}</span>
+                          {!narrow && (
+                            <span style={{ fontSize: 12, color: t.inkSoft }}>{d.name}</span>
+                          )}
                           <span
                             style={{
                               fontFamily: MONO,
@@ -462,7 +468,7 @@ export function GitHubView({
                   key={c.sha}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '84px 110px minmax(0, 1fr)',
+                    gridTemplateColumns: narrow ? '74px minmax(0, 1fr)' : '84px 110px minmax(0, 1fr)',
                     gap: 14,
                     padding: '11px 16px',
                     borderBottom: `1px solid ${t.line}`,
@@ -477,9 +483,11 @@ export function GitHubView({
                   >
                     {c.shortSha}
                   </a>
-                  <span style={{ fontFamily: MONO, fontSize: 10.5, color: t.inkFaint }}>
-                    {humanDate(c.date)}
-                  </span>
+                  {!narrow && (
+                    <span style={{ fontFamily: MONO, fontSize: 10.5, color: t.inkFaint }}>
+                      {humanDate(c.date)}
+                    </span>
+                  )}
                   <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
                     <span style={{ fontSize: 12.5, fontWeight: 600, lineHeight: 1.4 }}>
                       {c.message.split('\n')[0]}

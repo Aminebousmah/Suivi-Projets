@@ -40,8 +40,10 @@ src/
     tree.ts           l'arborescence réelle regroupée en dossiers et fichiers
     activity.ts       ce que les derniers commits ont touché, en constats datés
     sessions.ts       lecture des fichiers .jsonl de session Claude Code
+    keyboard.ts       déplacement dans l'arbre au clavier
+    useMediaQuery.ts  ce que les composants savent de la place disponible
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        160 tests Vitest sur ces neuf modules
+    __tests__/        192 tests Vitest sur ces onze modules
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -49,6 +51,7 @@ src/
     ContextView.tsx   04 Contexte Claude — fichiers lus, règles actives, interdits, décisions ouvertes
     ProgressView.tsx  05 Avancement — les phases de plan.md avec leur statut réel
     GitHubView.tsx    06 Dépôt réel — métadonnées GitHub, commits, écarts de fichiers
+    __tests__/        tests de rendu : ce qu'un lecteur voit, vue par vue
   components/
     ui.tsx            primitives partagées (bouton à survol, sur-titre mono)
     SourceBadge.tsx   bandeau de provenance : dépôt lu, ou description figée
@@ -80,6 +83,30 @@ comme dossier, via un motif, déplacé ailleurs — ou déclaré absent.
 Le jeton personnel GitHub est facultatif : sans lui, seuls les dépôts publics répondent,
 dans la limite de soixante requêtes par heure. Il est gardé dans le `localStorage` du
 navigateur, n'est envoyé qu'à `api.github.com`, et un bouton l'efface.
+
+## Clavier et écrans étroits
+
+L'arbre se parcourt entièrement au clavier : la tabulation y mène, les flèches
+descendent (→), remontent (←) et parcourent un niveau (↑ ↓) en enjambant la frontière
+entre deux branches, `Échap` dégage d'un cran, `Origine` et `Fin` sautent aux extrémités.
+Le focus suit la sélection et le nœud choisi est amené dans la vue. Le liseré de focus
+prend la couleur d'accent du dépôt affiché — aucune couleur n'est codée en dur.
+
+Les styles étant en ligne, hérités de la maquette, aucune règle CSS ne peut les adapter :
+c'est le composant qui sait s'il est à l'étroit, via `useMediaQuery`. Sous 720 px, le
+panneau latéral passe sous le contenu et les colonnes secondaires des tableaux
+s'effacent. Vérifié à 390 px comme à 1440 px : aucun débordement horizontal.
+
+## Publication
+
+`.github/workflows/pages.yml` publie le site sur GitHub Pages à chaque poussée sur
+`main`, ou à la demande. Le lint, les tests et le build doivent passer : rien n'est
+publié sur une base rouge. Le build de publication reçoit `PAGES_BASE`, car Pages sert
+le site sous `/<dépôt>/` et non à la racine — `npm run build:pages` reproduit ce build
+en local.
+
+Une étape reste manuelle, côté GitHub : **Settings → Pages → Source : GitHub Actions**.
+Tant qu'elle n'est pas faite, le workflow échoue au moment du déploiement.
 
 ## Cache et quota
 

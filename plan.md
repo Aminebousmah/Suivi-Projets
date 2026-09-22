@@ -30,6 +30,13 @@ Les domaines se déduisent de l'arborescence réelle, l'activité git décore le
 
 Un navigateur ne lit pas le disque : les fichiers de session sont déposés dans la page, pas lus automatiquement. Et l'activité git ne devient pas un statut — aucune source ne dit qu'un fichier modifié hier est « en cours ».
 
-## Phase 5 — Finition 💡
+## Phase 5 — Finition ✅
 
-Navigation au clavier dans le graphe, mise en page mobile du panneau latéral, tests de rendu par vue, publication du build.
+Navigation au clavier dans le graphe, mise en page adaptée aux écrans étroits, tests de rendu par vue, et publication du build.
+
+- [x] Flèches, Échap, Home et Fin dans l'arbre, avec focus visible
+- [x] Panneau latéral et tableaux repliés sous 720 px
+- [x] Tests de rendu vue par vue, en jsdom
+- [x] Workflow GitHub Pages, publication sur poussée vers `main`
+
+La publication demande une action dans les réglages du dépôt — Settings, Pages, source « GitHub Actions » — que le dépôt seul ne peut pas faire.

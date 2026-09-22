@@ -42,6 +42,11 @@ export default function App() {
     document.title = `Atlas — ${repo.label}`;
   }, [repo.label]);
 
+  // Le liseré de focus suit la palette du dépôt : aucune couleur en dur.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--focus', t.accent);
+  }, [t.accent]);
+
   const repoTabs = useMemo(
     () =>
       Object.keys(REPOS).map((k) => ({

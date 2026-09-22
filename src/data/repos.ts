@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '32', k: 'fonctions' }, { v: '160', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '34', k: 'fonctions' }, { v: '192', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -591,8 +591,8 @@ export const REPOS: Record<string, RepoData> = {
       "Lit vos fichiers de session Claude Code déposés dans la page, sans qu'ils quittent le navigateur."
     ],
     todo: [
-      "Rendre le graphe navigable au clavier et le panneau lisible sur mobile.",
-      "Publier le build : le dépôt n'est déployé nulle part pour l'instant."
+      "Activer GitHub Pages dans les réglages du dépôt : le workflow est prêt, la source reste à choisir.",
+      "Rapprocher l'arbre décrit et l'arbre du dépôt : dire quel fichier sert quelle fonctionnalité."
     ],
     stack: [
       { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
@@ -602,18 +602,18 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "160 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence et les sessions." },
+      { cat: 'Tests', v: 'Vitest', note: "192 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "160", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "192", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '90%', tone: 'wip' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
-      { k: "Application déployée", v: "non", target: "oui", pct: '0%', tone: 'frozen' }
+      { k: "Application déployée", v: "workflow prêt", target: "en ligne", pct: '80%', tone: 'wip' }
     ],
     domains: [
       { key: 'shell', num: '01', name: 'Coque et navigation', tone: 'a',
@@ -630,8 +630,12 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée"] },
           { name: "Historique navigateur", status: 'live', what: "Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépôt.",
             files: ['src/lib/useAtlasState.ts — popstate', 'src/App.tsx'] },
-          { name: "Navigation au clavier", status: 'idea', what: "Parcourir le graphe aux flèches et ouvrir une fonctionnalité à l'entrée.",
-            files: ['src/views/ArchView.tsx'] }
+          { name: "Navigation au clavier", status: 'live', what: "L'arbre se parcourt aux flèches, Échap dégage d'un cran, Origine et Fin sautent aux extrémités.",
+            files: ['src/lib/keyboard.ts', 'src/views/ArchView.tsx'],
+            notes: ["La tabulation mène à l'arbre : sans ce point d'entrée, il ne se pilotait qu'après un clic dedans", "Le focus suit la sélection et le nœud choisi est amené dans la vue", "Le liseré de focus prend la couleur d'accent du dépôt"] },
+          { name: "Écrans étroits", status: 'live', what: "Sous 720 px, le panneau passe sous le contenu et les colonnes secondaires s'effacent.",
+            files: ['src/lib/useMediaQuery.ts'],
+            notes: ["Les styles en ligne hérités de la maquette ne peuvent pas être adaptés par une règle CSS", "Vérifié à 390 px comme à 1440 px : aucun débordement horizontal"] }
         ] },
       { key: 'views', num: '02', name: 'Les six vues', tone: 'b',
         role: "Ce que chaque onglet montre du projet décrit.",
@@ -717,8 +721,12 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/lib/__tests__/verify.test.ts'] },
           { name: "Maquette de référence", status: 'live', what: "Le prototype Claude Design d'origine, gardé intact comme source de vérité visuelle.",
             files: ['design/Project Atlas.dc.html', 'design/github.md'] },
-          { name: "Tests de rendu", status: 'idea', what: "Un test de bout en bout par vue, plutôt qu'un script de vérification manuel.",
-            files: ['src/views/'] }
+          { name: "Tests de rendu", status: 'live', what: "Chaque vue, la navigation, l'arbre au clavier et les bascules d'affichage, éprouvés en jsdom.",
+            files: ['src/views/__tests__/render.test.tsx', 'src/setupTests.ts'],
+            notes: ["Ils remplacent les vérifications manuelles au navigateur", "jsdom n'est monté que pour ces tests : la logique pure s'en passe", "C'est ce test qui a montré que l'arbre n'était pas atteignable au clavier"] },
+          { name: "Publication du build", status: 'live', what: "GitHub Pages à chaque poussée sur main, à condition que lint, tests et build passent.",
+            files: ['.github/workflows/pages.yml', 'vite.config.ts — base'],
+            notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Une étape reste manuelle : Settings, Pages, source « GitHub Actions »", "Rien n'est publié sur une base rouge"] }
         ] }
     ],
     goldenRule: "Aucun composant ne code une couleur en dur : tout passe par le thème du dépôt affiché. Et rien n'est affirmé sur un dépôt qui ne soit lisible dans ses données ou dans GitHub.",
@@ -743,7 +751,11 @@ export const REPOS: Record<string, RepoData> = {
       { num: 'session', date: 'Données', turns: 'phase 4', tone: 'a',
         prompt: "Fais la phase 4.",
         reply: "L'arborescence réelle devient un arbre explorable — sans statut, puisque rien n'en porte — décoré de ce que les derniers commits ont touché, obtenu en une requête. Les fichiers de session déposés dans la page sont lus et appariés, sans confondre un résultat d'outil avec une demande.",
-        outcome: 'live', touched: ['src/lib/tree.ts', 'src/lib/activity.ts', 'src/lib/sessions.ts'] }
+        outcome: 'live', touched: ['src/lib/tree.ts', 'src/lib/activity.ts', 'src/lib/sessions.ts'] },
+      { num: 'session', date: 'Finition', turns: 'phase 5', tone: 'd',
+        prompt: "Fais la phase 5.",
+        reply: "Arbre parcourable au clavier avec focus visible, mise en page repliée sous 720 px, tests de rendu par vue en jsdom, et workflow de publication sur GitHub Pages. Le test de rendu a montré que l'arbre n'était atteignable au clavier qu'après un clic dedans.",
+        outcome: 'live', touched: ['src/lib/keyboard.ts', 'src/views/__tests__/render.test.tsx', '.github/workflows/pages.yml'] }
     ],
     memories: [
       { file: 'CLAUDE.md — à ne jamais faire', rule: "Ne jamais inventer un statut qu'aucune source ne porte : une absence se signale, elle ne se comble pas." },

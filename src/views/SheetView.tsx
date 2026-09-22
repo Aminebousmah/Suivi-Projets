@@ -1,5 +1,6 @@
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
+import { useNarrow } from '../lib/useMediaQuery';
 
 interface Props {
   t: Theme;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function SheetView({ t, repo }: Props) {
+  const narrow = useNarrow();
   const lastSession = repo.sessions[repo.sessions.length - 1];
 
   return (
@@ -157,8 +159,8 @@ export function SheetView({ t, repo }: Props) {
                 key={s.cat + s.v}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '136px minmax(0, 1fr)',
-                  gap: 14,
+                  gridTemplateColumns: narrow ? '1fr' : '136px minmax(0, 1fr)',
+                  gap: narrow ? 5 : 14,
                   padding: '11px 16px',
                   borderBottom: `1px solid ${t.line}`,
                   alignItems: 'baseline',
@@ -201,7 +203,9 @@ export function SheetView({ t, repo }: Props) {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'minmax(0, 1fr) 96px 96px 104px',
+                gridTemplateColumns: narrow
+                  ? 'minmax(0, 1fr) 64px 72px'
+                  : 'minmax(0, 1fr) 96px 96px 104px',
                 gap: 12,
                 padding: '10px 16px',
                 borderBottom: `1px solid ${t.line}`,
@@ -214,7 +218,7 @@ export function SheetView({ t, repo }: Props) {
             >
               <span>Indicateur</span>
               <span style={{ textAlign: 'right' }}>Actuel</span>
-              <span style={{ textAlign: 'right' }}>Cible</span>
+              {!narrow && <span style={{ textAlign: 'right' }}>Cible</span>}
               <span>Avancement</span>
             </div>
             {repo.tracking.map((r) => {
@@ -224,7 +228,9 @@ export function SheetView({ t, repo }: Props) {
                   key={r.k}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'minmax(0, 1fr) 96px 96px 104px',
+                    gridTemplateColumns: narrow
+                      ? 'minmax(0, 1fr) 64px 72px'
+                      : 'minmax(0, 1fr) 96px 96px 104px',
                     gap: 12,
                     padding: '12px 16px',
                     borderBottom: `1px solid ${t.line}`,
@@ -242,16 +248,18 @@ export function SheetView({ t, repo }: Props) {
                   >
                     {r.v}
                   </span>
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: 11.5,
-                      color: t.inkSoft,
-                      textAlign: 'right',
-                    }}
-                  >
-                    {r.target}
-                  </span>
+                  {!narrow && (
+                    <span
+                      style={{
+                        fontFamily: MONO,
+                        fontSize: 11.5,
+                        color: t.inkSoft,
+                        textAlign: 'right',
+                      }}
+                    >
+                      {r.target}
+                    </span>
+                  )}
                   <span
                     style={{
                       height: 8,
