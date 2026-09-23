@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, six phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
+État : fonctionnellement terminé, sept phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -53,14 +53,24 @@ Les fichiers cités par les fonctionnalités et les fichiers du dépôt sont rap
 
 Le rapprochement ne juge rien : un fichier que rien ne cite n'est ni mort ni superflu, il est seulement non décrit.
 
+## Phase 7 — Le suivi vient du projet ✅
+
+Un projet peut décrire lui-même son arbre, au lieu de le voir écrit en dur dans Atlas.
+
+- [x] `ATLAS-PROMPT.md` : le prompt à coller dans une session Claude Code
+- [x] Lecture d'`atlas.md` : domaines, fonctionnalités, statuts, fichiers, feuille de suivi
+- [x] Quand le dépôt fournit ce fichier, il remplace la description figée
+- [x] Atlas se décrit avec son propre `atlas.md`, et un test refuse que les deux descriptions divergent
+
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
 - **Publier** — le workflow est écrit et vérifié, mais GitHub Pages s'active dans les
   réglages du dépôt, et la publication se déclenche sur `main`. Deux gestes qui
   appartiennent au propriétaire du dépôt.
-- **Ouvrir Atlas à un dépôt quelconque** — aujourd'hui trois dépôts sont décrits dans
-  `src/data/repos.ts`. Lire un dépôt saisi à la volée demanderait de déduire aussi sa
-  palette et ses domaines, ou d'assumer qu'il n'en a pas.
+- **Ouvrir Atlas à un dépôt quelconque** — depuis `atlas.md`, un dépôt décrit lui-même
+  ses domaines ; il reste à l'enregistrer dans `src/data/repos.ts` pour sa palette et son
+  slug. Accepter un dépôt saisi à la volée demanderait d'en déduire aussi la direction
+  artistique, ou d'assumer qu'il n'en a pas.
 - **Rapprocher les sessions du reste** — une session sait quels fichiers elle a touchés,
   et le croisement sait ce que ces fichiers servent : les brancher l'un sur l'autre dirait
   quelles fonctionnalités une session a fait avancer.

@@ -41,6 +41,7 @@ src/
     coverage.ts       croisement des deux arbres : ce qu'un fichier sert, ce que rien ne décrit
     activity.ts       ce que les derniers commits ont touché, en constats datés
     sessions.ts       lecture des fichiers .jsonl de session Claude Code
+    atlasFile.ts      lecture d'atlas.md : domaines, statuts, fichiers, feuille de suivi
     keyboard.ts       déplacement dans l'arbre au clavier
     useMediaQuery.ts  ce que les composants savent de la place disponible
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
@@ -59,6 +60,8 @@ src/
     SourceBadge.tsx   bandeau de provenance : dépôt lu, ou description figée
 CLAUDE.md             contexte, conventions et interdits du projet
 plan.md               les phases, avec leur statut et leurs cases à cocher
+atlas.md              le suivi d'Atlas, dans le format qu'il propose aux autres
+ATLAS-PROMPT.md       le prompt à coller dans une session Claude Code
 design/               maquette Claude Design d'origine, source de vérité visuelle
 ```
 
@@ -101,7 +104,7 @@ s'effacent. Vérifié à 390 px comme à 1440 px : aucun débordement horizontal
 
 ## État du projet
 
-Les six phases de `plan.md` sont livrées. Il reste deux gestes, hors du dépôt, pour que
+Les sept phases de `plan.md` sont livrées. Il reste deux gestes, hors du dépôt, pour que
 le site soit en ligne : activer GitHub Pages dans les réglages, et fusionner la branche
 de travail dans `main`. `plan.md` dit aussi ce qui n'a pas été fait, et pourquoi.
 
@@ -187,6 +190,35 @@ Le format est du JSON Lines qu'aucun contrat ne garantit, la lecture est donc to
 une ligne illisible est comptée et ignorée, le raisonnement interne n'est pas affiché, et
 un résultat d'outil revenu sous le rôle « user » n'est pas pris pour une demande — sans
 quoi la moitié des « prompts » affichés seraient des sorties de commandes.
+
+## Faire décrire un projet par lui-même
+
+`ATLAS-PROMPT.md` contient un prompt à coller dans une session Claude Code ouverte sur
+n'importe quel projet. Il en fait produire un `atlas.md` à la racine : les domaines, leurs
+fonctionnalités, le statut de chacune, les fichiers qui l'implémentent, et une feuille de
+suivi. Relancé plus tard, il met à jour au lieu de réécrire.
+
+```md
+## Domaine · Navigation & parcours
+L'ossature de circulation : menu, portes, pied de page.
+
+### Les 10 portes thématiques — en ligne
+Grille d'entrée vers les dix univers du citron.
+- `src/config/nav.ts`
+> La porte Boutique disparaît quand le commerce est coupé.
+```
+
+Quand un dépôt fournit ce fichier, **c'est lui qui décrit son arbre** : les domaines, les
+statuts, la feuille de suivi et le croisement en viennent, et la description figée de
+`src/data/repos.ts` n'est plus qu'un repli. Chaque vue dit laquelle des deux elle affiche.
+
+Le prompt porte aussi les règles de suivi : ne jamais inventer un statut, ne citer que des
+chemins qui existent, couvrir tout le dépôt, et n'écrire dans une fonctionnalité que ce
+qui est — le reste va dans `À faire`.
+
+Atlas se décrit avec son propre `atlas.md`, et deux tests veillent : l'un refuse que ce
+fichier et la description figée divergent, l'autre qu'un fichier du dépôt n'y soit cité
+nulle part.
 
 ## Lecture des fichiers de contexte
 
