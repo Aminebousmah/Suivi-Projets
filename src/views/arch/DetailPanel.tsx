@@ -39,6 +39,14 @@ export function DetailPanel({ t, panel, narrow, fromRepo, goldenRule }: Props) {
           flexDirection: 'column',
           gap: 20,
           minHeight: narrow ? 0 : '68vh',
+          // Collant en large : cliquer une feuille au fond du graphe montre son
+          // détail sans devoir remonter la page.
+          position: narrow ? 'static' : 'sticky',
+          top: 0,
+          alignSelf: 'start',
+          maxHeight: narrow ? 'none' : '100vh',
+          overflowY: narrow ? 'visible' : 'auto',
+          boxSizing: 'border-box',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

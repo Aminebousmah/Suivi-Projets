@@ -1,4 +1,5 @@
 import { SourceBadge } from '../components/SourceBadge';
+import type { RepoReader } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { LiveContext } from '../lib/context';
@@ -8,9 +9,10 @@ interface Props {
   t: Theme;
   repo: RepoData;
   live: LiveContext | null;
+  reader: RepoReader;
 }
 
-export function ProgressView({ t, repo, live }: Props) {
+export function ProgressView({ t, repo, live, reader }: Props) {
   const narrow = useNarrow();
   const phases = live?.phases.length ? live.phases : repo.phases;
   const isLive = !!live?.phases.length;
@@ -24,7 +26,14 @@ export function ProgressView({ t, repo, live }: Props) {
         gap: 12,
       }}
     >
-      <SourceBadge t={t} live={isLive} what="Les phases" from="plan.md" />
+      <SourceBadge
+        t={t}
+        live={isLive}
+        what="Les phases"
+        from="plan.md"
+        hint="Le dépôt n'a pas de plan.md, ou aucune phase n'y est reconnue."
+        {...reader}
+      />
 
       {phases.map((p) => {
         const pl = t.pills[p.tone] || t.pills.idea;

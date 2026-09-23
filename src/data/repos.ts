@@ -16,6 +16,8 @@ export const REPOS: Record<string, RepoData> = {
     ],
     todo: [
       "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
       "Activer l'aile marchande : compte Snipcart, clé dans Vercel, flag commerce à true.",
       "Compléter les mentions légales avec SIREN et TVA intracommunautaire.",
       "Créer les pages manquantes : /drop, /drop/archive, /coffrets, /carte-cadeau.",
@@ -304,6 +306,8 @@ export const REPOS: Record<string, RepoData> = {
     ],
     todo: [
       "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
       "Compléter la couverture : quatre saisons sur cinq n'ont que cinq stat_types sur onze.",
       "Relancer l'extraction FBref dès que le rate-limit retombe, via la vue Big 5 Combined.",
       "Figer l'environnement : requirements.txt régénéré, soccerdata pinné en 1.8.8.",
@@ -580,7 +584,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '49', k: 'fonctions' }, { v: '247', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '51', k: 'fonctions' }, { v: '261', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -591,10 +595,13 @@ export const REPOS: Record<string, RepoData> = {
       "Garde les réponses GitHub en cache et les revalide par ETag, pour ne pas épuiser le quota à chaque visite.",
       "Montre l'arborescence réelle du dépôt, décorée de ce que les derniers commits ont touché.",
       "Lit vos fichiers de session Claude Code déposés dans la page, sans qu'ils quittent le navigateur.",
+      "Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.",
       "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit."
     ],
     todo: [
       "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
     ],
     stack: [
       { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
@@ -604,13 +611,13 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "247 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "261 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "247", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "261", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
@@ -633,6 +640,9 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée"] },
           { name: "Historique navigateur", status: 'live', what: "Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépôt.",
             files: ['src/lib/useAtlasState.ts — popstate', 'src/App.tsx'] },
+          { name: "Barrière d'erreur", status: 'live', what: "Une vue qui plante laisse l'en-tête, les onglets et les autres vues utilisables.",
+            files: ['src/components/ErrorBoundary.tsx', 'src/components/__tests__/ErrorBoundary.test.tsx'],
+            notes: ["Changer d'onglet suffit à sortir de l'erreur : la barrière est remontée à chaque vue", "Un bouton ramène à la fiche projet"] },
           { name: "Point d'entrée de l'application", status: 'live', what: "La page servie, le montage de React, le fond et le liseré de focus.",
             files: ['index.html', 'src/main.tsx', 'src/index.css', 'public/favicon.svg'],
             notes: ["index.html charge les trois polices depuis Google Fonts et rien d'autre", "index.css ne porte que le strict minimum : fond, liens, boutons, focus — tout le reste vient du thème", "Le liseré de focus lit une variable CSS que App met à jour selon le dépôt affiché"] },
@@ -641,7 +651,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["La tabulation mène à l'arbre : sans ce point d'entrée, il ne se pilotait qu'après un clic dedans", "Le focus suit la sélection et le nœud choisi est amené dans la vue", "Le liseré de focus prend la couleur d'accent du dépôt"] },
           { name: "Écrans étroits", status: 'live', what: "Sous 720 px, le panneau passe sous le contenu et les colonnes secondaires s'effacent.",
             files: ['src/lib/useMediaQuery.ts'],
-            notes: ["Les styles en ligne hérités de la maquette ne peuvent pas être adaptés par une règle CSS", "Vérifié à 390 px comme à 1440 px : aucun débordement horizontal"] }
+            notes: ["Les styles en ligne hérités de la maquette ne peuvent pas être adaptés par une règle CSS", "Sous 1100 px, le panneau de l'arbre passe dessous ; sous 720 px, les colonnes secondaires s'effacent", "En étroit, dépôts et onglets défilent sur une ligne au lieu de s'empiler", "Vérifié à 390 px comme à 1440 px : aucun débordement horizontal"] }
         ] },
       { key: 'views', num: '02', name: 'Les six vues', tone: 'b',
         role: "Ce que chaque onglet montre du projet décrit.",
@@ -656,7 +666,7 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/views/arch/DomainCards.tsx', 'src/views/arch/FeatureTable.tsx'] },
           { name: "Panneau de détail", status: 'live', what: "Ce que porte la sélection : rôle, statut, chemins cités, ce qu'ils donnent dans le dépôt, et la règle d'or.",
             files: ['src/views/arch/DetailPanel.tsx'],
-            notes: ["Il parle de fonctionnalité ou de fichier selon l'arbre affiché", "Un chemin cité mais absent du dépôt y est encadré comme un avertissement"] },
+            notes: ["Il parle de fonctionnalité ou de fichier selon l'arbre affiché", "Un chemin cité mais absent du dépôt y est encadré comme un avertissement", "Colonne de largeur fixe et collante : le détail reste visible en bas du graphe"] },
           { name: "Sessions", status: 'live', what: "Vos fichiers de session déposés dans la page, lus et appariés en demandes et réponses.",
             files: ['src/views/SessionsView.tsx', 'src/lib/sessions.ts'],
             notes: ["Un navigateur ne lit pas ~/.claude/projects/ : les fichiers sont déposés, jamais envoyés ailleurs", "Un résultat d'outil revenu sous le rôle « user » n'est pas pris pour une demande", "Le raisonnement interne n'est pas affiché", "Une ligne illisible est comptée et ignorée", "Sans fichier déposé, la description écrite reste affichée"] },
@@ -671,7 +681,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Les styles en ligne hérités de la maquette ne savent pas exprimer un survol : le bouton le porte lui-même", "C'est l'équivalent du style-hover du prototype"] },
           { name: "Bandeau de provenance", status: 'live', what: "Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figée.",
             files: ['src/components/SourceBadge.tsx'],
-            notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place"] }
+            notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place", "Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit"] }
         ] },
       { key: 'model', num: '03', name: 'Modèle et données', tone: 'c',
         role: "Ce qui décrit un dépôt, et d'où viennent les couleurs.",
@@ -682,6 +692,9 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Description des dépôts", status: 'wip', what: "Domaines, fonctionnalités, sessions, phases et feuille de suivi de chaque dépôt.",
             files: ['src/data/repos.ts'],
             notes: ["Écrit à la main, repris de la maquette", "C'est ce fichier que la vue Dépôt réel confronte à GitHub"] },
+          { name: "Encre lisible sur chaque ton", status: 'live', what: "Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fond donné.",
+            files: ['src/lib/color.ts', 'src/lib/__tests__/color.test.ts'],
+            notes: ["Choisie à la main, dépôt par dépôt, l'encre avait produit un texte noir sur fond noir", "Un test vérifie, pour chaque ton de chaque thème, un contraste d'au moins 3:1"] },
           { name: "Thèmes par dépôt", status: 'live', what: "Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.",
             files: ['src/data/themes.ts'] },
           { name: "Lecture du fichier de suivi", status: 'live', what: "Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.",
@@ -775,8 +788,8 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/views/__tests__/render.test.tsx', 'src/views/__tests__/github.render.test.tsx', 'src/setupTests.ts'],
             notes: ["Ils remplacent les vérifications manuelles au navigateur", "jsdom n'est monté que pour ces tests : la logique pure s'en passe", "C'est ce test qui a montré que l'arbre n'était pas atteignable au clavier", "GitHub y est simulé : la vue Dépôt réel est éprouvée sans toucher au réseau"] },
           { name: "Publication du build", status: 'live', what: "GitHub Pages à chaque poussée sur main, à condition que lint, tests et build passent.",
-            files: ['.github/workflows/pages.yml', 'vite.config.ts — base'],
-            notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Une étape reste manuelle : Settings, Pages, source « GitHub Actions »", "Rien n'est publié sur une base rouge"] }
+            files: ['.github/workflows/pages.yml', 'vite.config.ts — base, manualChunks'],
+            notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Une étape reste manuelle : Settings, Pages, source « GitHub Actions »", "Rien n'est publié sur une base rouge", "React est livré à part : une mise à jour d'Atlas ne le fait pas retélécharger"] }
         ] }
     ],
     goldenRule: "Aucun composant ne code une couleur en dur : tout passe par le thème du dépôt affiché. Et rien n'est affirmé sur un dépôt qui ne soit lisible dans ses données ou dans GitHub.",

@@ -19,6 +19,9 @@ npm run test     # vitest
 npm run lint     # oxlint
 ```
 
+Le build sépare React du code de l'application : environ 50 kB compressés pour Atlas,
+68 kB pour React, que le navigateur garde en cache d'une version à l'autre.
+
 ## Architecture
 
 ```
@@ -44,8 +47,9 @@ src/
     atlasFile.ts      lecture d'atlas.md : domaines, statuts, fichiers, feuille de suivi
     keyboard.ts       déplacement dans l'arbre au clavier
     useMediaQuery.ts  ce que les composants savent de la place disponible
+    color.ts          l'encre la plus lisible sur un fond donné
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        224 tests Vitest, logique pure et rendu compris
+    __tests__/        261 tests Vitest, logique pure et rendu compris
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -57,7 +61,8 @@ src/
     __tests__/        tests de rendu : ce qu'un lecteur voit, vue par vue
   components/
     ui.tsx            primitives partagées (bouton à survol, sur-titre mono)
-    SourceBadge.tsx   bandeau de provenance : dépôt lu, ou description figée
+    SourceBadge.tsx   bandeau de provenance : dépôt lu, ou description figée — et le bouton qui le lit
+    ErrorBoundary.tsx une vue qui plante n'emporte pas l'application
 CLAUDE.md             contexte, conventions et interdits du projet
 plan.md               les phases, avec leur statut et leurs cases à cocher
 atlas.md              le suivi d'Atlas, dans le format qu'il propose aux autres
@@ -76,6 +81,12 @@ au lieu de casser la page.
 ```
 ?repo=eleven&view=arch&domain=player&feat=Radar+contextualis%C3%A9+par+poste&zoom=0.85
 ```
+
+## Lire le dépôt depuis n'importe quelle vue
+
+Tant que le dépôt n'est pas lu, chaque vue qui pourrait en profiter le dit — « description
+figée » — et porte le bouton **Lire le dépôt**. Plus besoin de passer par l'onglet 06 ; après
+un échec, le même bouton relance.
 
 ## Vue « Dépôt réel »
 
@@ -98,9 +109,14 @@ Le focus suit la sélection et le nœud choisi est amené dans la vue. Le liser�
 prend la couleur d'accent du dépôt affiché — aucune couleur n'est codée en dur.
 
 Les styles étant en ligne, hérités de la maquette, aucune règle CSS ne peut les adapter :
-c'est le composant qui sait s'il est à l'étroit, via `useMediaQuery`. Sous 720 px, le
-panneau latéral passe sous le contenu et les colonnes secondaires des tableaux
-s'effacent. Vérifié à 390 px comme à 1440 px : aucun débordement horizontal.
+c'est le composant qui sait s'il est à l'étroit, via `useMediaQuery`. Sous 1100 px, le
+panneau de l'arbre passe dessous ; sous 720 px, les colonnes secondaires des tableaux
+s'effacent, et dépôts comme onglets défilent sur une ligne, l'élément actif ramené dans
+l'écran. Vérifié à 390, 1024 et 1440 px : aucun débordement horizontal.
+
+En large, le panneau de détail a une colonne fixe et reste collé en haut de l'écran :
+cliquer une feuille au fond du graphe montre son détail sans remonter la page. C'est le
+seul écart assumé avec la maquette, qui partageait l'écran en deux moitiés égales.
 
 ## État du projet
 

@@ -202,3 +202,33 @@ describe('ce que le dépôt change dans les autres vues', () => {
     expect(screen.getAllByText('modifié, 42 ligne(s)').length).toBeGreaterThan(0);
   });
 });
+
+describe('lire le dépôt sans quitter la vue', () => {
+  it('le bouton du bandeau lit le dépôt et bascule la vue sur ce qu’il porte', async () => {
+    vi.stubGlobal('fetch', fakeGitHub());
+    open('?repo=atlas&view=context');
+    const user = userEvent.setup();
+
+    expect(screen.getByText(/description figée/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /lire le dépôt/i }));
+
+    expect(await screen.findByText(/lu dans le dépôt/i, {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(screen.getByText('Une règle bien à elle.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /lire le dépôt/i })).not.toBeInTheDocument();
+  });
+
+  it('propose de réessayer après un échec', async () => {
+    vi.stubGlobal(
+      'fetch',
+      fakeGitHub({ '/repos/': () => new Response('{}', { status: 500 }) }),
+    );
+    open('?repo=atlas&view=progress');
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: /lire le dépôt/i }));
+
+    expect(
+      await screen.findByRole('button', { name: /lire le dépôt/i }, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+});

@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, sept phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
+État : fonctionnellement terminé, huit phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -61,6 +61,18 @@ Un projet peut décrire lui-même son arbre, au lieu de le voir écrit en dur da
 - [x] Lecture d'`atlas.md` : domaines, fonctionnalités, statuts, fichiers, feuille de suivi
 - [x] Quand le dépôt fournit ce fichier, il remplace la description figée
 - [x] Atlas se décrit avec son propre `atlas.md`, et un test refuse que les deux descriptions divergent
+
+## Phase 8 — Un rendu propre et utilisable ✅
+
+Une passe à l'écran, captures à l'appui, en large comme en étroit.
+
+- [x] L'arbre prend la largeur ; le panneau de détail a une colonne fixe et reste visible en bas du graphe
+- [x] En étroit, dépôts et onglets défilent sur une ligne, et l'onglet actif est ramené dans l'écran
+- [x] Chaque bandeau « description figée » porte le bouton qui lit le dépôt, sans changer de vue
+- [x] L'encre se choisit par le contraste : fini le texte noir sur fond noir
+- [x] Une vue qui plante n'emporte plus l'application
+- [x] React livré à part, pour qu'une mise à jour d'Atlas ne le fasse pas retélécharger
+- [x] Plus aucun hex dans un composant
 
 ## Ce qui reste, et pourquoi ce n'est pas fait
 

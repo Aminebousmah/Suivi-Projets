@@ -1,4 +1,5 @@
 import { SourceBadge } from '../components/SourceBadge';
+import type { RepoReader } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { LiveContext } from '../lib/context';
@@ -7,9 +8,10 @@ interface Props {
   t: Theme;
   repo: RepoData;
   live: LiveContext | null;
+  reader: RepoReader;
 }
 
-export function ContextView({ t, repo, live }: Props) {
+export function ContextView({ t, repo, live, reader }: Props) {
   // Le dépôt a le dernier mot quand il a été lu — mais seulement sur ce qu'il
   // porte vraiment : un CLAUDE.md sans section « à ne jamais faire » ne doit pas
   // effacer les interdits déjà décrits.
@@ -32,6 +34,8 @@ export function ContextView({ t, repo, live }: Props) {
         live={!!live?.found.length}
         what="Les fichiers, règles et interdits"
         from={fromFiles}
+        hint="Aucun de ces fichiers n'existe dans le dépôt."
+        {...reader}
       />
 
       {live && (live.absent.length > 0 || live.unreadable.length > 0) && (

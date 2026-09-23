@@ -1,4 +1,5 @@
 import { SourceBadge } from '../components/SourceBadge';
+import type { RepoReader } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import { useNarrow } from '../lib/useMediaQuery';
@@ -8,9 +9,10 @@ interface Props {
   repo: RepoData;
   /** Vrai quand le dépôt fournit son atlas.md. */
   live: boolean;
+  reader: RepoReader;
 }
 
-export function SheetView({ t, repo, live }: Props) {
+export function SheetView({ t, repo, live, reader }: Props) {
   const narrow = useNarrow();
   const lastSession = repo.sessions[repo.sessions.length - 1];
 
@@ -28,7 +30,8 @@ export function SheetView({ t, repo, live }: Props) {
         live={live}
         what="Ce que le projet fait et sa feuille de suivi"
         from="atlas.md"
-        hint="Un atlas.md dans le dépôt remplacerait cette description — voir ATLAS-PROMPT.md."
+        hint="Ce dépôt ne fournit pas d'atlas.md — ATLAS-PROMPT.md contient le prompt qui le produit."
+        {...reader}
       />
 
       <div

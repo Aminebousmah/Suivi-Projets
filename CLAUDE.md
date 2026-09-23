@@ -4,17 +4,21 @@ Application de visualisation de projets GitHub : pour chaque dépôt décrit, el
 
 Le projet est né d'une maquette Claude Design, conservée intacte sous `design/`. C'est la référence visuelle : quand le rendu diverge, c'est le code qui a tort.
 
+Un seul écart est assumé : dans la vue Fonctionnalités, la maquette partageait l'écran en deux moitiés égales, et le graphe débordait de la sienne dès le zoom par défaut. Le panneau de détail y a donc une largeur fixe et reste collé en haut de l'écran ; l'arbre prend le reste. Ne pas revenir aux deux moitiés.
+
 ## Architecture
 
 - `src/App.tsx` — coque : barre de dépôts, en-tête, onglets. Ne calcule rien.
 - `src/data/` — le modèle et son contenu : types, thèmes, description des dépôts, libellés.
 - `src/lib/` — toute la logique pure, avec ses tests : graphe, état d'URL, client GitHub, croisement de chemins, lecture des fichiers de contexte.
 - `src/views/` — une vue par onglet, six au total ; `src/views/arch/` porte les morceaux de l'arbre.
+- `src/components/` — ce que les vues partagent : primitives, bandeau de provenance, barrière d'erreur.
 - `design/` — la maquette d'origine. Référence, pas du code applicatif.
 
 ## Conventions de code
 
-- Toute couleur passe par le thème du dépôt affiché : aucun hex dans un composant.
+- Toute couleur passe par le thème du dépôt affiché : aucun hex dans un composant. La barre d'application, commune à tous les dépôts, a ses couleurs dans `CHROME`.
+- Une encre posée sur un ton du thème se choisit par le contraste (`readableOn`), jamais au cas par cas.
 - La logique pure va dans `src/lib` et arrive avec ses tests ; les composants ne calculent pas.
 - L'état de navigation vit dans l'URL, pas dans un state React parallèle.
 - Une affirmation sur un dépôt doit être vérifiable : donnée citée, ou lecture GitHub.

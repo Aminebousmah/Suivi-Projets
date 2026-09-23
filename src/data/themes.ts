@@ -4,6 +4,18 @@ import type { Theme } from './types';
    Sole-Citron   → src/styles/tokens.css
    Eleven-Fields → assets/style.css */
 
+/**
+ * La barre d'application — le bandeau « Atlas » et les onglets de dépôt — ne
+ * change pas d'un dépôt à l'autre : c'est le cadre, pas le contenu. Ses couleurs
+ * viennent de la maquette et vivent ici plutôt que dans un composant.
+ */
+export const CHROME = {
+  bar: '#101014',
+  ink: '#FAFAF8',
+  inkSoft: 'rgba(250,250,248,0.6)',
+  swatchTray: '#7A7A82',
+};
+
 export const THEMES: Record<string, Theme> = {
   sole: {
     page: '#F5F5F2', surface: '#FFFFFF', surfaceAlt: '#EFEDE5',

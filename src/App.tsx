@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
-import { THEMES } from './data/themes';
+import { CHROME, THEMES } from './data/themes';
 import { useAtlasState } from './lib/useAtlasState';
+import { useCenteredActive, useNarrow } from './lib/useMediaQuery';
 import { readConnected, readToken, useGitHub, writeConnected } from './lib/useGitHub';
 import { ArchView } from './views/ArchView';
 import { ContextView } from './views/ContextView';
@@ -15,6 +17,9 @@ const MONO = "'JetBrains Mono', monospace";
 
 export default function App() {
   const [state, navigate] = useAtlasState();
+  const narrow = useNarrow();
+  const repoStrip = useRef<HTMLDivElement>(null);
+  const viewStrip = useRef<HTMLElement>(null);
   const [token, setToken] = useState(readToken);
   const [connected, setConnected] = useState(readConnected);
   const { repo: repoKey, view, viz, domain: domainKey, feat: featName, zoom } = state;
@@ -39,10 +44,20 @@ export default function App() {
     if (connected) reload();
   };
 
+  // Lire le dépôt depuis n'importe quelle vue, sans passer par l'onglet 06 ;
+  // après un échec, le même bouton relance.
+  const reader = {
+    onConnect: !connected || source.status === 'error' ? () => connect(token) : undefined,
+    loading: source.status === 'loading',
+  };
+
   const disconnect = () => {
     setConnected(false);
     writeConnected(false);
   };
+
+  useCenteredActive(repoStrip, repoKey);
+  useCenteredActive(viewStrip, view);
 
   useEffect(() => {
     document.title = `Atlas — ${repo.label}`;
@@ -60,7 +75,7 @@ export default function App() {
         label: REPOS[k].label,
         dot: THEMES[k].accent,
         bg: k === repoKey ? THEMES[k].primary : 'transparent',
-        fg: k === repoKey ? THEMES[k].onPrimary : 'rgba(250,250,248,0.6)',
+        fg: k === repoKey ? THEMES[k].onPrimary : CHROME.inkSoft,
       })),
     [repoKey],
   );
@@ -76,12 +91,15 @@ export default function App() {
       }}
     >
       <div
+        ref={repoStrip}
         style={{
           display: 'flex',
           alignItems: 'stretch',
-          background: '#101014',
-          color: '#FAFAF8',
-          flexWrap: 'wrap',
+          background: CHROME.bar,
+          color: CHROME.ink,
+          flexWrap: 'nowrap',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
         }}
       >
         <span
@@ -101,16 +119,19 @@ export default function App() {
           <button
             key={r.key}
             onClick={() => navigate({ repo: r.key })}
+            aria-current={r.key === repoKey ? 'true' : undefined}
             style={{
               appearance: 'none',
               cursor: 'pointer',
               border: 'none',
-              padding: '12px 20px',
+              padding: narrow ? '12px 14px' : '12px 20px',
               background: r.bg,
               color: r.fg,
               display: 'flex',
               alignItems: 'center',
               gap: 10,
+              flex: 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             <span
@@ -125,18 +146,20 @@ export default function App() {
             <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 500 }}>{r.label}</span>
           </button>
         ))}
-        <span
-          style={{
-            marginLeft: 'auto',
-            fontFamily: MONO,
-            fontSize: 10.5,
-            padding: '14px 18px',
-            opacity: 0.5,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {t.source}
-        </span>
+        {!narrow && (
+          <span
+            style={{
+              marginLeft: 'auto',
+              fontFamily: MONO,
+              fontSize: 10.5,
+              padding: '14px 18px',
+              opacity: 0.5,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {t.source}
+          </span>
+        )}
       </div>
 
       <header
@@ -195,11 +218,19 @@ export default function App() {
           </div>
 
           <div
-            style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-end' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              alignItems: 'flex-end',
+              width: narrow ? '100%' : 'auto',
+            }}
           >
             <div
               style={{
-                display: 'flex',
+                display: narrow ? 'grid' : 'flex',
+                gridTemplateColumns: narrow ? '1fr 1fr' : undefined,
+                width: narrow ? '100%' : 'auto',
                 gap: 1,
                 flexWrap: 'wrap',
                 borderRadius: 10,
@@ -239,12 +270,12 @@ export default function App() {
             </div>
             <div
               style={{
-                display: 'flex',
+                display: narrow ? 'none' : 'flex',
                 alignItems: 'center',
                 gap: 4,
                 padding: 4,
                 borderRadius: 6,
-                background: '#7A7A82',
+                background: CHROME.swatchTray,
               }}
             >
               {t.swatches.map((w) => (
@@ -258,12 +289,26 @@ export default function App() {
           </div>
         </div>
 
-        <nav style={{ display: 'flex', gap: 4, marginTop: 24, flexWrap: 'wrap' }}>
+        <nav
+          ref={viewStrip}
+          aria-label="Vues"
+          style={{
+            display: 'flex',
+            gap: 4,
+            marginTop: narrow ? 18 : 24,
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+          }}
+        >
           {VIEWS.map((v) => (
             <button
               key={v.id}
               onClick={() => navigate({ view: v.id })}
+              aria-current={v.id === view ? 'page' : undefined}
               style={{
+                flex: 'none',
+                whiteSpace: 'nowrap',
                 appearance: 'none',
                 cursor: 'pointer',
                 border: 'none',
@@ -300,36 +345,43 @@ export default function App() {
         {BLURBS[view]}
       </div>
 
-      {view === 'sheet' && <SheetView t={t} repo={described} live={!!live?.atlas} />}
-      {view === 'arch' && (
-        <ArchView
-          t={t}
-          repo={described}
-          viz={viz}
-          src={state.src}
-          treeDomains={source.status === 'ready' ? source.data.treeDomains : null}
-          check={source.status === 'ready' ? source.data.check : null}
-          fromAtlasFile={!!live?.atlas}
-          domainKey={domainKey}
-          featName={featName}
-          zoom={zoom}
-          navigate={navigate}
-        />
-      )}
-      {view === 'sessions' && <SessionsView t={t} repo={repo} repoKey={repoKey} />}
-      {view === 'context' && <ContextView t={t} repo={repo} live={live} />}
-      {view === 'progress' && <ProgressView t={t} repo={repo} live={live} />}
-      {view === 'github' && (
-        <GitHubView
-          t={t}
-          repo={repo}
-          token={token}
-          source={source}
-          connected={connected}
-          onConnect={connect}
-          onDisconnect={disconnect}
-        />
-      )}
+      <ErrorBoundary
+        key={repoKey + ':' + view}
+        t={t}
+        onRecover={() => navigate({ view: 'sheet', domain: null, feat: null })}
+      >
+        {view === 'sheet' && <SheetView t={t} repo={described} live={!!live?.atlas} reader={reader} />}
+        {view === 'arch' && (
+          <ArchView
+            t={t}
+            repo={described}
+            viz={viz}
+            src={state.src}
+            treeDomains={source.status === 'ready' ? source.data.treeDomains : null}
+            check={source.status === 'ready' ? source.data.check : null}
+            fromAtlasFile={!!live?.atlas}
+            reader={reader}
+            domainKey={domainKey}
+            featName={featName}
+            zoom={zoom}
+            navigate={navigate}
+          />
+        )}
+        {view === 'sessions' && <SessionsView t={t} repo={repo} />}
+        {view === 'context' && <ContextView t={t} repo={repo} live={live} reader={reader} />}
+        {view === 'progress' && <ProgressView t={t} repo={repo} live={live} reader={reader} />}
+        {view === 'github' && (
+          <GitHubView
+            t={t}
+            repo={repo}
+            token={token}
+            source={source}
+            connected={connected}
+            onConnect={connect}
+            onDisconnect={disconnect}
+          />
+        )}
+      </ErrorBoundary>
     </div>
   );
 }

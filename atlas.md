@@ -30,6 +30,13 @@ Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépô
 - `src/lib/useAtlasState.ts — popstate`
 - `src/App.tsx`
 
+### Barrière d'erreur — en ligne
+Une vue qui plante laisse l'en-tête, les onglets et les autres vues utilisables.
+- `src/components/ErrorBoundary.tsx`
+- `src/components/__tests__/ErrorBoundary.test.tsx`
+> Changer d'onglet suffit à sortir de l'erreur : la barrière est remontée à chaque vue
+> Un bouton ramène à la fiche projet
+
 ### Point d'entrée de l'application — en ligne
 La page servie, le montage de React, le fond et le liseré de focus.
 - `index.html`
@@ -52,6 +59,8 @@ L'arbre se parcourt aux flèches, Échap dégage d'un cran, Origine et Fin saute
 Sous 720 px, le panneau passe sous le contenu et les colonnes secondaires s'effacent.
 - `src/lib/useMediaQuery.ts`
 > Les styles en ligne hérités de la maquette ne peuvent pas être adaptés par une règle CSS
+> Sous 1100 px, le panneau de l'arbre passe dessous ; sous 720 px, les colonnes secondaires s'effacent
+> En étroit, dépôts et onglets défilent sur une ligne au lieu de s'empiler
 > Vérifié à 390 px comme à 1440 px : aucun débordement horizontal
 
 ## Domaine · Les six vues
@@ -80,6 +89,7 @@ Ce que porte la sélection : rôle, statut, chemins cités, ce qu'ils donnent da
 - `src/views/arch/DetailPanel.tsx`
 > Il parle de fonctionnalité ou de fichier selon l'arbre affiché
 > Un chemin cité mais absent du dépôt y est encadré comme un avertissement
+> Colonne de largeur fixe et collante : le détail reste visible en bas du graphe
 
 ### Sessions — en ligne
 Vos fichiers de session déposés dans la page, lus et appariés en demandes et réponses.
@@ -115,6 +125,7 @@ Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figé
 - `src/components/SourceBadge.tsx`
 > Une vue lue dans le dépôt cite le fichier d'où elle vient
 > Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place
+> Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit
 
 ## Domaine · Modèle et données
 Ce qui décrit un dépôt, et d'où viennent les couleurs.
@@ -128,6 +139,13 @@ Domaines, fonctionnalités, sessions, phases et feuille de suivi de chaque dép�
 - `src/data/repos.ts`
 > Écrit à la main, repris de la maquette
 > C'est ce fichier que la vue Dépôt réel confronte à GitHub
+
+### Encre lisible sur chaque ton — en ligne
+Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fond donné.
+- `src/lib/color.ts`
+- `src/lib/__tests__/color.test.ts`
+> Choisie à la main, dépôt par dépôt, l'encre avait produit un texte noir sur fond noir
+> Un test vérifie, pour chaque ton de chaque thème, un contraste d'au moins 3:1
 
 ### Thèmes par dépôt — en ligne
 Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.
@@ -344,16 +362,17 @@ Chaque vue, la navigation, l'arbre au clavier et les bascules d'affichage, épro
 ### Publication du build — en ligne
 GitHub Pages à chaque poussée sur main, à condition que lint, tests et build passent.
 - `.github/workflows/pages.yml`
-- `vite.config.ts — base`
+- `vite.config.ts — base, manualChunks`
 > Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE
 > Une étape reste manuelle : Settings, Pages, source « GitHub Actions »
 > Rien n'est publié sur une base rouge
+> React est livré à part : une mise à jour d'Atlas ne le fait pas retélécharger
 ## Suivi
 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 247 | — | 100% |
+| Tests au vert | 261 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
 | Dépôts décrits | 3 | 3 | 100% |
 | Fichiers du dépôt décrits | tous | tous | 100% |
@@ -370,6 +389,7 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 - Croise les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, ce que personne ne décrit.
 - Garde les réponses GitHub en cache et les revalide par ETag, pour épargner le quota.
 - Lit les fichiers de session Claude Code déposés dans la page, sans qu'ils en sortent.
+- Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.
 
 ## À faire
 

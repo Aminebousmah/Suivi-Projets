@@ -3,16 +3,16 @@ import { SourceBadge } from '../components/SourceBadge';
 import { Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { ParsedSession } from '../lib/sessions';
+import { readableOn } from '../lib/color';
 import { clamp, parseSessionFiles, shortDate } from '../lib/sessions';
 import { useNarrow } from '../lib/useMediaQuery';
 
 interface Props {
   t: Theme;
   repo: RepoData;
-  repoKey: string;
 }
 
-export function SessionsView({ t, repo, repoKey }: Props) {
+export function SessionsView({ t, repo }: Props) {
   const narrow = useNarrow();
   const [imported, setImported] = useState<ParsedSession[]>([]);
   const [unreadable, setUnreadable] = useState<string[]>([]);
@@ -144,7 +144,9 @@ export function SessionsView({ t, repo, repoKey }: Props) {
               <div
                 style={{
                   background: tn.dot,
-                  color: repoKey === 'sole' ? tn.ink : '#0E1117',
+                  // Le ton varie d'un dépôt à l'autre, du bleu au presque noir :
+                  // l'encre se choisit par le contraste, jamais au cas par cas.
+                  color: readableOn(tn.dot, [tn.ink, t.page, t.ink, t.onAccent]),
                   padding: '15px 14px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -364,7 +366,11 @@ function ImportedSessions({ t, sessions, unreadable, onReset }: ImportedProps) {
             <div
               style={{
                 background: t.tones[(['a', 'b', 'c', 'd'] as const)[i % 4]].dot,
-                color: t.page,
+                color: readableOn(t.tones[(['a', 'b', 'c', 'd'] as const)[i % 4]].dot, [
+                  t.page,
+                  t.ink,
+                  t.onAccent,
+                ]),
                 padding: '15px 14px',
                 display: 'flex',
                 flexDirection: 'column',

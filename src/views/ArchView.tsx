@@ -4,10 +4,11 @@ import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { resolvedFor } from '../lib/coverage';
 import { SourceBadge } from '../components/SourceBadge';
+import type { RepoReader } from '../components/SourceBadge';
 import type { RepoCheck } from '../lib/verify';
 import { buildMap, buildOverview } from '../lib/graph';
 import { HANDLED, nextSelection, nodeId } from '../lib/keyboard';
-import { useNarrow } from '../lib/useMediaQuery';
+import { useNarrow, useStacked } from '../lib/useMediaQuery';
 import type { PanelModel } from './arch/DetailPanel';
 import { DetailPanel } from './arch/DetailPanel';
 import { DomainCards } from './arch/DomainCards';
@@ -27,6 +28,7 @@ interface Props {
   check: RepoCheck | null;
   /** Vrai quand l'arbre décrit vient de l'atlas.md du dépôt. */
   fromAtlasFile: boolean;
+  reader: RepoReader;
   domainKey: string | null;
   featName: string | null;
   zoom: number;
@@ -41,12 +43,14 @@ export function ArchView({
   treeDomains,
   check,
   fromAtlasFile,
+  reader,
   domainKey,
   featName,
   zoom,
   navigate,
 }: Props) {
   const narrow = useNarrow();
+  const stacked = useStacked();
   const fromRepo = src === 'repo';
   const domains = fromRepo ? (treeDomains ?? []) : repo.domains;
   const hasStatuses = domains.some((d) => d.features.some((f) => f.status));
@@ -177,7 +181,10 @@ export function ArchView({
     <section
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 620px), 1fr))',
+        // La maquette partageait l'écran en deux moitiés égales : le graphe, cœur
+        // de la vue, débordait alors de sa colonne dès le zoom par défaut. Le
+        // panneau garde une largeur de lecture, l'arbre prend le reste.
+        gridTemplateColumns: stacked ? '1fr' : 'minmax(0, 1fr) clamp(300px, 27vw, 400px)',
         alignItems: 'start',
       }}
     >
@@ -275,7 +282,8 @@ export function ArchView({
             live={fromAtlasFile}
             what="Les domaines et leurs statuts"
             from="atlas.md"
-            hint="Un atlas.md dans le dépôt ferait décrire cet arbre par le projet lui-même — voir ATLAS-PROMPT.md."
+            hint="Ce dépôt ne fournit pas d'atlas.md — ATLAS-PROMPT.md contient le prompt qui le produit."
+            {...reader}
           />
         )}
 
@@ -555,7 +563,7 @@ export function ArchView({
       <DetailPanel
         t={t}
         panel={panel}
-        narrow={narrow}
+        narrow={stacked}
         fromRepo={fromRepo}
         goldenRule={repo.goldenRule}
       />
