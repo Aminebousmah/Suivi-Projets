@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #101014; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  button { font: inherit; }
+</style>
+</helmet>
+<div style="min-height: 100vh; background: {{ t.page }}; color: {{ t.ink }}; font-family: Manrope, Helvetica, sans-serif; text-wrap: pretty;">
+
+  <div style="display: flex; align-items: stretch; background: #101014; color: #FAFAF8; flex-wrap: wrap;">
+    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 14px 18px; opacity: 0.55; white-space: nowrap;">Atlas</span>
+    <sc-for list="{{ repoTabs }}" as="r" hint-placeholder-count="2">
+      <button onClick="{{ r.go }}" style="appearance: none; cursor: pointer; border: none; padding: 12px 20px; background: {{ r.bg }}; color: {{ r.fg }}; display: flex; align-items: center; gap: 10px;">
+        <span style="width: 9px; height: 9px; border-radius: 2px; background: {{ r.dot }}; flex: none;"></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;">{{ r.label }}</span>
+      </button>
+    </sc-for>
+    <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 14px 18px; opacity: 0.5; white-space: nowrap;">{{ themeSource }}</span>
+  </div>
+
+  <header style="background: {{ t.primary }}; color: {{ t.onPrimary }}; padding: 26px clamp(18px, 3.5vw, 38px) 0; border-bottom: 1px solid {{ t.hairline }};">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 26px; flex-wrap: wrap;">
+      <div style="display: flex; flex-direction: column; gap: 9px; min-width: 0;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ t.accent }};">{{ repo.slug }}</span>
+        <h1 style="margin: 0; font-family: {{ t.display }}; font-weight: {{ t.displayWeight }}; font-size: clamp(26px, 3.3vw, 40px); line-height: 1.05; letter-spacing: -0.02em;">{{ repo.titleA }}<em style="color: {{ t.accent }}; font-style: {{ t.emStyle }};">{{ repo.titleB }}</em></h1>
+        <p style="margin: 0; max-width: 58ch; font-size: 13.5px; line-height: 1.55; color: {{ t.onPrimarySoft }};">{{ repo.tagline }}</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; align-items: flex-end;">
+        <div style="display: flex; gap: 1px; flex-wrap: wrap; border-radius: 10px; overflow: hidden; background: {{ t.hairline }};">
+          <sc-for list="{{ repo.stats }}" as="s" hint-placeholder-count="4">
+            <div style="background: {{ t.primary }}; padding: 11px 16px; min-width: 82px; display: flex; flex-direction: column; gap: 4px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 19px; font-weight: 700; color: {{ t.accent }};">{{ s.v }}</span>
+              <span style="font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: {{ t.onPrimarySoft }};">{{ s.k }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px; padding: 4px; border-radius: 6px; background: #7A7A82;">
+          <sc-for list="{{ swatches }}" as="w" hint-placeholder-count="5">
+            <span style="width: 34px; height: 19px; border-radius: 3px; background: {{ w.hex }};" title="{{ w.title }}"></span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <nav style="display: flex; gap: 4px; margin-top: 24px; flex-wrap: wrap;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+        <button onClick="{{ n.go }}" style="appearance: none; cursor: pointer; border: none; border-radius: 8px 8px 0 0; padding: 11px 19px; background: {{ n.bg }}; color: {{ n.fg }}; display: flex; align-items: baseline; gap: 9px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; opacity: 0.6;">{{ n.num }}</span>
+          <span style="font-size: 13.5px; font-weight: 600;">{{ n.label }}</span>
+        </button>
+      </sc-for>
+    </nav>
+  </header>
+
+  <div style="background: {{ t.accent }}; color: {{ t.onAccent }}; padding: 11px clamp(18px, 3.5vw, 38px); font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.03em;">{{ viewBlurb }}</div>
+
+  <sc-if value="{{ isSheet }}" hint-placeholder-val="{{ true }}">
+    <section style="padding: 24px clamp(18px, 3.5vw, 38px) 48px; display: flex; flex-direction: column; gap: 32px;">
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 12px; align-items: start;">
+        <div style="border: 1px solid {{ t.line }}; border-top: 4px solid {{ t.accent }}; border-radius: 12px; background: {{ t.surface }}; padding: 20px 22px; display: flex; flex-direction: column; gap: 13px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Ce que le projet fait</span>
+          <sc-for list="{{ does }}" as="d" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; align-items: start;">
+              <span style="width: 7px; height: 7px; border-radius: 2px; background: {{ t.accent }}; margin-top: 7px;"></span>
+              <span style="font-size: 13px; line-height: 1.55;">{{ d }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="border: 1px solid {{ t.line }}; border-top: 4px solid {{ t.inkFaint }}; border-radius: 12px; background: {{ t.surfaceAlt }}; padding: 20px 22px; display: flex; flex-direction: column; gap: 13px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Ce qu'il doit encore faire</span>
+          <sc-for list="{{ todo }}" as="d" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; align-items: start;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; border: 1px solid {{ t.inkFaint }}; margin-top: 7px;"></span>
+              <span style="font-size: 13px; line-height: 1.55; color: {{ t.inkSoft }};">{{ d }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 13px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Dernière session</span>
+        <div style="border: 1px solid {{ t.line }}; border-left: 4px solid {{ t.accent }}; border-radius: 12px; background: {{ t.surface }}; padding: 18px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px;">
+          <span style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">vous · {{ lastSession.date }}</span>
+            <span style="font-size: 13.5px; font-weight: 600; line-height: 1.5;">{{ lastSession.prompt }}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">claude</span>
+            <span style="font-size: 12.5px; line-height: 1.55; color: {{ t.inkSoft }};">{{ lastSession.reply }}</span>
+          </span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 32px; align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: 13px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Comment le projet marche</span>
+          <div style="border: 1px solid {{ t.line }}; border-radius: 12px; overflow: hidden; background: {{ t.surface }};">
+            <sc-for list="{{ stack }}" as="s" hint-placeholder-count="18">
+              <div style="display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 14px; padding: 11px 16px; border-bottom: 1px solid {{ t.line }}; align-items: baseline;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: {{ t.inkFaint }};">{{ s.cat }}</span>
+                <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+                  <span style="font-size: 13px; font-weight: 700; line-height: 1.35;">{{ s.v }}</span>
+                  <span style="font-size: 12px; line-height: 1.5; color: {{ t.inkSoft }};">{{ s.note }}</span>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 13px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Feuille de suivi</span>
+          <div style="border: 1px solid {{ t.line }}; border-radius: 12px; overflow: hidden; background: {{ t.surface }};">
+            <div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px 104px; gap: 12px; padding: 10px 16px; border-bottom: 1px solid {{ t.line }}; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: {{ t.inkFaint }};">
+              <span>Indicateur</span>
+              <span style="text-align: right;">Actuel</span>
+              <span style="text-align: right;">Cible</span>
+              <span>Avancement</span>
+            </div>
+            <sc-for list="{{ tracking }}" as="r" hint-placeholder-count="8">
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px 104px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid {{ t.line }}; align-items: center;">
+                <span style="font-size: 12.5px; line-height: 1.4;">{{ r.k }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; text-align: right;">{{ r.v }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: {{ t.inkSoft }}; text-align: right;">{{ r.target }}</span>
+                <span style="height: 8px; border-radius: 4px; background: {{ t.surfaceAlt }}; overflow: hidden; border: 1px solid {{ t.line }};">
+                  <span style="display: block; height: 100%; width: {{ r.pct }}; background: {{ r.bar }};"></span>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isArch }}" hint-placeholder-val="{{ false }}">
+    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 620px), 1fr)); align-items: start;">
+      <div style="padding: 20px clamp(18px, 3.5vw, 38px) 44px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+
+        <div style="display: flex; align-items: center; gap: 9px; flex-wrap: wrap;">
+          <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="1">
+            <button onClick="{{ c.go }}" style="appearance: none; cursor: pointer; background: none; border: none; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: {{ c.weight }}; color: {{ c.color }};">{{ c.label }}</button>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{ t.inkFaint }};">{{ c.sep }}</span>
+          </sc-for>
+          <span style="margin-left: auto; display: flex; gap: 4px;">
+            <sc-for list="{{ vizModes }}" as="m" hint-placeholder-count="2">
+              <button onClick="{{ m.go }}" style="appearance: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 14px; border-radius: 999px; border: 1px solid {{ m.border }}; background: {{ m.bg }}; color: {{ m.fg }};">{{ m.label }}</button>
+            </sc-for>
+          </span>
+        </div>
+
+        <sc-if value="{{ isGraph }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+
+            <div style="border: 1px solid {{ t.line }}; border-radius: 12px; background: {{ t.surface }}; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">État du projet</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{ t.inkSoft }};">{{ projectCounts }}</span>
+              </div>
+              <div style="display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px;">
+                <sc-for list="{{ projectSegs }}" as="s" hint-placeholder-count="3">
+                  <span style="width: {{ s.w }}; background: {{ s.bg }};" title="{{ s.label }}"></span>
+                </sc-for>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 1px; border-top: 1px solid {{ t.line }}; padding-top: 10px;">
+                <sc-for list="{{ overview }}" as="o" hint-placeholder-count="7">
+                  <button onClick="{{ o.go }}" style="appearance: none; cursor: pointer; width: 100%; box-sizing: border-box; text-align: left; border: none; border-radius: 7px; background: {{ o.rowBg }}; padding: 7px 9px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(90px, 150px) 132px 34px; gap: 14px; align-items: center; color: {{ t.ink }};" style-hover="background: {{ t.surfaceAlt }}">
+                    <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                      <span style="width: 8px; height: 8px; border-radius: 2px; background: {{ o.dot }}; flex: none;"></span>
+                      <span style="font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ o.name }}</span>
+                    </span>
+                    <span style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px;">
+                      <sc-for list="{{ o.segs }}" as="s" hint-placeholder-count="2">
+                        <span style="width: {{ s.w }}; background: {{ s.bg }};" title="{{ s.label }}"></span>
+                      </sc-for>
+                    </span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: {{ o.stateFg }};">{{ o.state }}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{ t.inkSoft }}; text-align: right;">{{ o.total }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+              <span style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkSoft }};">état</span>
+                <sc-for list="{{ legend }}" as="g" hint-placeholder-count="4">
+                  <span style="display: flex; align-items: center; gap: 7px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ g.dot }};"></span>
+                    <span style="font-size: 11.5px; color: {{ t.inkSoft }};">{{ g.label }}</span>
+                  </span>
+                </sc-for>
+              </span>
+              <span style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ t.inkFaint }}; margin-right: 4px;">zoom</span>
+                <sc-for list="{{ zoomSteps }}" as="z" hint-placeholder-count="4">
+                  <button onClick="{{ z.go }}" style="appearance: none; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; padding: 6px 11px; border-radius: 999px; border: 1px solid {{ z.border }}; background: {{ z.bg }}; color: {{ z.fg }};">{{ z.label }}</button>
+                </sc-for>
+              </span>
+            </div>
+
+            <div style="border: 1px solid {{ t.line }}; border-radius: 14px; background: {{ t.surface }}; overflow: auto; max-height: 76vh; min-height: 520px;">
+              <div style="width: {{ scaledW }}; height: {{ scaledH }}; position: relative;">
+                <div style="position: absolute; left: 0; top: 0; transform: {{ zoomTransform }}; transform-origin: 0 0; width: {{ canvasW }}; height: {{ canvasH }};">
+                  <svg viewBox="{{ viewBox }}" style="position: absolute; left: 0; top: 0; width: {{ canvasW }}; height: {{ canvasH }};">
+                    <sc-for list="{{ mapEdges }}" as="e" hint-placeholder-count="20">
+                      <path d="{{ e.d }}" fill="none" stroke="{{ e.stroke }}" stroke-width="{{ e.w }}" stroke-linecap="round"></path>
+                    </sc-for>
+                  </svg>
+
+                  <button onClick="{{ hub.go }}" style="position: absolute; left: {{ rootLeft }}; top: {{ rootTop }}; width: {{ rootW }}; appearance: none; cursor: pointer; text-align: left; border-radius: 12px; background: {{ hub.bg }}; color: {{ hub.ink }}; border: 1px solid {{ hub.border }}; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px;">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ hub.inkSoft }};">{{ hub.kicker }}</span>
+                    <span style="font-size: 18px; font-weight: 700; line-height: 1.2;">{{ hub.name }}</span>
+                    <span style="display: flex; align-items: baseline; gap: 8px;">
+                      <span style="font-family: {{ t.display }}; font-weight: {{ t.displayWeight }}; font-size: 30px; line-height: 1;">{{ hub.count }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: {{ hub.inkSoft }};">{{ hub.unit }}</span>
+                    </span>
+                  </button>
+
+                  <sc-for list="{{ mapDomains }}" as="d" hint-placeholder-count="7">
+                    <button onClick="{{ d.go }}" style="position: absolute; left: {{ d.left }}; top: {{ d.top }}; width: {{ d.w }}; appearance: none; cursor: pointer; text-align: left; border-radius: 11px; background: {{ d.bg }}; color: {{ d.ink }}; border: 1px solid {{ d.border }}; box-shadow: {{ d.ring }}; padding: 13px 15px; display: flex; flex-direction: column; gap: 5px;">
+                      <span style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px;">
+                        <span style="font-size: 14px; font-weight: 700; line-height: 1.25;">{{ d.name }}</span>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: {{ d.inkSoft }};">{{ d.num }}</span>
+                      </span>
+                      <span style="font-size: 12px; line-height: 1.4; color: {{ d.inkSoft }};">{{ d.role }}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: {{ d.inkSoft }};">{{ d.count }}</span>
+                    </button>
+                  </sc-for>
+
+                  <sc-for list="{{ mapLeaves }}" as="l" hint-placeholder-count="44">
+                    <button onClick="{{ l.go }}" style="position: absolute; left: {{ l.left }}; top: {{ l.top }}; width: {{ l.w }}; height: {{ l.h }}; box-sizing: border-box; appearance: none; cursor: pointer; text-align: left; border-radius: 9px; background: {{ l.bg }}; color: {{ l.ink }}; border: 1px solid {{ l.border }}; padding: 0 13px; display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ l.dot }}; flex: none;"></span>
+                      <span style="font-size: 13px; font-weight: 600; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ l.name }}</span>
+                      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: {{ l.statusFg }}; white-space: nowrap;">{{ l.status }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px;">
+            <sc-for list="{{ domainCards }}" as="d" hint-placeholder-count="7">
+              <button onClick="{{ d.go }}" style="appearance: none; cursor: pointer; text-align: left; border: 1px solid {{ d.border }}; border-radius: 12px; background: {{ d.bg }}; color: {{ d.ink }}; padding: 16px 17px; display: flex; flex-direction: column; gap: 11px; min-width: 0;">
+                <span style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+                  <span style="font-size: 14.5px; font-weight: 700; line-height: 1.25;">{{ d.name }}</span>
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: {{ d.inkSoft }};">{{ d.num }}</span>
+                </span>
+                <span style="font-size: 12.5px; line-height: 1.5; color: {{ d.inkSoft }};">{{ d.role }}</span>
+                <span style="display: flex; gap: 5px; flex-wrap: wrap;">
+                  <sc-for list="{{ d.preview }}" as="p" hint-placeholder-count="4">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 4px 8px; border-radius: 5px; background: {{ d.chipBg }};">{{ p }}</span>
+                  </sc-for>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ inDomain }}" hint-placeholder-val="{{ false }}">
+          <div style="border: 1px solid {{ t.line }}; border-radius: 12px; overflow: hidden; background: {{ t.surface }};">
+            <div style="display: grid; grid-template-columns: 250px minmax(0, 1fr) 100px; gap: 16px; padding: 10px 16px; border-bottom: 1px solid {{ t.line }}; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ t.inkFaint }};">
+              <span>Fonctionnalité</span>
+              <span>Ce qu'elle fait</span>
+              <span style="text-align: right;">Statut</span>
+            </div>
+            <sc-for list="{{ features }}" as="f" hint-placeholder-count="8">
+              <button onClick="{{ f.go }}" style="appearance: none; cursor: pointer; width: 100%; box-sizing: border-box; text-align: left; background: {{ f.bg }}; border: none; border-bottom: 1px solid {{ t.line }}; padding: 12px 16px; display: grid; grid-template-columns: 250px minmax(0, 1fr) 100px; gap: 16px; align-items: baseline; color: {{ t.ink }};" style-hover="background: {{ t.surfaceAlt }}">
+                <span style="display: flex; align-items: baseline; gap: 9px; min-width: 0;">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{ f.caret }};">{{ f.mark }}</span>
+                  <span style="font-size: 13px; font-weight: 600; line-height: 1.35;">{{ f.name }}</span>
+                </span>
+                <span style="font-size: 12.5px; line-height: 1.5; color: {{ t.inkSoft }};">{{ f.what }}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 7px; border-radius: 999px; background: {{ f.pillBg }}; color: {{ f.pillFg }}; border: 1px solid {{ f.pillBorder }}; text-align: center;">{{ f.status }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <aside style="border-left: 1px solid {{ t.line }}; background: {{ t.surfaceAlt }}; padding: 22px 22px 44px; display: flex; flex-direction: column; gap: 20px; min-height: 68vh;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">{{ panel.kicker }}</span>
+          <span style="font-size: 17px; font-weight: 700; line-height: 1.3; color: {{ panel.titleColor }};">{{ panel.title }}</span>
+          <sc-if value="{{ panel.hasStatus }}" hint-placeholder-val="{{ false }}">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: {{ panel.pillBg }}; color: {{ panel.pillFg }}; border: 1px solid {{ panel.pillBorder }}; align-self: flex-start;">{{ panel.status }}</span>
+          </sc-if>
+          <span style="font-size: 13px; line-height: 1.6; color: {{ t.inkSoft }};">{{ panel.role }}</span>
+        </div>
+
+        <sc-if value="{{ panel.hasFiles }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Implémentée par</span>
+            <sc-for list="{{ panel.files }}" as="f" hint-placeholder-count="3">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; padding: 7px 10px; border-radius: 6px; background: {{ t.surface }}; border: 1px solid {{ t.line }}; word-break: break-word;">{{ f }}</span>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ panel.hasNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 9px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">{{ panel.notesLabel }}</span>
+            <sc-for list="{{ panel.notes }}" as="n" hint-placeholder-count="5">
+              <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 11px; align-items: start;">
+                <span style="width: 6px; height: 6px; border-radius: 2px; background: {{ t.accent }}; margin-top: 7px;"></span>
+                <span style="font-size: 12.5px; line-height: 1.5;">{{ n }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="margin-top: auto; border-top: 1px solid {{ t.line }}; padding-top: 16px; display: flex; flex-direction: column; gap: 7px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Règle d'or du repo</span>
+          <span style="font-size: 12.5px; line-height: 1.55; color: {{ t.inkSoft }};">{{ repo.goldenRule }}</span>
+        </div>
+      </aside>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isSessions }}" hint-placeholder-val="{{ false }}">
+    <section style="padding: 24px clamp(18px, 3.5vw, 38px) 48px; display: flex; flex-direction: column; gap: 18px;">
+      <div style="border: 1px dashed {{ t.accent }}; border-radius: 10px; padding: 12px 15px; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ t.accent }};">source</span>
+        <span style="font-size: 12.5px; line-height: 1.5; color: {{ t.inkSoft }};">L'historique des sessions vit dans <span style="font-family: 'JetBrains Mono', monospace;">~/.claude/projects/</span> en local, hors dépôt. Les entrées ci-dessous sont reconstituées depuis plan.md, CLAUDE.md et les mémoires citées — à brancher sur les vrais fichiers de session.</span>
+      </div>
+
+      <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="6">
+        <div style="border: 1px solid {{ t.line }}; border-radius: 12px; background: {{ t.surface }}; overflow: hidden;">
+          <div style="display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 0; align-items: stretch;">
+            <div style="background: {{ s.railBg }}; color: {{ s.railInk }}; padding: 15px 14px; display: flex; flex-direction: column; gap: 6px; justify-content: center;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8;">{{ s.num }}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;">{{ s.date }}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.8;">{{ s.turns }}</span>
+            </div>
+            <div style="padding: 15px 18px; display: flex; flex-direction: column; gap: 13px; min-width: 0;">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">vous</span>
+                <span style="font-size: 13.5px; line-height: 1.5; font-weight: 600; border-left: 3px solid {{ t.accent }}; padding-left: 12px;">{{ s.prompt }}</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">claude</span>
+                <span style="font-size: 12.5px; line-height: 1.55; color: {{ t.inkSoft }};">{{ s.reply }}</span>
+              </div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; background: {{ s.pillBg }}; color: {{ s.pillFg }}; border: 1px solid {{ s.pillBorder }};">{{ s.outcome }}</span>
+                <sc-for list="{{ s.touched }}" as="f" hint-placeholder-count="3">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 4px 8px; border-radius: 5px; background: {{ t.surfaceAlt }}; color: {{ t.inkSoft }}; border: 1px solid {{ t.line }};">{{ f }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="border: 1px solid {{ t.warnBorder }}; border-radius: 12px; background: {{ t.warnBg }}; padding: 18px 19px; display: flex; flex-direction: column; gap: 11px; margin-top: 8px;">
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.warnFg }};">Mémoires écrites depuis ces sessions</span>
+        <sc-for list="{{ memories }}" as="m" hint-placeholder-count="2">
+          <div style="display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 14px; align-items: baseline;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; font-weight: 700; word-break: break-word;">{{ m.file }}</span>
+            <span style="font-size: 12.5px; line-height: 1.5; color: {{ t.ink }};">{{ m.rule }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isContext }}" hint-placeholder-val="{{ false }}">
+    <section style="padding: 24px clamp(18px, 3.5vw, 38px) 48px; display: flex; flex-direction: column; gap: 30px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(262px, 1fr)); gap: 10px;">
+        <sc-for list="{{ ctxFiles }}" as="f" hint-placeholder-count="3">
+          <div style="border: 1px solid {{ f.border }}; border-radius: 12px; background: {{ f.bg }}; color: {{ f.ink }}; padding: 17px 18px; display: flex; flex-direction: column; gap: 11px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700;">{{ f.name }}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{ f.inkSoft }};">{{ f.size }}</span>
+            </div>
+            <span style="font-size: 12.5px; line-height: 1.5; color: {{ f.inkSoft }};">{{ f.role }}</span>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+              <sc-for list="{{ f.chips }}" as="c" hint-placeholder-count="4">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 4px 7px; border-radius: 5px; background: {{ f.chipBg }}; color: {{ f.ink }};">{{ c }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(292px, 1fr)); gap: 30px; align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: 13px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Règles actives</span>
+          <sc-for list="{{ ctxRules }}" as="r" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr); gap: 12px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid {{ t.line }};">
+              <span style="width: 7px; height: 7px; border-radius: 2px; background: {{ t.accent }}; margin-top: 6px;"></span>
+              <span style="font-size: 13px; line-height: 1.5;">{{ r }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 22px;">
+          <div style="border: 1px solid {{ t.warnBorder }}; border-radius: 12px; background: {{ t.warnBg }}; padding: 18px 19px; display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.warnFg }};">À ne jamais faire</span>
+            <sc-for list="{{ ctxNever }}" as="n" hint-placeholder-count="5">
+              <span style="font-size: 12.5px; line-height: 1.5; color: {{ t.ink }};">{{ n }}</span>
+            </sc-for>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ t.inkFaint }};">Décisions encore ouvertes</span>
+            <sc-for list="{{ ctxOpen }}" as="o" hint-placeholder-count="4">
+              <div style="display: grid; grid-template-columns: 9px minmax(0, 1fr); gap: 12px; align-items: start;">
+                <span style="width: 7px; height: 7px; border-radius: 50%; border: 1px solid {{ t.accent }}; margin-top: 6px;"></span>
+                <span style="font-size: 12.5px; line-height: 1.5; color: {{ t.inkSoft }};">{{ o }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ isProgress }}" hint-placeholder-val="{{ false }}">
+    <section style="padding: 24px clamp(18px, 3.5vw, 38px) 48px; display: flex; flex-direction: column; gap: 12px;">
+      <sc-for list="{{ phases }}" as="p" hint-placeholder-count="5">
+        <div style="border: 1px solid {{ t.line }}; border-left: 4px solid {{ p.bar }}; border-radius: 12px; background: {{ t.surface }}; padding: 17px 20px; display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 20px; align-items: start;">
+          <span style="display: flex; flex-direction: column; gap: 6px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; background: {{ p.pillBg }}; color: {{ p.pillFg }}; border: 1px solid {{ p.pillBorder }}; text-align: center;">{{ p.status }}</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{ t.inkFaint }}; text-align: center;">{{ p.num }}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 7px; min-width: 0;">
+            <span style="font-size: 15px; font-weight: 700; line-height: 1.3;">{{ p.title }}</span>
+            <span style="font-size: 13px; line-height: 1.55; color: {{ t.inkSoft }};">{{ p.detail }}</span>
+          </span>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;repo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sole&quot;,&quot;eleven&quot;],&quot;default&quot;:&quot;sole&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Dépôt&quot;},&quot;defaultView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sheet&quot;,&quot;arch&quot;,&quot;sessions&quot;,&quot;context&quot;,&quot;progress&quot;],&quot;default&quot;:&quot;sheet&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Vue&quot;},&quot;defaultViz&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;graph&quot;,&quot;list&quot;],&quot;default&quot;:&quot;graph&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Vue&quot;}}">
+/* Palettes lues dans le code de chaque dépôt :
+   Sole-Citron   → src/styles/tokens.css
+   Eleven-Fields → assets/style.css                          */
+
+const THEMES = {
+  sole: {
+    page: '#F5F5F2', surface: '#FFFFFF', surfaceAlt: '#EFEDE5',
+    ink: '#0A1A3F', inkSoft: 'rgba(10,26,63,0.7)', inkFaint: 'rgba(10,26,63,0.45)',
+    line: 'rgba(10,26,63,0.13)',
+    primary: '#0E3FB5', onPrimary: '#F5F5F2', onPrimarySoft: 'rgba(245,245,242,0.84)',
+    hairline: 'rgba(245,245,242,0.24)',
+    accent: '#F2D205', onAccent: '#0A1A3F',
+    display: "'DM Serif Display', Georgia, serif", displayWeight: '400', emStyle: 'italic',
+    warnBg: '#EFEDE5', warnBorder: '#0A1A3F', warnFg: '#0A1A3F',
+    statusFg: { live: '#0E3FB5', wip: '#7A6800', frozen: 'rgba(10,26,63,0.78)', idea: 'rgba(10,26,63,0.62)' },
+    pills: {
+      live:   { bg: '#0E3FB5', fg: '#F5F5F2', border: '#0E3FB5' },
+      wip:    { bg: '#F2D205', fg: '#0A1A3F', border: '#F2D205' },
+      frozen: { bg: 'transparent', fg: 'rgba(10,26,63,0.6)', border: 'rgba(10,26,63,0.3)' },
+      idea:   { bg: 'transparent', fg: 'rgba(10,26,63,0.5)', border: 'rgba(10,26,63,0.2)' }
+    },
+    tones: {
+      a: { bg: '#0E3FB5', ink: '#F5F5F2', inkSoft: 'rgba(245,245,242,0.8)', border: '#0E3FB5', dot: '#0E3FB5', chipBg: 'rgba(245,245,242,0.18)' },
+      b: { bg: '#F2D205', ink: '#0A1A3F', inkSoft: 'rgba(10,26,63,0.74)', border: '#F2D205', dot: '#F2D205', chipBg: 'rgba(10,26,63,0.12)' },
+      c: { bg: '#0A1A3F', ink: '#F5F5F2', inkSoft: 'rgba(245,245,242,0.78)', border: '#0A1A3F', dot: '#0A1A3F', chipBg: 'rgba(245,245,242,0.18)' },
+      d: { bg: '#EFEDE5', ink: '#0A1A3F', inkSoft: 'rgba(10,26,63,0.66)', border: 'rgba(10,26,63,0.18)', dot: 'rgba(10,26,63,0.45)', chipBg: 'rgba(10,26,63,0.08)' }
+    },
+    swatches: [
+      { hex: '#0E3FB5', title: '--cobalt #0E3FB5' },
+      { hex: '#F2D205', title: '--citron #F2D205' },
+      { hex: '#0A1A3F', title: '--navy #0A1A3F' },
+      { hex: '#EFEDE5', title: '--offwhite-warm #EFEDE5' },
+      { hex: '#F5F5F2', title: '--offwhite #F5F5F2' }
+    ],
+    source: 'palette + typo lues dans src/styles/tokens.css'
+  },
+  eleven: {
+    page: '#0E1117', surface: '#16213E', surfaceAlt: '#1A1A2E',
+    ink: '#FFFFFF', inkSoft: '#8899AA', inkFaint: 'rgba(136,153,170,0.72)',
+    line: '#2D2D4E',
+    primary: '#16213E', onPrimary: '#FFFFFF', onPrimarySoft: '#8899AA',
+    hairline: '#2D2D4E',
+    accent: '#00FF99', onAccent: '#0E1117',
+    display: "Manrope, Helvetica, sans-serif", displayWeight: '800', emStyle: 'normal',
+    warnBg: 'rgba(255,70,85,0.12)', warnBorder: '#FF4655', warnFg: '#FF4655',
+    statusFg: { live: '#00FF99', wip: '#FFD700', frozen: '#8899AA', idea: '#8899AA' },
+    pills: {
+      live:   { bg: '#00FF99', fg: '#0E1117', border: '#00FF99' },
+      wip:    { bg: '#FFD700', fg: '#0E1117', border: '#FFD700' },
+      frozen: { bg: 'transparent', fg: '#8899AA', border: '#2D2D4E' },
+      idea:   { bg: 'transparent', fg: '#8899AA', border: '#2D2D4E' }
+    },
+    tones: {
+      a: { bg: '#16213E', ink: '#FFFFFF', inkSoft: '#8899AA', border: '#00FF99', dot: '#00FF99', chipBg: '#2D2D4E' },
+      b: { bg: '#16213E', ink: '#FFFFFF', inkSoft: '#8899AA', border: '#00B4D8', dot: '#00B4D8', chipBg: '#2D2D4E' },
+      c: { bg: '#16213E', ink: '#FFFFFF', inkSoft: '#8899AA', border: '#FFD700', dot: '#FFD700', chipBg: '#2D2D4E' },
+      d: { bg: '#1A1A2E', ink: '#FFFFFF', inkSoft: '#8899AA', border: '#2D2D4E', dot: '#8899AA', chipBg: '#2D2D4E' }
+    },
+    swatches: [
+      { hex: '#0E1117', title: '--bg #0e1117' },
+      { hex: '#16213E', title: '--card #16213e' },
+      { hex: '#00FF99', title: '--green #00ff99' },
+      { hex: '#00B4D8', title: '--blue #00b4d8' },
+      { hex: '#FFD700', title: '--gold #ffd700' },
+      { hex: '#FF4655', title: '--red #ff4655' }
+    ],
+    source: 'palette lue dans assets/style.css'
+  }
+};
+
+const LABELS = { live: 'en ligne', wip: 'en cours', frozen: 'gelée', idea: 'idée' };
+
+const REPOS = {
+  sole: {
+    label: 'Sole-Citron',
+    slug: 'Aminebousmah/Sole-Citron · main · 593a784',
+    titleA: 'Encyclopédie du ', titleB: 'citron',
+    tagline: "Site éditorial Astro 5 en production. 131 pages générées, aile marchande construite mais gelée par un feature flag.",
+    stats: [ { v: '131', k: 'pages' }, { v: '7', k: 'domaines' }, { v: '44', k: 'fonctions' }, { v: '9', k: 'services' } ],
+    does: [
+      "Publie une encyclopédie du citron en dix portes thématiques : cuisine, santé, beauté, maison, jardinage, variétés, culture, industrie, boutique, journal.",
+      "Sert 131 pages statiques générées au build depuis 149 fichiers Markdown validés par Zod.",
+      "Met en avant 21 producteurs européens et 4 terroirs, rattachés aux 32 variétés qu'ils cultivent.",
+      "Se positionne en SEO sur l'écosystème citron : JSON-LD par type de page, sitemap, OG surchargeable, mots-clés étendus.",
+      "Collecte des inscriptions newsletter et des messages de contact sans backend propre."
+    ],
+    todo: [
+      "Activer l'aile marchande : compte Snipcart, clé dans Vercel, flag commerce à true.",
+      "Compléter les mentions légales avec SIREN et TVA intracommunautaire.",
+      "Créer les pages manquantes : /drop, /drop/archive, /coffrets, /carte-cadeau.",
+      "Vérifier la gestion atomique du stock côté webhook Snipcart — les drops sont sur-vendables.",
+      "Trancher le nom de marque définitif et les polices commerciales.",
+      "Ouvrir les comptes réseaux sociaux puis passer socialSoon à false.",
+      "Finir la validation AdSense pour activer la régie."
+    ],
+    stack: [
+      { cat: 'Langage', v: 'TypeScript strict', note: "Alias ~/* vers src/*, archive/ exclu du tsconfig." },
+      { cat: 'Framework', v: 'Astro 5 — mode static', note: "131 pages générées au build. Composants .astro par défaut." },
+      { cat: 'Frontend', v: 'Astro + JS minimal', note: "client:load uniquement en cas d'interactivité réelle. Recherche Cmd+K et bandeau cookies." },
+      { cat: 'Backend', v: 'Aucun — tout est statique', note: "Une seule route API, search.json.ts, générée au build." },
+      { cat: 'UI', v: '24 composants maison', note: "4 familles : sections, ui, layout, decor. Pas de librairie de composants." },
+      { cat: 'CSS', v: 'CSS natif + variables', note: "Pas de Tailwind. tokens.css est la seule source visuelle." },
+      { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Cibles commerciales : Oruguitas et Adrianna, non tranchées." },
+      { cat: 'Base de données', v: 'Aucune — Content Collections', note: "149 fichiers Markdown, 7 schémas Zod, références croisées." },
+      { cat: 'Images', v: 'astro:assets + sharp', note: "188 images en import ESM, converties en WebP. Mapping slug vers fichier dans src/config." },
+      { cat: 'Déploiement', v: 'Vercel — static', note: "Rebuild automatique à chaque push sur main. Domaine custom, HTTPS, redirection www." },
+      { cat: 'Versionning', v: 'GitHub — main', note: "Claude Code n'a pas le droit de commit, push ou ouvrir une PR seul." },
+      { cat: 'Paiement', v: 'Snipcart — gelé', note: "Pré-câblé, bloc commenté. Attend PUBLIC_SNIPCART_KEY." },
+      { cat: 'Newsletter', v: 'Brevo', note: "PUBLIC_BREVO_ENDPOINT. Formulaire actif." },
+      { cat: 'Formulaires', v: 'Formspree', note: "PUBLIC_FORMSPREE_ENDPOINT pour le contact." },
+      { cat: 'Analytique', v: 'Google Analytics 4', note: "PUBLIC_GA4_ID, chargé seulement après consentement." },
+      { cat: 'Régie pub', v: 'Google AdSense — en examen', note: "ads.enabled à false. ads.txt déposé." },
+      { cat: 'Email', v: 'ciao@solecitron.com', note: "SPF, DKIM et DMARC configurés. 10/10 mail-tester." },
+      { cat: 'SEO', v: '@astrojs/sitemap + JSON-LD maison', note: "Search Console et Bing Webmaster connectés, sitemap soumis." }
+    ],
+    tracking: [
+      { k: "Pages générées", v: "131", target: "—", pct: '100%', tone: 'live' },
+      { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
+      { k: "Portes construites", v: "10 / 10", target: "10", pct: '100%', tone: 'live' },
+      { k: "Articles publiés", v: "~32 / 53", target: "53", pct: '60%', tone: 'wip' },
+      { k: "Phases terminées", v: "3 / 5", target: "5", pct: '60%', tone: 'wip' },
+      { k: "Aile marchande", v: "gelée", target: "activée", pct: '0%', tone: 'frozen' },
+      { k: "Régie publicitaire", v: "en examen", target: "active", pct: '50%', tone: 'wip' },
+      { k: "Réseaux sociaux", v: "aucun compte", target: "ouverts", pct: '0%', tone: 'idea' }
+    ],
+    goldenRule: "Aucun composant ne contient de hex, de nom de marque ou de prix codé en dur. Tout passe par src/config/*.",
+    hubName: 'Sole Citron', hubCount: '40', hubUnit: 'fonctionnalités',
+    domains: [
+      { key: 'nav', num: '01', name: 'Navigation & parcours', tone: 'a',
+        role: "L'ossature de circulation : menu, portes, pied de page, recherche.",
+        detail: "Tout ce qui permet de se déplacer. Les items marqués commerce disparaissent quand le flag est à false.",
+        features: [
+          { name: "Les 10 portes thématiques", status: 'live', what: "Grille d'entrée vers les 10 univers du citron, de 01 Cuisine à 10 Journal.",
+            files: ['src/config/nav.ts — doors[]', 'components/sections/TenDoors.astro'],
+            notes: ["Les 10 portes sont construites", "La porte 09 Boutique passe en « Bientôt » si commerce est off", "Chaque porte porte un n°, un titre, un sous-titre, une href"] },
+          { name: "Menu principal filtré", status: 'live', what: "Sept entrées, dont Boutique qui n'apparaît que si le commerce est activé.",
+            files: ['src/config/nav.ts — mainNav', 'components/layout/Header.astro'],
+            notes: ["visible() retire tout item marqué commerce: true", "Cuisine · Bien-être · Maison & Jardin · Variétés · Producteurs · Journal"] },
+          { name: "Pied de page 4 colonnes", status: 'live', what: "Le savoir citron, Origines, Lire & Boire, Maison — filtré par les mêmes flags.",
+            files: ['src/config/nav.ts — footerNav', 'components/layout/Footer.astro'] },
+          { name: "Recherche Cmd+K", status: 'live', what: "Modale de recherche en overlay, alimentée par un index JSON statique.",
+            files: ['src/pages/api/search.json.ts'] },
+          { name: "Bandeau cookies RGPD", status: 'live', what: "Consentement préalable au dépôt de GA4 et AdSense.",
+            files: ['src/config/features.ts — cookieBanner', 'components/layout/CookieBanner.astro'] },
+          { name: "Fil d'ariane", status: 'live', what: "Chemin de navigation sur les pages profondes, doublé en JSON-LD Breadcrumb.",
+            files: ['src/lib/seo.ts — breadcrumb'] }
+        ] },
+      { key: 'editorial', num: '02', name: 'Contenu éditorial', tone: 'b',
+        role: "Les fiches et les articles. Le cœur de valeur du site.",
+        detail: "Six familles de contenu, chacune avec sa page de liste et sa page de détail générée depuis une collection Markdown.",
+        features: [
+          { name: "Fiche variété", status: 'live', what: "Profil gustatif sur 6 axes, fenêtres de récolte, usages, produits et recettes liés.",
+            files: ['src/content/varieties/ — 32 fiches', 'src/pages/varietes/[slug].astro'],
+            notes: ["acidity · bitterness · sugar · parfum · herbace · mielle, de 0 à 100", "harvest_windows — nom et tableau de mois", "weight_g · acidity_pct · juice_pct", "igp — label et année, nullable"] },
+          { name: "Dictionnaire des variétés", status: 'live', what: "Index alphabétique de toutes les variétés, y compris les rares.",
+            files: ['src/pages/varietes/dictionnaire.astro'],
+            notes: ["10 familles : lemon, citron, lime, bergamot, orange-amere, pomelo, kumquat, hybride, caviar, main-de-bouddha"] },
+          { name: "Fiche producteur", status: 'live', what: "Métier, région, fondation, statistiques, terroir rattaché, lien site.",
+            files: ['src/content/producers/ — 21 fiches', 'src/pages/producteurs/[slug].astro'],
+            notes: ["13 métiers, de ceramic à beverage", "featured_until pilote la mise en avant sur la home"] },
+          { name: "Fiche terroir", status: 'live', what: "Zone de production avec GPS, variété signature, mois de récolte, statut IGP.",
+            files: ['src/content/terroirs/ — 4 zones', 'src/pages/terroirs/[slug].astro'],
+            notes: ["Sorrento · Menton · Murcia · Sicilia"] },
+          { name: "Recette", status: 'live', what: "Ingrédients, étapes, durées, régimes, rendement — et le JSON-LD Recipe associé.",
+            files: ['src/content/recipes/ — 25 recettes', 'src/pages/recettes/[slug].astro'],
+            notes: ["5 types : boisson, sucré, salé, ménage, cosmétique DIY", "4 régimes : vegan, végétarien, sans gluten, sans lactose", "prep_min et cook_min séparés pour les Rich Results"] },
+          { name: "Article de journal", status: 'live', what: "Article rattaché à une porte, avec FAQ structurée et emplacement publicitaire en bas.",
+            files: ['src/content/articles/ — 53 fichiers', 'src/pages/journal/[slug].astro'],
+            notes: ["6 formats : reportage, interview, carnet, technique, idées reçues, saison", "faq[] alimente le JSON-LD FAQPage", "italic_word met un mot du titre en italique citron"] },
+          { name: "Carte mondiale des agrumes", status: 'live', what: "Aperçu cartographique des zones de production, cliquable vers les terroirs.",
+            files: ['src/config/world-map.ts', 'components/decor/WorldMap.astro'] },
+          { name: "Arbre généalogique", status: 'live', what: "Filiation des espèces d'agrumes, du cédrat aux hybrides modernes.",
+            files: ['src/config/genealogy.ts'] },
+          { name: "Calendrier de saison", status: 'live', what: "Ce qui est de saison ce mois-ci, dérivé des fenêtres de récolte des variétés.",
+            files: ['src/config/selection.ts', 'components/sections/SeasonRibbon.astro'] }
+        ] },
+      { key: 'commerce', num: '03', name: 'Commerce', tone: 'c',
+        role: "L'aile marchande. Entièrement construite, entièrement gelée.",
+        detail: "Un seul booléen — features.commerce — masque ou réveille tout ce bloc, sans perte de données.",
+        features: [
+          { name: "Boutique et fiches produit", status: 'frozen', what: "Catalogue de 12 objets curés, une page de liste et une page par produit.",
+            files: ['src/content/products/ — 12 fiches', 'src/pages/boutique/[slug].astro'],
+            notes: ["5 catégories : alimentaire, cosmétique, maison, papeterie, art", "sku · price_eur · stock · edition_total · drop_number", "footprint — km, packaging, part producteur"] },
+          { name: "Drop du mois", status: 'frozen', what: "Objet en édition limitée du mois, avec compte à rebours et producteur mis en avant.",
+            files: ['src/config/product.ts', 'components/sections/HeroDrop.astro'],
+            notes: ["features.drop est un getter dérivé de commerce", "HeroDrop remplace HeroEditorial quand le flag passe à true"] },
+          { name: "Panier Snipcart", status: 'frozen', what: "Panier et paiement pré-câblés, bloc commenté dans le layout.",
+            files: ['src/layouts/BaseLayout.astro'],
+            notes: ["Nécessite PUBLIC_SNIPCART_KEY", "Classes snipcart-add-item à ajouter", "Vérifier la gestion atomique du stock côté webhook"] },
+          { name: "Placeholder « Bientôt »", status: 'live', what: "Écran de substitution servi sur les routes commerce tant que le flag est à false.",
+            files: ['components/sections/ComingSoon.astro', 'src/pages/produit.astro'] },
+          { name: "Coffrets et carte cadeau", status: 'idea', what: "Pages prévues en Phase 4, pas encore créées.",
+            files: ['plan.md — Phase 4'] }
+        ] },
+      { key: 'seo', num: '04', name: 'Référencement & partage', tone: 'a',
+        role: "Le dispositif qui fait venir le trafic. Trois leviers, tous automatisés.",
+        detail: "Structured data sur chaque page, sitemap généré au build, image de partage surchargeable page par page.",
+        features: [
+          { name: "JSON-LD par type de page", status: 'live', what: "Organization et WebSite partout ; Article, Recipe, Product, Breadcrumb et FAQ selon la page.",
+            files: ['src/lib/seo.ts', 'src/layouts/BaseLayout.astro'],
+            notes: ["JSON-LD validé", "Search Console et Bing Webmaster connectés"] },
+          { name: "Sitemap automatique", status: 'live', what: "Généré au build avec lastmod, changefreq hebdomadaire et priorité 0.7.",
+            files: ['@astrojs/sitemap', 'astro.config.mjs'] },
+          { name: "Image de partage", status: 'live', what: "og-default.jpg en 1200×630, surchargée par page pour articles, recettes et produits.",
+            files: ['public/og-default.jpg', 'src/layouts/BaseLayout.astro'] },
+          { name: "Mots-clés étendus", status: 'live', what: "Base citron commune plus des mots-clés spécifiques déclarés par page.",
+            files: ['src/layouts/BaseLayout.astro'],
+            notes: ["Cible : toutes les recherches liées au citron", "Canonical géré par le layout"] },
+          { name: "robots.txt et ads.txt", status: 'live', what: "Autorisation de crawl et vérification AdSense.",
+            files: ['public/robots.txt', 'public/ads.txt'] }
+        ] },
+      { key: 'growth', num: '05', name: 'Audience & revenus', tone: 'b',
+        role: "Newsletter, formulaire de contact, régie publicitaire, analytics.",
+        detail: "Tout est branché sur des endpoints externes via variables d'environnement. Aucune clé dans le code.",
+        features: [
+          { name: "Newsletter La Lettera", status: 'live', what: "Une lettre par mois, jamais le dimanche. Formulaire branché sur Brevo.",
+            files: ['src/config/brand.ts — newsletter', 'components/sections/Newsletter.astro'],
+            notes: ["PUBLIC_BREVO_ENDPOINT", "Seul endroit du site où l'on tutoie le lecteur", "Message de succès : « Ciao. À vendredi. »"] },
+          { name: "Formulaire de contact", status: 'live', what: "Branché sur Formspree, avec ciao@solecitron.com en repli.",
+            files: ['src/pages/contact.astro'],
+            notes: ["PUBLIC_FORMSPREE_ENDPOINT", "SPF, DKIM et DMARC configurés — 10/10 mail-tester"] },
+          { name: "Régie publicitaire", status: 'wip', what: "Emplacements AdSlot en bas d'article, loader AdSense conditionné au consentement.",
+            files: ['src/config/ads.ts', 'components/ui/AdSlot.astro'],
+            notes: ["ads.enabled = false par défaut", "AdSense en cours d'examen"] },
+          { name: "Analytics GA4", status: 'live', what: "Chargé seulement après consentement explicite du visiteur.",
+            files: ['src/layouts/BaseLayout.astro'],
+            notes: ["PUBLIC_GA4_ID"] },
+          { name: "Réseaux sociaux", status: 'idea', what: "Le pied de page affiche « prochainement » tant que les comptes n'existent pas.",
+            files: ['src/config/brand.ts — socialSoon'],
+            notes: ["Passer socialSoon à false une fois les comptes ouverts"] }
+        ] },
+      { key: 'infra', num: '06', name: 'Services externes', tone: 'c',
+        role: "Ce que le projet ne fait pas lui-même : hébergement, versionning, emails, régie, données.",
+        detail: "Sept services tiers. Aucune clé dans le code : tout passe par des variables d'environnement Vercel.",
+        features: [
+          { name: "GitHub — versionning", status: 'live', what: "Dépôt Aminebousmah/Sole-Citron sur main. Chaque push déclenche un rebuild Vercel.",
+            files: ['.gitignore', 'github — main · 593a784'],
+            notes: ["Claude Code n'a pas le droit de commit, push ou ouvrir une PR de façon autonome", "Pas de trailer Co-Authored-By dans les commits", "Le dépôt s'appelait Melted-Mood à l'origine"] },
+          { name: "Vercel — hébergement", status: 'live', what: "Build static Astro, domaine custom, HTTPS, redirection www vers apex.",
+            files: ['vercel.json', 'astro.config.mjs'],
+            notes: ["131 pages, 0 erreur de build", "Rebuild automatique à chaque push sur main", "Les variables d'environnement vivent côté Vercel"] },
+          { name: "Brevo — newsletter", status: 'live', what: "Collecte des inscriptions à La Lettera via un formulaire hébergé sibforms.",
+            files: ['PUBLIC_BREVO_ENDPOINT', 'components/sections/Newsletter.astro'],
+            notes: ["Une lettre par mois, jamais le dimanche", "Aucune promo dans la promesse éditoriale"] },
+          { name: "Formspree — contact", status: 'live', what: "Réception du formulaire de contact sans backend à maintenir.",
+            files: ['PUBLIC_FORMSPREE_ENDPOINT', 'src/pages/contact.astro'] },
+          { name: "Google AdSense — régie", status: 'wip', what: "Emplacements publicitaires en bas d'article, chargés après consentement.",
+            files: ['src/config/ads.ts', 'public/ads.txt', 'components/ui/AdSlot.astro'],
+            notes: ["ads.enabled = false par défaut", "Compte en cours d'examen chez Google", "ads.txt déposé pour la vérification"] },
+          { name: "Google Analytics 4", status: 'live', what: "Mesure d'audience, script chargé seulement après consentement explicite.",
+            files: ['PUBLIC_GA4_ID', 'src/layouts/BaseLayout.astro'],
+            notes: ["Gated par le bandeau cookies"] },
+          { name: "Search Console & Bing", status: 'live', what: "Indexation surveillée, sitemap soumis aux deux moteurs.",
+            files: ['@astrojs/sitemap', 'public/robots.txt'],
+            notes: ["JSON-LD validé côté Search Console"] },
+          { name: "Email — délivrabilité", status: 'live', what: "ciao@solecitron.com avec SPF, DKIM et DMARC configurés.",
+            files: ['src/config/brand.ts — contact'],
+            notes: ["10/10 au mail-tester"] },
+          { name: "Snipcart — paiement", status: 'frozen', what: "Panier et encaissement pré-câblés, bloc commenté dans le layout.",
+            files: ['PUBLIC_SNIPCART_KEY', 'src/layouts/BaseLayout.astro'],
+            notes: ["Attend la création du compte", "Mentions légales à compléter : SIREN, TVA intracommunautaire"] }
+        ] },
+      { key: 'system', num: '07', name: 'Système de design', tone: 'd',
+        role: "La mécanique qui rend le site re-skinnable en changeant un fichier.",
+        detail: "tokens.css est la seule source visuelle — et celle que cet Atlas lit pour se colorer.",
+        features: [
+          { name: "Tokens de design", status: 'live', what: "Palette, typo, échelle, espaces et radii dans un seul fichier de variables CSS.",
+            files: ['src/styles/tokens.css'],
+            notes: ["cobalt #0E3FB5 · citron #F2D205 · offwhite #F5F5F2 · navy #0A1A3F", "DM Serif Display + Manrope + JetBrains Mono", "échelle 12 → 92 px, display en clamp jusqu'à 142 px", "9 espacements · 5 radii · 3 transitions"] },
+          { name: "Sections colorées", status: 'live', what: "Quatre fonds sémantiques qui produisent les compositions en blocs à la suisse.",
+            files: ['src/styles/global.css'],
+            notes: [".section--cobalt / --citron / --navy / --offwhite", "Maximum 2 fonds par page"] },
+          { name: "Bascule de densité", status: 'idea', what: "Trois densités de padding vertical, pilotables par un attribut sur html.",
+            files: ['src/styles/tokens.css — data-density'],
+            notes: ["aere | regular | dense", "Câblé mais pas encore exposé dans l'interface"] },
+          { name: "Photo avec placeholder", status: 'live', what: "Composant qui sert soit la vraie image, soit un placeholder tonal et motivé.",
+            files: ['components/ui/Photo.astro'],
+            notes: ["tone — cobalt, citron, paper, navy", "motif — lemon, slice, pattern, none"] },
+          { name: "Italique citron", status: 'live', what: "Un mot-clé du titre passe en italique jaune. Un mot par bloc, jamais deux.",
+            files: ['src/lib/typo.ts'] }
+        ] }
+    ],
+    sessions: [
+      { num: 'session', date: 'Phase 1', turns: 'fondations', tone: 'a',
+        prompt: "Pose les fondations : Astro 5, TypeScript strict, tokens CSS, et toutes les sources de vérité dans src/config.",
+        reply: "Alias ~/* posé, tokens complets (cobalt, citron, offwhite, navy + trio typo), sept fichiers de config, header et footer navy 4 colonnes, sept composants UI, home en neuf sections.",
+        outcome: 'live', touched: ['tokens.css', 'src/config/*', 'BaseLayout.astro'] },
+      { num: 'session', date: 'Phase 2', turns: 'collections', tone: 'b',
+        prompt: "Mets en place les collections de contenu et les pages dynamiques, avec un SEO complet.",
+        reply: "Sept collections en schémas Zod, six familles de pages dynamiques, JSON-LD par type, sitemap, OG, canonical et robots.txt.",
+        outcome: 'live', touched: ['content/config.ts', 'lib/seo.ts', 'pages/[slug]'] },
+      { num: 'session', date: 'Phase 3', turns: '10 portes', tone: 'a',
+        prompt: "Construis les 10 portes thématiques et remplis-les de contenu.",
+        reply: "Dix portes en ligne, environ 32 articles, 32 variétés, 21 producteurs, 17 recettes, 4 terroirs. Recherche Cmd+K, bandeau cookies, dictionnaire, annuaire producteurs, système de pubs câblé.",
+        outcome: 'live', touched: ['src/content/*', 'nav.ts — doors', 'api/search.json.ts'] },
+      { num: 'session', date: 'Pivot', turns: 'décision', tone: 'c',
+        prompt: "Je veux passer le site en encyclopédie pure et mettre les producteurs en avant, sans perdre la boutique.",
+        reply: "Introduit features.commerce à false : boutique, drop et panier masqués du menu et du footer, HeroDrop remplacé par HeroEditorial, routes commerce en placeholder « Bientôt ». Aucune donnée supprimée, réversible en changeant un booléen.",
+        outcome: 'live', touched: ['config/features.ts', 'config/nav.ts', 'index.astro'] },
+      { num: 'session', date: 'Mise en prod', turns: 'déploiement', tone: 'b',
+        prompt: "Déploie sur Vercel avec le domaine, les emails et les formulaires branchés.",
+        reply: "131 pages, zéro erreur de build. Domaine custom, HTTPS, redirection www vers apex. ciao@solecitron.com avec SPF, DKIM et DMARC — 10/10 mail-tester. Brevo et Formspree branchés, GA4 sous consentement.",
+        outcome: 'live', touched: ['vercel.json', 'variables Vercel', 'plan.md'] },
+      { num: 'session', date: 'Cadrage', turns: 'mémoires', tone: 'd',
+        prompt: "Ne commit jamais tout seul, et ne signe pas les commits avec ton nom.",
+        reply: "Deux mémoires écrites. Le workflow de CLAUDE.md porte désormais l'interdiction de commit, push ou PR autonome, et l'absence de trailer Co-Authored-By.",
+        outcome: 'live', touched: ['CLAUDE.md — workflow', 'feedback_git_actions.md'] }
+    ],
+    memories: [
+      { file: 'feedback_git_actions.md', rule: "Ne jamais commit, push ou ouvrir une PR de manière autonome." },
+      { file: 'feedback_commit_authorship.md', rule: "Ne pas ajouter de trailer Co-Authored-By: Claude aux commits." }
+    ],
+    ctxFiles: [
+      { name: 'CLAUDE.md', size: '14,0 ko', tone: 'a', role: "Contexte produit, les 10 portes, stack, direction artistique, règles de copy, conventions, SEO, workflow attendu.",
+        chips: ['10 portes', 'palette', 'typo', 'copy', 'conventions', 'SEO'] },
+      { name: 'plan.md', size: '4,6 ko', tone: 'b', role: "Roadmap vivante. Statut de production, 5 phases, workflow du drop mensuel, commandes npm.",
+        chips: ['5 phases', 'statut prod', 'workflow drop'] },
+      { name: 'README.md', size: '4,6 ko', tone: 'd', role: "Démarrage, architecture commentée, tableau des feature flags, variables d'environnement.",
+        chips: ['install', 'flags', 'env'] }
+    ],
+    ctxRules: [
+      "Lire CLAUDE.md en premier, avant toute action sur le code.",
+      "Pour toute nouvelle feature : un plan court de 3 à 7 étapes avant d'écrire du code.",
+      "Modifier les tokens ou les configs plutôt que les composants quand on change l'apparence.",
+      "Mini-récap et liste des fichiers touchés à la fin de chaque tâche.",
+      "Décisions produit en suspens → placeholders évidents ou valeurs lorem cohérentes.",
+      "Composants .astro par défaut. client:load seulement en cas d'interactivité réelle.",
+      "Titre de 12 mots maximum, un mot-clé possible en italique citron.",
+      "Un mot italien par bloc, jamais deux. Vouvoiement partout sauf la newsletter."
+    ],
+    ctxNever: [
+      "Jamais de hex, de nom de marque ou de prix codé en dur dans un composant.",
+      "Jamais de commit, push ou PR de manière autonome.",
+      "Pas de trailer Co-Authored-By: Claude dans les commits.",
+      "Pas de CSS inline, sauf valeurs dynamiques liées aux props."
+    ],
+    ctxOpen: [
+      "Nom de marque définitif — Sole Citron reste un placeholder.",
+      "Polices commerciales Oruguitas et Adrianna, ou substituts libres.",
+      "Activation Snipcart : clé publique et classes snipcart-add-item.",
+      "Domaine final et branding — le paquet npm s'appelle encore meltedmood.",
+      "Photos produit haute définition, en partie en place."
+    ],
+    phases: [
+      { num: 'Phase 1', status: 'fait', title: "Foundation et home", tone: 'live',
+        detail: "Astro 5 et TS strict, tokens CSS complets, sources de vérité dans src/config, header et footer, sept composants UI, home en neuf sections." },
+      { num: 'Phase 2', status: 'fait', title: "Boutique et savoir", tone: 'live',
+        detail: "Sept collections avec schémas Zod, six familles de pages dynamiques, SEO complet — JSON-LD, meta, sitemap, OG, canonical, robots.txt." },
+      { num: 'Phase 3', status: 'fait', title: "10 portes et production", tone: 'live',
+        detail: "Les dix portes construites, recherche Cmd+K, bandeau cookies, déploiement Vercel avec domaine et HTTPS, délivrabilité email 10/10, ads.txt." },
+      { num: 'Pivot', status: 'fait', title: "Passage en mode éditorial", tone: 'live',
+        detail: "features.commerce à false : encyclopédie et mise en avant des producteurs, aile marchande gelée sans perte de données." },
+      { num: 'Phase 4', status: 'à venir', title: "Commerce, quand ce sera prêt", tone: 'frozen',
+        detail: "Compte Snipcart, clé dans Vercel, flag à true, mentions légales complétées, pages drop, coffrets et carte cadeau, stock atomique côté webhook." },
+      { num: 'Phase 5', status: 'idées', title: "Post-lancement", tone: 'idea',
+        detail: "La Carta del Limone en PDF A5, comparateur de variétés, favoris en localStorage, archive de la newsletter, carte des terroirs étendue, salon du citron." }
+    ]
+  },
+
+  eleven: {
+    label: 'Eleven-Fields',
+    slug: 'Aminebousmah/Eleven-Fields · main · 1874d0b',
+    titleA: 'Dashboard ', titleB: 'ElevenField',
+    tagline: "Analyse football des Big 5 européens sous Streamlit. Cinq saisons FBref, radars contextualisés, percentiles ligue, clustering de styles.",
+    stats: [ { v: '13', k: 'dashboards' }, { v: '6', k: 'domaines' }, { v: '42', k: 'fonctions' }, { v: '1/5', k: 'saisons ok' } ],
+    does: [
+      "Explore cinq saisons de statistiques FBref sur les Big 5 européens : Premier League, La Liga, Bundesliga, Serie A, Ligue 1.",
+      "Repositionne chaque joueur en percentiles de sa ligue, sur des métriques choisies selon son poste.",
+      "Note les joueurs sur seize profils de poste fins, détecte le profil dominant et calcule une compatibilité en pourcentage.",
+      "Produit des rapports de match individuels : note sur 10, meilleurs et pires matchs, courbe chronologique.",
+      "Regroupe les équipes par style de jeu via KMeans et PCA, et compare les clubs sur des nuages de points libres.",
+      "Enrichit joueurs et clubs avec les logos, photos et valeurs marché de Transfermarkt."
+    ],
+    todo: [
+      "Compléter la couverture : quatre saisons sur cinq n'ont que cinq stat_types sur onze.",
+      "Relancer l'extraction FBref dès que le rate-limit retombe, via la vue Big 5 Combined.",
+      "Figer l'environnement : requirements.txt régénéré, soccerdata pinné en 1.8.8.",
+      "Factoriser _numeric(), dupliqué entre loader.py et processor.py.",
+      "Finir SHAP : sélecteur de target et beeswarm. Finir la prédiction PPM avec MAE et R².",
+      "Splitter charts.py — aucun fichier ne doit dépasser 400 lignes.",
+      "Trancher l'hébergement : Streamlit Cloud, Hugging Face Spaces ou self-host.",
+      "Écrire les premiers tests pytest sur les trois fonctions critiques de processor.py."
+    ],
+    stack: [
+      { cat: 'Langage', v: 'Python 3.12+', note: "Typage pydantic v2 strict côté pipeline, pas de dict non typé." },
+      { cat: 'Framework', v: 'Streamlit', note: "Routeur maison dans app.py, navigation en radio sidebar." },
+      { cat: 'Frontend', v: 'Streamlit + HTML inline', note: "Pas de framework JS. Le HTML inline répétitif doit être extrait en composants." },
+      { cat: 'Backend', v: 'Python — même process', note: "Pas d'API séparée. Idée backlog : exposer les calculs via FastAPI." },
+      { cat: 'UI', v: '8 modules de composants', note: "charts, filters, report_card, design, kpi_cards, glossary, flags." },
+      { cat: 'CSS', v: '2 feuilles maison', note: "elevenfield.css et style.css. Thème sombre, aucun hex hors de config.COLORS." },
+      { cat: 'Graphes', v: 'Plotly', note: "Factories centralisées, layout par défaut fusionné dans chaque appel." },
+      { cat: 'Calcul', v: 'pandas 2.3 · NumPy 2.4', note: "processor.py est pur : jamais d'appel Streamlit dedans." },
+      { cat: 'Machine learning', v: 'scikit-learn · scipy', note: "KMeans et PCA pour le clustering, percentileofscore pour les percentiles." },
+      { cat: 'ML avancé', v: 'xgboost · shap — prototype', note: "Lazy import. Risque d'incompatibilité avec numpy 2.x." },
+      { cat: 'Base de données', v: 'Aucune — CSV sur disque', note: "Un dossier par saison. loader.py est la seule porte d'entrée." },
+      { cat: 'Source de données', v: 'FBref via soccerdata 1.8.8', note: "Version verrouillée : la 1.9 retire sept stat_types." },
+      { cat: 'Données tierces', v: 'Transfermarkt via Kaggle', note: "Dataset davidcariboo/player-scores. Matching rapidfuzz au seuil 82." },
+      { cat: 'Déploiement', v: 'Aucun — local uniquement', note: "Trois pistes ouvertes. Le volume des CSV peut dépasser la limite de 1 Go." },
+      { cat: 'Versionning', v: 'GitHub — main', note: "Commits conventionnels. Dossiers de saison et .venv exclus." },
+      { cat: 'Analytique', v: 'Aucune', note: "Pas de mesure d'audience : l'app n'est pas publique." },
+      { cat: 'Tests', v: 'Aucun', note: "Cible Phase 6 : pytest sur percentile, build_radar_with_context, find_xg_outliers." },
+      { cat: 'CI', v: 'Aucune', note: "Pas de build, pas de pipeline configuré." }
+    ],
+    tracking: [
+      { k: "Dashboards livrés", v: "13", target: "13", pct: '100%', tone: 'live' },
+      { k: "Saisons complètes", v: "1 / 5", target: "5", pct: '20%', tone: 'wip' },
+      { k: "Couverture des fichiers", v: "~40 %", target: "≥ 90 %", pct: '44%', tone: 'wip' },
+      { k: "Phases terminées", v: "1 / 7", target: "7", pct: '14%', tone: 'wip' },
+      { k: "Environnement reproductible", v: "manuel", target: "figé", pct: '25%', tone: 'frozen' },
+      { k: "Modules ML finis", v: "0 / 2", target: "2", pct: '30%', tone: 'wip' },
+      { k: "Fichiers > 400 lignes", v: "plusieurs", target: "0", pct: '20%', tone: 'frozen' },
+      { k: "Tests automatisés", v: "0", target: "3 fonctions", pct: '0%', tone: 'idea' },
+      { k: "Déploiement", v: "local", target: "public", pct: '0%', tone: 'idea' }
+    ],
+    goldenRule: "data/loader.py est le seul fichier qui lit des CSV. data/processor.py est pur : jamais d'appel st.* dedans.",
+    hubName: 'ElevenField', hubCount: '42', hubUnit: 'fonctionnalités',
+    domains: [
+      { key: 'player', num: '01', name: 'Analyse joueur', tone: 'a',
+        role: "Le module le plus travaillé : profil, scouting, rapports de match.",
+        detail: "Radars par poste, percentiles ligue, 16 profils fins, notation, watchlist. Le fichier player_profile.py fait 59,6 ko à lui seul.",
+        features: [
+          { name: "Radar contextualisé par poste", status: 'live', what: "Métriques adaptées au poste — FW, MF, DF, GK — repositionnées en percentiles de la ligue.",
+            files: ['config.py — PLAYER_METRICS_BY_POS', 'data/processor.py', 'components/charts.py — make_radar'],
+            notes: ["percentileofscore de scipy", "Un jeu de métriques par poste, jamais le même radar pour tous"] },
+          { name: "Data'Scout — 16 profils de poste", status: 'live', what: "Indice de performance sur 100 par profil, profil dominant détecté automatiquement.",
+            files: ['dashboards/player_profile.py'],
+            notes: ["16 profils de poste fins", "Le profil dominant est déduit, pas déclaré", "Disclaimer affiché sur la méthode"] },
+          { name: "Similarité de joueurs", status: 'live', what: "Compatibilité exprimée en pourcentage entre deux joueurs sur leurs scores de profil.",
+            files: ['dashboards/player_profile.py'],
+            notes: ["Idée backlog : recommandation k-NN sur percentiles"] },
+          { name: "Watchlist personnelle", status: 'live', what: "Shortlist de joueurs conservée pour comparaison ultérieure.",
+            files: ['dashboards/player_profile.py'] },
+          { name: "Rapport de match joueur", status: 'live', what: "Note sur 10, top 3 et bottom 3 des performances, courbe chronologique.",
+            files: ['components/report_card.py — 30,7 ko'] },
+          { name: "Évolution multi-saisons", status: 'live', what: "Trajectoire d'un joueur sur ses scores de profil, saison après saison.",
+            files: ['dashboards/player_profile.py'],
+            notes: ["Limité par la couverture : seule 2024-25 est complète"] },
+          { name: "Export du rapport en markdown", status: 'live', what: "Téléchargement du rapport joueur au format markdown.",
+            files: ['dashboards/player_profile.py'] },
+          { name: "Leaderboards joueur", status: 'live', what: "Classements par métrique et par poste sur la saison et la ligue sélectionnées.",
+            files: ['dashboards/ranking_player.py'] }
+        ] },
+      { key: 'team', num: '02', name: 'Analyse équipe', tone: 'b',
+        role: "Vue club : radars, classements, nuages de points, composition.",
+        detail: "Même socle de calcul que le joueur, appliqué aux agrégats d'équipe.",
+        features: [
+          { name: "Vue équipe", status: 'live', what: "Radar contextualisé du club, statistiques de saison, comparaison à la ligue.",
+            files: ['dashboards/team_overview.py — 32,0 ko'] },
+          { name: "Isolation domicile / extérieur", status: 'live', what: "Rejoue les mêmes analyses en ne gardant que les matchs à domicile ou à l'extérieur.",
+            files: ['dashboards/team_overview.py'],
+            notes: ["Disponible côté équipe et côté joueur"] },
+          { name: "Composition — XI et remplaçants", status: 'live', what: "Terrain visuel, sept formations, onze titulaires et sept remplaçants.",
+            files: ['dashboards/lineup_builder.py — 42,2 ko'],
+            notes: ["7 formations disponibles"] },
+          { name: "Classements club", status: 'live', what: "Leaderboards de clubs sur les métriques de saison.",
+            files: ['dashboards/ranking_club.py'] },
+          { name: "Nuages de points", status: 'live', what: "Deux métriques libres en abscisse et ordonnée, côté club comme côté joueur.",
+            files: ['dashboards/scatter_club.py', 'dashboards/scatter_player.py'] },
+          { name: "Clustering de styles", status: 'live', what: "Regroupement des équipes par style de jeu via KMeans et PCA.",
+            files: ['data/processor.py'],
+            notes: ["Idée backlog : nommer les clusters, type « gegenpressing »"] }
+        ] },
+      { key: 'compare', num: '03', name: 'Comparaison & modèles', tone: 'c',
+        role: "Duels, shortlist, et les deux modules ML encore en prototype.",
+        detail: "xgboost et shap sont importés à la demande dans comparison.py pour ne pas alourdir le démarrage.",
+        features: [
+          { name: "Comparaison de joueurs", status: 'live', what: "Deux à plusieurs joueurs superposés sur un radar multiple.",
+            files: ['dashboards/comparison.py — 37,7 ko', 'components/charts.py — make_multi_radar'] },
+          { name: "Comparaison contre shortlist", status: 'live', what: "Un joueur cible confronté à tous les membres de la watchlist.",
+            files: ['dashboards/comparison.py'] },
+          { name: "Explication SHAP", status: 'wip', what: "Contributions des variables à la performance. Bar chart en place, target figée sur xG.",
+            files: ['dashboards/comparison.py'],
+            notes: ["À faire : sélecteur de target — xG, points, xGA", "À faire : ajouter un beeswarm", "Risque : xgboost et shap incompatibles avec numpy 2.x sur certaines plateformes"] },
+          { name: "Prédiction PPM", status: 'wip', what: "Points par match prédits par club. Sortie encore sans métriques d'erreur.",
+            files: ['dashboards/comparison.py'],
+            notes: ["Valider la colonne PPM dans playing_time, sinon calculer Pts/MP", "À afficher : MAE et R² sur un split par saisons", "Documenter les features retenues et écartées"] },
+          { name: "Tendances inter-saisons", status: 'live', what: "Évolution des métriques d'une saison à l'autre, scatter xG contre buts.",
+            files: ['dashboards/trends.py'],
+            notes: ["Objectif : couvrir 2122 à 2526 sans trou", "Idée : mode comparer en overlay de deux saisons"] }
+        ] },
+      { key: 'data', num: '04', name: 'Pipeline de données', tone: 'a',
+        role: "L'extraction FBref et l'enrichissement Transfermarkt. Le point le plus fragile.",
+        detail: "Une seule porte d'entrée pour les CSV, un processeur pur, et un scraper qui doit ménager FBref.",
+        features: [
+          { name: "Extraction FBref", status: 'wip', what: "Récupération des stats saison et match via soccerdata, avec retry et temporisation.",
+            files: ['data/scraper.py', 'DataBaseHome.ipynb', 'fbref_extract.py'],
+            notes: ["soccerdata verrouillé en 1.8.8 — la 1.9 retire sept stat_types", "Vue Big 5 Combined pour les stats saison : 1 requête au lieu de 5", "Sleep de 3 à 5 s, retry exponentiel", "Risque : 403 Forbidden si l'IP est limitée"] },
+          { name: "Couche de chargement en cache", status: 'live', what: "Le seul endroit du projet où l'on fait pd.read_csv, avec mise en cache Streamlit.",
+            files: ['data/loader.py'],
+            notes: ["@st.cache_data(show_spinner=False) partout", "Double en-tête FBref → _parse_multiheader_csv", "En-tête plat → _parse_flat_csv", "_numeric() a un skip-set explicite — le préserver ou W/D/L devient NaN"] },
+          { name: "Calculs purs", status: 'live', what: "Percentiles, radars contextualisés, clustering, détection d'outliers xG.",
+            files: ['data/processor.py — 54,9 ko'],
+            notes: ["Aucun appel st.* autorisé dans ce fichier", "_numeric() dupliqué avec loader.py — à factoriser"] },
+          { name: "Matrice de couverture", status: 'live', what: "Tableau saison par type de fichier : présent avec sa taille, ou manquant.",
+            files: ['dashboards/coverage.py'],
+            notes: ["Seule 2024-25 est complète : 11/11 stat_types", "2122, 2223, 2324 et 2526 n'ont que 5 stat_types", "Cible Phase 1 : 90 % de fichiers présents par saison"] },
+          { name: "Enrichissement Transfermarkt", status: 'live', what: "Logos, photos et valeurs marché rattachés aux joueurs et aux clubs.",
+            files: ['transfermarkt/matcher.py — 22,5 ko', 'transfermarkt/loader.py'],
+            notes: ["Matching rapidfuzz, insensible aux accents, seuil 82", "Tous les imports sous try/except avec fallback no-op", "L'app doit tourner sans le module"] },
+          { name: "Signal média", status: 'live', what: "Collecte et analyse des mentions média rattachées aux joueurs.",
+            files: ['media/fetcher.py', 'media/analyzer.py', 'dashboards/media_intel.py'] },
+          { name: "Exploration brute", status: 'live', what: "Accès direct aux tables FBref pour vérifier une valeur.",
+            files: ['dashboards/database.py'] }
+        ] },
+      { key: 'infra', num: '05', name: 'Dépendances externes', tone: 'c',
+        role: "Sources de données, bibliothèques verrouillées, versionning. Le point le plus fragile du projet.",
+        detail: "Aucun service d'hébergement pour l'instant : l'app tourne en local. Les dépendances de données sont en revanche critiques.",
+        features: [
+          { name: "GitHub — versionning", status: 'live', what: "Dépôt Aminebousmah/Eleven-Fields sur main.",
+            files: ['.gitignore — 3,2 ko', 'github — main · 1874d0b'],
+            notes: ["Commits conventionnels : feat(...), fix(...)", "Ne jamais committer les dossiers de saison, transfermarkt_data/ ni .venv/", "Le .gitignore a dû être écrit avant le premier git init"] },
+          { name: "FBref via soccerdata", status: 'wip', what: "Source principale : stats équipe et joueur, saison et match, sur cinq saisons.",
+            files: ['data/scraper.py', 'requirements.txt', 'DataBaseHome.ipynb'],
+            notes: ["Verrouillé en 1.8.8 — la 1.9 retire sept stat_types", "assert sd.__version__.startswith('1.8') dans le notebook", "Risque 403 Forbidden : sleep 3 à 7 s, attendre 1 h si bannissement", "Vue Big 5 Combined : 1 requête au lieu de 5"] },
+          { name: "Transfermarkt via Kaggle", status: 'live', what: "Logos, photos et valeurs marché. Dataset davidcariboo/player-scores.",
+            files: ['transfermarkt/scraper.py', 'transfermarkt/loader.py'],
+            notes: ["Nécessite KAGGLE_API_TOKEN", "Matching rapidfuzz au seuil 82, insensible aux accents", "Tous les imports sous try/except : l'app tourne sans"] },
+          { name: "Streamlit — runtime", status: 'live', what: "Le framework qui sert l'app. Navigation custom en radio sidebar.",
+            files: ['app.py', 'streamlit run app.py'],
+            notes: ["Pas de dossier pages/ — interdiction explicite", "API des query params encore mouvante : permaliens repoussés en Phase 5"] },
+          { name: "Plotly — graphes", status: 'live', what: "Tous les graphes interactifs, via des factories centralisées.",
+            files: ['components/charts.py', 'config.py — PLOTLY_LAYOUT'] },
+          { name: "scikit-learn & scipy", status: 'live', what: "KMeans et PCA pour le clustering, percentileofscore pour les percentiles.",
+            files: ['data/processor.py'] },
+          { name: "xgboost & shap", status: 'wip', what: "Modules ML encore en prototype, importés à la demande.",
+            files: ['dashboards/comparison.py'],
+            notes: ["Lazy import pour ne pas ralentir le démarrage", "Risque d'incompatibilité avec numpy 2.x — fallback sklearn prévu"] },
+          { name: "Environnement figé", status: 'wip', what: "requirements.txt à régénérer et à pinner, env encore manuel dans .venv.",
+            files: ['requirements.txt — 1,7 ko'],
+            notes: ["Cible Phase 2 : cloner et lancer en moins de dix minutes", "Tester l'install dans un venv neuf — numpy 2.4 et pandas 2.3 peuvent casser shap"] },
+          { name: "Hébergement", status: 'idea', what: "Aucun déploiement pour l'instant. Trois pistes envisagées.",
+            files: ['plan.md — Phase 6'],
+            notes: ["Streamlit Community Cloud, gratuit et public", "Hugging Face Spaces", "Self-host", "Volume des CSV possiblement au-delà de la limite de 1 Go"] }
+        ] },
+      { key: 'shell', num: '06', name: 'Interface & thème', tone: 'd',
+        role: "Navigation, filtres, glossaire et le thème sombre du dashboard.",
+        detail: "Navigation custom en radio sidebar — pas de dossier pages/ Streamlit. Les couleurs ne vivent qu'à deux endroits.",
+        features: [
+          { name: "Navigation custom", status: 'live', what: "Routeur maison en radio sidebar, imports des dashboards faits dans le routeur.",
+            files: ['app.py — 29,5 ko'],
+            notes: ["Pas de dossier pages/ — interdiction explicite", "Chaque dashboard expose render(season, league)"] },
+          { name: "Filtres globaux et contextuels", status: 'live', what: "Saison et ligue en sidebar, équipe et joueur en haut de chaque dashboard.",
+            files: ['components/filters.py — 23,9 ko'],
+            notes: ["« Toutes les ligues » vaut absence de filtre", "Jamais de filtre contextuel en sidebar"] },
+          { name: "Thème sombre", status: 'live', what: "Palette et layout Plotly centralisés. Aucun hex ailleurs que dans ces constantes.",
+            files: ['assets/style.css', 'config.py — COLORS, PLOTLY_LAYOUT'],
+            notes: ["bg #0e1117 · surface #1a1a2e · card #16213e · border #2d2d4e", "green #00ff99 · blue #00b4d8 · gold #ffd700 · red #ff4655", "text #ffffff · muted #8899aa"] },
+          { name: "Glossaire français", status: 'live', what: "Définitions des sigles et indicateurs, dépliables au fil des pages.",
+            files: ['config.py — METRIC_DEFINITIONS', 'components/glossary.py'],
+            notes: ["Code en anglais, interface en français"] },
+          { name: "Cartes KPI", status: 'live', what: "Indicateurs en tête de section, en HTML inline.",
+            files: ['components/kpi_cards.py', 'components/design.py'],
+            notes: ["Phase 3 : extraire le HTML répétitif en render_page_header()"] },
+          { name: "Drapeaux de nationalité", status: 'live', what: "Pavillon associé à chaque nationalité de joueur.",
+            files: ['components/flags.py', 'flags.csv'] },
+          { name: "Permaliens et exports", status: 'idea', what: "Encoder l'état dans l'URL et exporter les tableaux en PNG ou CSV.",
+            files: ['plan.md — Phase 5'],
+            notes: ["API Streamlit des query params encore mouvante"] }
+        ] }
+    ],
+    sessions: [
+      { num: 'session', date: 'Phase 0', turns: 'fondations', tone: 'a',
+        prompt: "Structure le projet en couches propres et branche les dashboards dans un routeur unique.",
+        reply: "Trois couches : loader seul à lire les CSV, processor pur, dashboards en render(season, league). Treize vues branchées dans app.py, thème sombre custom, fallback gracieux Transfermarkt, glossaire français.",
+        outcome: 'live', touched: ['app.py', 'data/loader.py', 'data/processor.py'] },
+      { num: 'session', date: 'Refonte', turns: "Data'Scout", tone: 'b',
+        prompt: "Refais le module de scouting : je veux des profils de poste fins et un indice de performance lisible.",
+        reply: "Seize profils de poste, indice sur 100 par profil, profil dominant détecté, similarité en pourcentage de compatibilité, watchlist personnelle, disclaimer sur la méthode.",
+        outcome: 'live', touched: ['dashboards/player_profile.py', 'config.py'] },
+      { num: 'session', date: 'Rapports', turns: 'notation', tone: 'a',
+        prompt: "Ajoute des rapports de match par joueur, avec une note et ses meilleurs et pires matchs.",
+        reply: "Note sur 10, top 3 et bottom 3, courbe chronologique. Isolation domicile et extérieur ajoutée côté équipe comme côté joueur. Minutes masquées partout sauf profil joueur et comparaison.",
+        outcome: 'live', touched: ['components/report_card.py', 'dashboards/team_overview.py'] },
+      { num: 'session', date: 'Incident', turns: 'soccerdata', tone: 'c',
+        prompt: "Les stats avancées ont disparu après une mise à jour. Trouve pourquoi.",
+        reply: "La 1.9.x de soccerdata retire passing, defense, possession, passing_types, goal_shot_creation, keeper_adv et read_shot_events. Downgrade en 1.8.8 et assert de version posé dans le notebook pour empêcher toute remontée.",
+        outcome: 'wip', touched: ['requirements.txt', 'DataBaseHome.ipynb', 'CLAUDE.md'] },
+      { num: 'session', date: 'Incident', turns: 'colonnes NaN', tone: 'c',
+        prompt: "Les résultats W/D/L et les noms d'équipes sortent en NaN.",
+        reply: "La conversion numérique agressive écrasait les colonnes texte. Un skip-set explicite a été ajouté dans _numeric() — result, opponent, team, player, league — et l'interdiction de le réécrire est passée dans CLAUDE.md.",
+        outcome: 'live', touched: ['data/loader.py — _numeric()', 'CLAUDE.md'] },
+      { num: 'session', date: 'Phase 1', turns: 'en cours', tone: 'b',
+        prompt: "Complète la couverture des données sur les quatre saisons incomplètes.",
+        reply: "Seule 2024-25 est complète. Les quatre autres n'ont que cinq stat_types. Extraction à relancer par le notebook via la vue Big 5 Combined, dès que le rate-limit FBref retombe. Cible : 90 % de fichiers présents par saison.",
+        outcome: 'wip', touched: ['data/scraper.py', 'dashboards/coverage.py', 'plan.md'] }
+    ],
+    memories: [
+      { file: 'CLAUDE.md — interdits', rule: "Ne jamais upgrader soccerdata au-delà de 1.8.x : la 1.9 retire sept stat_types." },
+      { file: 'CLAUDE.md — interdits', rule: "Ne pas réécrire _numeric() sans préserver son skip-set de colonnes texte." },
+      { file: 'CLAUDE.md — conventions', rule: "Exécution autonome : avancer sans confirmation, une seule question ciblée si bloquant." },
+      { file: 'CLAUDE.md — interdits', rule: "Pas d'émojis ni de documentation markdown non demandée." }
+    ],
+    ctxFiles: [
+      { name: 'CLAUDE.md', size: '6,6 ko', tone: 'a', role: "Contexte, stack, structure commentée, commandes, conventions, interdits, fichiers à consulter en priorité, état des données.",
+        chips: ['stack', 'structure', 'conventions', 'interdits', 'état data'] },
+      { name: 'plan.md', size: '8,9 ko', tone: 'c', role: "Sept phases avec tâches, critères de validation et risques identifiés. Phase active : la 1.",
+        chips: ['7 phases', 'critères', 'risques', 'backlog'] },
+      { name: 'README.md', size: '14,0 ko', tone: 'd', role: "Documentation longue. Répète les conventions de couleur et de thème.",
+        chips: ['install', 'run', 'structure'] }
+    ],
+    ctxRules: [
+      "Exécution autonome : avancer sans demander confirmation, une seule question ciblée si bloquant.",
+      "data/loader.py est le seul fichier qui lit des CSV, avec transfermarkt/loader.py.",
+      "data/processor.py est pur : pandas et numpy uniquement, jamais d'appel st.*.",
+      "Dashboards en render(season, league), imports faits dans le routeur app.py.",
+      "Filtres globaux en sidebar, filtres contextuels en haut de chaque dashboard.",
+      "Couleurs par config.COLORS et config.PLOTLY_LAYOUT, jamais de hex ailleurs.",
+      "Tous les loaders en @st.cache_data(show_spinner=False).",
+      "Code en anglais, interface en français.",
+      "Commits conventionnels : feat(scenarist), fix(renderer)."
+    ],
+    ctxNever: [
+      "Ne jamais upgrader soccerdata au-delà de 1.8.x — la 1.9 retire sept stat_types.",
+      "Pas de pd.read_csv en dehors des deux loaders autorisés.",
+      "Pas d'appel st.* depuis data/processor.py.",
+      "Ne pas réécrire _numeric() sans préserver son skip-set — sinon W/D/L devient NaN.",
+      "Ne pas marteler FBref : retry exponentiel et sleep de 3 à 5 s.",
+      "Ne pas committer transfermarkt_data/, .venv/ ni les dossiers de saison.",
+      "Pas d'émojis ni de docs markdown non demandés.",
+      "Pas de pages Streamlit dans pages/ — la navigation est custom."
+    ],
+    ctxOpen: [
+      "Quatre saisons sur cinq n'ont que les cinq stat_types de base. Compléter est la priorité.",
+      "Choix de déploiement : Streamlit Community Cloud, Hugging Face Spaces ou self-host.",
+      "Volume des dossiers de saison possiblement trop gros pour la limite de 1 Go.",
+      "Colonne PPM à valider dans playing_time, sinon calculer Pts/MP depuis le schedule."
+    ],
+    phases: [
+      { num: 'Phase 0', status: 'fait', title: "Fondations", tone: 'live',
+        detail: "Architecture en couches, treize dashboards branchés, thème sombre custom, fallback Transfermarkt, glossaire français, métriques par poste, refonte Data'Scout, rapports de match, isolation domicile et extérieur." },
+      { num: 'Phase 1', status: 'en cours', title: "Compléter la couverture des données", tone: 'wip',
+        detail: "Seule la saison 2024-25 est complète. Relancer l'extraction sur 2122, 2223, 2324 et 2526 dès que le rate-limit FBref retombe. Cible : 90 % de fichiers présents par saison." },
+      { num: 'Phase 2', status: 'à venir', title: "Reproductibilité et hygiène", tone: 'frozen',
+        detail: "Pinner soccerdata en 1.8.8, requirements.txt figé, .gitignore adapté, README court, suppression du code mort. Cible : cloner et lancer en moins de dix minutes." },
+      { num: 'Phase 3', status: 'à venir', title: "Robustesse data et UX", tone: 'frozen',
+        detail: "Factoriser _numeric(), bouton de vidage du cache, messages d'erreur qui nomment la donnée manquante, extraire le HTML inline en composants réutilisables." },
+      { num: 'Phase 4', status: 'à venir', title: "Finir les modules ML", tone: 'frozen',
+        detail: "SHAP avec sélecteur de target et beeswarm, prédiction PPM validée avec MAE et R², features documentées." },
+      { num: 'Phase 5', status: 'à venir', title: "UX ciblée", tone: 'frozen',
+        detail: "Splitter charts.py, export PNG et CSV, permaliens en query params, mode comparer sur les tendances, tooltips enrichis. Cible : aucun fichier de plus de 400 lignes." },
+      { num: 'Phase 6', status: 'idées', title: "Tests et déploiement", tone: 'idea',
+        detail: "pytest sur les trois fonctions critiques de processor.py, fixture CSV minimale, choix d'hébergement." }
+    ]
+  }
+};
+
+const VIEWS = [
+  { id: 'sheet', num: '01', label: 'Fiche projet' },
+  { id: 'arch', num: '02', label: 'Fonctionnalités' },
+  { id: 'sessions', num: '03', label: 'Sessions' },
+  { id: 'context', num: '04', label: 'Contexte Claude' },
+  { id: 'progress', num: '05', label: 'Avancement' }
+];
+
+const BLURBS = {
+  sheet: "Ce que le projet fait, ce qu'il doit encore faire, sa pile technique poste par poste, et sa feuille de suivi.",
+  arch: "L'arbre entier : chaque domaine et chacune de ses fonctionnalités. La pastille donne l'état ; un clic ouvre les fichiers dans le panneau.",
+  sessions: "Vos demandes et le condensé de ce que Claude a répondu, session par session.",
+  context: "Ce que Claude Code lit avant d'agir : fichiers de contexte, règles actives, interdits, décisions en suspens.",
+  progress: "Les phases telles qu'elles sont écrites dans plan.md, avec leur statut réel."
+};
+
+class Component extends DCLogic {
+  state = { repo: null, view: null, viz: null, domain: null, feat: null, zoom: null };
+
+  get repoKey() { return this.state.repo || this.props.repo || 'sole'; }
+  get view() { return this.state.view || this.props.defaultView || 'sheet'; }
+  get viz() { return this.state.viz || this.props.defaultViz || 'graph'; }
+
+  renderVals() {
+    const rk = this.repoKey, t = THEMES[rk], repo = REPOS[rk];
+    const view = this.view, viz = this.viz;
+    const domains = repo.domains;
+    const domain = this.state.domain ? domains.find(d => d.key === this.state.domain) : null;
+    const tone = (k) => t.tones[k];
+    const pill = (s) => t.pills[s] || t.pills.idea;
+
+    const hubTone = tone('a');
+    const hub = {
+      kicker: 'Projet', name: repo.hubName, count: repo.hubCount, unit: repo.hubUnit,
+      bg: hubTone.bg, ink: hubTone.ink, inkSoft: hubTone.inkSoft, border: hubTone.border,
+      go: () => this.setState({ domain: null, feat: null })
+    };
+
+    /* ── carte à branches : tout est dessiné, on navigue au zoom et au scroll ── */
+    const LEAF_H = 44, LEAF_PITCH = 54, BLOCK_GAP = 46;
+    const X_ROOT = 30, W_ROOT = 260;
+    const X_DOM = 400, W_DOM = 300;
+    const X_LEAF = 800, W_LEAF = 360;
+    const CANVAS_W = 1200;
+
+    let y = 40;
+    const mapDomains = [], mapLeaves = [], mapEdges = [];
+    domains.forEach(d => {
+      const tn = tone(d.tone);
+      const k = d.features.length;
+      const blockH = k * LEAF_PITCH;
+      const domCy = y + blockH / 2;
+      d.features.forEach((f, i) => {
+        const cy = y + i * LEAF_PITCH + LEAF_PITCH / 2;
+        const on = this.state.feat === f.name;
+        const sfg = t.statusFg[f.status] || t.inkSoft;
+        mapLeaves.push({
+          name: f.name, status: LABELS[f.status], statusFg: on ? tn.ink : sfg,
+          left: X_LEAF + 'px', top: (cy - LEAF_H / 2) + 'px', w: W_LEAF + 'px', h: LEAF_H + 'px',
+          dot: sfg,
+          bg: on ? tn.bg : t.surfaceAlt,
+          ink: on ? tn.ink : t.ink,
+          border: on ? tn.border : t.line,
+          go: () => this.setState({ domain: d.key, feat: f.name })
+        });
+        const x1 = X_DOM + W_DOM, x2 = X_LEAF, mx = (x1 + x2) / 2;
+        mapEdges.push({ d: 'M' + x1 + ' ' + domCy + ' C' + mx + ' ' + domCy + ' ' + mx + ' ' + cy + ' ' + x2 + ' ' + cy,
+          stroke: on ? tn.dot : t.line, w: on ? 2.6 : 1.4 });
+      });
+      const onD = this.state.domain === d.key;
+      mapDomains.push({
+        num: d.num, name: d.name, role: d.role, count: k + ' fonctionnalités',
+        left: X_DOM + 'px', top: (domCy - 47) + 'px', w: W_DOM + 'px',
+        bg: tn.bg, ink: tn.ink, inkSoft: tn.inkSoft, border: tn.border,
+        ring: onD ? '0 0 0 3px ' + tn.dot : 'none',
+        go: () => this.setState({ domain: d.key, feat: null })
+      });
+      const rx1 = X_ROOT + W_ROOT, rmx = (rx1 + X_DOM) / 2;
+      mapEdges.push({ d: 'M' + rx1 + ' ' + 0 + ' C' + rmx + ' ' + 0 + ' ' + rmx + ' ' + domCy + ' ' + X_DOM + ' ' + domCy,
+        stroke: tn.dot, w: 2.2, root: true });
+      y += blockH + BLOCK_GAP;
+    });
+    const CANVAS_H = y;
+    const rootCy = CANVAS_H / 2;
+    mapEdges.forEach(e => { if (e.root) e.d = e.d.replace(/^M(\S+) 0 C(\S+) 0/, 'M$1 ' + rootCy + ' C$2 ' + rootCy); });
+
+    /* ── état par branche, lisible d'un coup d'œil ── */
+    const ORDER = ['live', 'wip', 'frozen', 'idea'];
+    const stateOf = (c, total) => {
+      if (c.wip > 0) return 'wip';
+      if (c.live === total) return 'live';
+      if (c.frozen + c.idea === total) return 'frozen';
+      return (c.frozen + c.idea) > c.live ? 'frozen' : 'partial';
+    };
+    const STATE_LABEL = { live: 'terminée', wip: 'en développement', frozen: 'gelée', idea: 'à explorer', partial: 'partielle' };
+
+    const tally = { live: 0, wip: 0, frozen: 0, idea: 0 };
+    const overview = domains.map(d => {
+      const c = { live: 0, wip: 0, frozen: 0, idea: 0 };
+      d.features.forEach(f => { c[f.status]++; tally[f.status]++; });
+      const total = d.features.length;
+      const st = stateOf(c, total);
+      const onD = this.state.domain === d.key;
+      return {
+        num: d.num, name: d.name, total: total + '',
+        dot: tone(d.tone).dot,
+        state: STATE_LABEL[st],
+        stateFg: t.statusFg[st] || t.inkSoft,
+        rowBg: onD ? t.surfaceAlt : 'transparent',
+        segs: ORDER.filter(s => c[s] > 0).map(s => ({
+          w: (c[s] / total * 100) + '%', bg: t.statusFg[s],
+          label: c[s] + ' ' + LABELS[s]
+        })),
+        go: () => this.setState({ domain: d.key, feat: null })
+      };
+    });
+    const grandTotal = ORDER.reduce((a, s) => a + tally[s], 0);
+    const projectSegs = ORDER.filter(s => tally[s] > 0).map(s => ({
+      w: (tally[s] / grandTotal * 100) + '%', bg: t.statusFg[s],
+      label: tally[s] + ' ' + LABELS[s]
+    }));
+    const projectCounts = ORDER.filter(s => tally[s] > 0)
+      .map(s => tally[s] + ' ' + LABELS[s]).join(' · ');
+
+    const zoom = this.state.zoom || 0.62;
+
+    const feat = domain && this.state.feat ? domain.features.find(f => f.name === this.state.feat) : null;
+    let panel;
+    if (feat) {
+      const p = pill(feat.status);
+      panel = { kicker: 'Fonctionnalité · ' + domain.name, title: feat.name, role: feat.what,
+        titleColor: t.ink, hasStatus: true, status: LABELS[feat.status],
+        pillBg: p.bg, pillFg: p.fg, pillBorder: p.border,
+        hasFiles: true, files: feat.files,
+        hasNotes: !!(feat.notes && feat.notes.length), notesLabel: 'Ce qu\u2019il faut savoir', notes: feat.notes || [] };
+    } else if (domain) {
+      panel = { kicker: 'Domaine ' + domain.num, title: domain.name, role: domain.detail,
+        titleColor: tone(domain.tone).dot, hasStatus: false, status: '',
+        pillBg: 'transparent', pillFg: t.inkSoft, pillBorder: t.line,
+        hasFiles: false, files: [],
+        hasNotes: true, notesLabel: 'Fonctionnalités', notes: domain.features.map(f => f.name + ' — ' + LABELS[f.status]) };
+    } else {
+      panel = { kicker: 'Projet', title: repo.label, role: repo.tagline,
+        titleColor: t.accent, hasStatus: false, status: '',
+        pillBg: 'transparent', pillFg: t.inkSoft, pillBorder: t.line,
+        hasFiles: false, files: [],
+        hasNotes: true, notesLabel: 'Domaines', notes: domains.map(d => d.name + ' — ' + d.features.length + ' fonctionnalités') };
+    }
+
+    return {
+      t: t, repo: repo, themeSource: t.source, swatches: t.swatches,
+
+      repoTabs: Object.keys(REPOS).map(k => ({
+        label: REPOS[k].label, dot: THEMES[k].accent,
+        bg: k === rk ? THEMES[k].primary : 'transparent',
+        fg: k === rk ? THEMES[k].onPrimary : 'rgba(250,250,248,0.6)',
+        go: () => this.setState({ repo: k, domain: null, feat: null })
+      })),
+
+      navItems: VIEWS.map(v => ({
+        num: v.num, label: v.label,
+        bg: v.id === view ? t.accent : 'transparent',
+        fg: v.id === view ? t.onAccent : t.onPrimary,
+        go: () => this.setState({ view: v.id })
+      })),
+
+      viewBlurb: BLURBS[view],
+      isSheet: view === 'sheet',
+      isArch: view === 'arch', isSessions: view === 'sessions',
+      isContext: view === 'context', isProgress: view === 'progress',
+
+      does: repo.does,
+      todo: repo.todo,
+      stack: repo.stack,
+      tracking: repo.tracking.map(r => {
+        const pl = pill(r.tone);
+        return { k: r.k, v: r.v, target: r.target, pct: r.pct,
+          bar: pl.border, pillBg: pl.bg, pillFg: pl.fg, pillBorder: pl.border };
+      }),
+      lastSession: repo.sessions[repo.sessions.length - 1],
+      isGraph: viz === 'graph', isList: viz === 'list' && !domain,
+      inDomain: viz === 'list' && !!domain,
+
+      vizModes: [ { id: 'graph', label: 'Graphe' }, { id: 'list', label: 'Liste' } ].map(m => ({
+        label: m.label,
+        border: m.id === viz ? t.accent : t.line,
+        bg: m.id === viz ? t.accent : 'transparent',
+        fg: m.id === viz ? t.onAccent : t.inkSoft,
+        go: () => this.setState({ viz: m.id })
+      })),
+
+      crumbs: (domain
+        ? [ { label: repo.label, go: () => this.setState({ domain: null, feat: null }), weight: '500', color: t.inkSoft, sep: '/' },
+            { label: domain.name, go: () => this.setState({ feat: null }), weight: '700', color: tone(domain.tone).dot, sep: feat ? '/' : '' } ]
+            .concat(feat ? [ { label: feat.name, go: () => {}, weight: '700', color: t.ink, sep: '' } ] : [])
+        : [ { label: repo.label, go: () => {}, weight: '700', color: t.ink, sep: '' } ]),
+
+      hub: hub, panel: panel,
+      mapDomains: mapDomains, mapLeaves: mapLeaves, mapEdges: mapEdges,
+      canvasW: CANVAS_W + 'px', canvasH: CANVAS_H + 'px',
+      canvasBox: 'width: ' + CANVAS_W + 'px; height: ' + CANVAS_H + 'px;',
+      viewBox: '0 0 ' + CANVAS_W + ' ' + CANVAS_H,
+      scaledW: Math.round(CANVAS_W * zoom) + 'px',
+      scaledH: Math.round(CANVAS_H * zoom) + 'px',
+      zoomTransform: 'scale(' + zoom + ')',
+      zoomLabel: Math.round(zoom * 100) + ' %',
+      rootTop: (rootCy - 54) + 'px', rootLeft: X_ROOT + 'px', rootW: W_ROOT + 'px',
+      zoomSteps: [0.45, 0.62, 0.85, 1.15].map(z => ({
+        label: Math.round(z * 100) + '%',
+        bg: Math.abs(z - zoom) < 0.001 ? t.accent : 'transparent',
+        fg: Math.abs(z - zoom) < 0.001 ? t.onAccent : t.inkSoft,
+        border: Math.abs(z - zoom) < 0.001 ? t.accent : t.line,
+        go: () => this.setState({ zoom: z })
+      })),
+      legend: ['live', 'wip', 'frozen', 'idea'].map(s => ({ label: LABELS[s], dot: t.statusFg[s] })),
+      overview: overview, projectSegs: projectSegs, projectCounts: projectCounts,
+
+      domainCards: domains.map(d => {
+        const tn = tone(d.tone);
+        return { name: d.name, num: d.num, role: d.role,
+          preview: d.features.slice(0, 4).map(f => f.name),
+          bg: tn.bg, ink: tn.ink, inkSoft: tn.inkSoft, border: tn.border, chipBg: tn.chipBg,
+          go: () => this.setState({ domain: d.key, feat: null }) };
+      }),
+
+      features: domain ? domain.features.map(f => {
+        const on = this.state.feat === f.name, p = pill(f.status);
+        return { name: f.name, what: f.what, status: LABELS[f.status],
+          mark: on ? '▸' : '·', caret: on ? tone(domain.tone).dot : t.inkFaint,
+          bg: on ? t.surfaceAlt : 'transparent',
+          pillBg: p.bg, pillFg: p.fg, pillBorder: p.border,
+          go: () => this.setState({ feat: f.name }) };
+      }) : [],
+
+      sessions: repo.sessions.map(s => {
+        const tn = tone(s.tone), p = pill(s.outcome);
+        return { num: s.num, date: s.date, turns: s.turns,
+          prompt: s.prompt, reply: s.reply, touched: s.touched,
+          railBg: tn.dot, railInk: rk === 'sole' ? tn.ink : '#0E1117',
+          outcome: s.outcome === 'wip' ? 'en cours' : 'livré',
+          pillBg: p.bg, pillFg: p.fg, pillBorder: p.border };
+      }),
+      memories: repo.memories,
+
+      ctxFiles: repo.ctxFiles.map(f => {
+        const tn = tone(f.tone);
+        return { name: f.name, size: f.size, role: f.role, chips: f.chips,
+          bg: tn.bg, ink: tn.ink, inkSoft: tn.inkSoft, border: tn.border, chipBg: tn.chipBg };
+      }),
+      ctxRules: repo.ctxRules, ctxNever: repo.ctxNever, ctxOpen: repo.ctxOpen,
+
+      phases: repo.phases.map(p => {
+        const pl = pill(p.tone);
+        return { num: p.num, status: p.status, title: p.title, detail: p.detail,
+          bar: pl.border, pillBg: pl.bg, pillFg: pl.fg, pillBorder: pl.border };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
