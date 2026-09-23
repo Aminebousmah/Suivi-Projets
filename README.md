@@ -44,7 +44,7 @@ src/
     keyboard.ts       déplacement dans l'arbre au clavier
     useMediaQuery.ts  ce que les composants savent de la place disponible
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        215 tests Vitest sur ces douze modules
+    __tests__/        224 tests Vitest, logique pure et rendu compris
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -52,6 +52,7 @@ src/
     ContextView.tsx   04 Contexte Claude — fichiers lus, règles actives, interdits, décisions ouvertes
     ProgressView.tsx  05 Avancement — les phases de plan.md avec leur statut réel
     GitHubView.tsx    06 Dépôt réel — métadonnées GitHub, commits, écarts de fichiers
+    arch/             les morceaux de l'arbre : canvas, cartes, tableau, panneau
     __tests__/        tests de rendu : ce qu'un lecteur voit, vue par vue
   components/
     ui.tsx            primitives partagées (bouton à survol, sur-titre mono)
@@ -97,6 +98,12 @@ Les styles étant en ligne, hérités de la maquette, aucune règle CSS ne peut 
 c'est le composant qui sait s'il est à l'étroit, via `useMediaQuery`. Sous 720 px, le
 panneau latéral passe sous le contenu et les colonnes secondaires des tableaux
 s'effacent. Vérifié à 390 px comme à 1440 px : aucun débordement horizontal.
+
+## État du projet
+
+Les six phases de `plan.md` sont livrées. Il reste deux gestes, hors du dépôt, pour que
+le site soit en ligne : activer GitHub Pages dans les réglages, et fusionner la branche
+de travail dans `main`. `plan.md` dit aussi ce qui n'a pas été fait, et pourquoi.
 
 ## Publication
 
@@ -165,7 +172,7 @@ rien : **un fichier que rien ne cite n'est ni mort ni superflu — il est seulem
 décrit.** C'est l'inverse des écarts, qui pointent des chemins cités mais absents du
 dépôt.
 
-Atlas se décrit lui-même en entier : les 61 fichiers du dépôt sont rattachés à une
+Atlas se décrit lui-même en entier : chaque fichier suivi par git est rattaché à une
 fonctionnalité. Un test le vérifie à chaque exécution et nomme les fichiers oubliés, de
 sorte que la description ne peut plus prendre du retard en silence.
 

@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : en développement actif. Aucun déploiement pour l'instant.
+État : fonctionnellement terminé, six phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -52,3 +52,15 @@ Les fichiers cités par les fonctionnalités et les fichiers du dépôt sont rap
 - [x] Un test échoue dès qu'un fichier ajouté n'est décrit nulle part
 
 Le rapprochement ne juge rien : un fichier que rien ne cite n'est ni mort ni superflu, il est seulement non décrit.
+
+## Ce qui reste, et pourquoi ce n'est pas fait
+
+- **Publier** — le workflow est écrit et vérifié, mais GitHub Pages s'active dans les
+  réglages du dépôt, et la publication se déclenche sur `main`. Deux gestes qui
+  appartiennent au propriétaire du dépôt.
+- **Ouvrir Atlas à un dépôt quelconque** — aujourd'hui trois dépôts sont décrits dans
+  `src/data/repos.ts`. Lire un dépôt saisi à la volée demanderait de déduire aussi sa
+  palette et ses domaines, ou d'assumer qu'il n'en a pas.
+- **Rapprocher les sessions du reste** — une session sait quels fichiers elle a touchés,
+  et le croisement sait ce que ces fichiers servent : les brancher l'un sur l'autre dirait
+  quelles fonctionnalités une session a fait avancer.

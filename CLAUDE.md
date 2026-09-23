@@ -9,7 +9,7 @@ Le projet est né d'une maquette Claude Design, conservée intacte sous `design/
 - `src/App.tsx` — coque : barre de dépôts, en-tête, onglets. Ne calcule rien.
 - `src/data/` — le modèle et son contenu : types, thèmes, description des dépôts, libellés.
 - `src/lib/` — toute la logique pure, avec ses tests : graphe, état d'URL, client GitHub, croisement de chemins, lecture des fichiers de contexte.
-- `src/views/` — une vue par onglet, six au total.
+- `src/views/` — une vue par onglet, six au total ; `src/views/arch/` porte les morceaux de l'arbre.
 - `design/` — la maquette d'origine. Référence, pas du code applicatif.
 
 ## Conventions de code
@@ -20,6 +20,9 @@ Le projet est né d'une maquette Claude Design, conservée intacte sous `design/
 - Une affirmation sur un dépôt doit être vérifiable : donnée citée, ou lecture GitHub.
 - Les messages, libellés et commentaires sont en français, messages d'erreur compris.
 - Un message d'erreur dit quoi faire, pas seulement ce qui a échoué.
+- Une fonctionnalité décrit une question à laquelle un fichier répond ; deux fichiers qui répondent à la même question vont ensemble, deux questions distinctes se séparent.
+- Tout fichier suivi par git est cité par au moins une fonctionnalité — un test le vérifie et nomme les oubliés.
+- Le cache est une optimisation, jamais une source : un stockage refusé, plein ou corrompu n'empêche rien.
 
 ## À ne jamais faire
 
@@ -28,6 +31,8 @@ Le projet est né d'une maquette Claude Design, conservée intacte sous `design/
 - Modifier les fichiers de `design/` : c'est la référence, pas du code applicatif.
 - Ajouter une dépendance sans usage réel dans le code.
 - Faire échouer une lecture parce qu'un fichier facultatif manque : une absence est une information, pas une panne.
+- Conserver les fichiers de session déposés d'une visite à l'autre : ce sont des conversations entières, gardées seulement le temps qu'on les regarde.
+- Laisser une requête sans délai maximal : une seule requête pendante gèle la vue entière.
 
 ## Workflow attendu
 

@@ -15,6 +15,7 @@ export const REPOS: Record<string, RepoData> = {
       "Collecte des inscriptions newsletter et des messages de contact sans backend propre."
     ],
     todo: [
+      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
       "Activer l'aile marchande : compte Snipcart, clé dans Vercel, flag commerce à true.",
       "Compléter les mentions légales avec SIREN et TVA intracommunautaire.",
       "Créer les pages manquantes : /drop, /drop/archive, /coffrets, /carte-cadeau.",
@@ -302,6 +303,7 @@ export const REPOS: Record<string, RepoData> = {
       "Enrichit joueurs et clubs avec les logos, photos et valeurs marché de Transfermarkt."
     ],
     todo: [
+      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
       "Compléter la couverture : quatre saisons sur cinq n'ont que cinq stat_types sur onze.",
       "Relancer l'extraction FBref dès que le rate-limit retombe, via la vue Big 5 Combined.",
       "Figer l'environnement : requirements.txt régénéré, soccerdata pinné en 1.8.8.",
@@ -578,7 +580,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '45', k: 'fonctions' }, { v: '217', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '46', k: 'fonctions' }, { v: '224', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -592,7 +594,7 @@ export const REPOS: Record<string, RepoData> = {
       "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit."
     ],
     todo: [
-      "Activer GitHub Pages dans les réglages du dépôt : le workflow est prêt, la source reste à choisir.",
+      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
     ],
     stack: [
       { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
@@ -602,13 +604,13 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "217 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "224 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "217", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "224", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
@@ -648,10 +650,13 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Fiche projet", status: 'live', what: "Ce que le projet fait, ce qu'il reste à faire, la pile poste par poste, la feuille de suivi.",
             files: ['src/views/SheetView.tsx'] },
           { name: "Graphe des fonctionnalités", status: 'live', what: "Arbre projet → domaine → fonctionnalité, tracé en courbes de Bézier, avec quatre paliers de zoom.",
-            files: ['src/views/ArchView.tsx', 'src/lib/graph.ts — buildMap'],
+            files: ['src/views/ArchView.tsx', 'src/views/arch/GraphCanvas.tsx', 'src/lib/graph.ts — buildMap'],
             notes: ["Tout est dessiné d'un coup : on navigue au zoom et au défilement", "La feuille sélectionnée épaissit son arête", "Le panneau de droite suit la sélection"] },
           { name: "Vue liste", status: 'live', what: "Les mêmes domaines en cartes, puis le tableau des fonctionnalités du domaine ouvert.",
-            files: ['src/views/ArchView.tsx'] },
+            files: ['src/views/arch/DomainCards.tsx', 'src/views/arch/FeatureTable.tsx'] },
+          { name: "Panneau de détail", status: 'live', what: "Ce que porte la sélection : rôle, statut, chemins cités, ce qu'ils donnent dans le dépôt, et la règle d'or.",
+            files: ['src/views/arch/DetailPanel.tsx'],
+            notes: ["Il parle de fonctionnalité ou de fichier selon l'arbre affiché", "Un chemin cité mais absent du dépôt y est encadré comme un avertissement"] },
           { name: "Sessions", status: 'live', what: "Vos fichiers de session déposés dans la page, lus et appariés en demandes et réponses.",
             files: ['src/views/SessionsView.tsx', 'src/lib/sessions.ts'],
             notes: ["Un navigateur ne lit pas ~/.claude/projects/ : les fichiers sont déposés, jamais envoyés ailleurs", "Un résultat d'outil revenu sous le rôle « user » n'est pas pris pour une demande", "Le raisonnement interne n'est pas affiché", "Une ligne illisible est comptée et ignorée", "Sans fichier déposé, la description écrite reste affichée"] },
@@ -758,8 +763,8 @@ export const REPOS: Record<string, RepoData> = {
             files: ['CLAUDE.md', 'plan.md', 'README.md'],
             notes: ["Ce sont exactement les fichiers que la vue Contexte Claude relit dans le dépôt", "Atlas se décrit donc avec les mêmes fichiers qu'il sait lire ailleurs", "plan.md porte les phases et leurs cases à cocher, reprises telles quelles par la vue Avancement"] },
           { name: "Tests de rendu", status: 'live', what: "Chaque vue, la navigation, l'arbre au clavier et les bascules d'affichage, éprouvés en jsdom.",
-            files: ['src/views/__tests__/render.test.tsx', 'src/setupTests.ts'],
-            notes: ["Ils remplacent les vérifications manuelles au navigateur", "jsdom n'est monté que pour ces tests : la logique pure s'en passe", "C'est ce test qui a montré que l'arbre n'était pas atteignable au clavier"] },
+            files: ['src/views/__tests__/render.test.tsx', 'src/views/__tests__/github.render.test.tsx', 'src/setupTests.ts'],
+            notes: ["Ils remplacent les vérifications manuelles au navigateur", "jsdom n'est monté que pour ces tests : la logique pure s'en passe", "C'est ce test qui a montré que l'arbre n'était pas atteignable au clavier", "GitHub y est simulé : la vue Dépôt réel est éprouvée sans toucher au réseau"] },
           { name: "Publication du build", status: 'live', what: "GitHub Pages à chaque poussée sur main, à condition que lint, tests et build passent.",
             files: ['.github/workflows/pages.yml', 'vite.config.ts — base'],
             notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Une étape reste manuelle : Settings, Pages, source « GitHub Actions »", "Rien n'est publié sur une base rouge"] }
@@ -824,10 +829,9 @@ export const REPOS: Record<string, RepoData> = {
       "Pas de dépendance ajoutée sans usage réel dans le code."
     ],
     ctxOpen: [
-      "Jusqu'où descendre dans le détail : un fichier par fonctionnalité, ou des regroupements plus larges ?",
-      "Où héberger le build : Vercel, GitHub Pages, ou rien pour l'instant ?",
-      "Faut-il garder les sessions déposées d'une visite à l'autre, ou les oublier à chaque fois ?",
-      "Faut-il un mode hors-ligne quand le quota GitHub est épuisé ?"
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Rapprocher les sessions du reste : dire quels fichiers une session a touchés, et quelles fonctionnalités ils servent.",
+      "Publier : le workflow attend que GitHub Pages soit activé dans les réglages, et que la branche rejoigne main."
     ],
     phases: [
       { num: 'Phase 1', status: 'fait', title: "Portage de la maquette", tone: 'live',

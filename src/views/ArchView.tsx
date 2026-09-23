@@ -4,9 +4,14 @@ import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { resolvedFor } from '../lib/coverage';
 import type { RepoCheck } from '../lib/verify';
-import { CANVAS_WIDTH, buildMap, buildOverview } from '../lib/graph';
+import { buildMap, buildOverview } from '../lib/graph';
 import { HANDLED, nextSelection, nodeId } from '../lib/keyboard';
 import { useNarrow } from '../lib/useMediaQuery';
+import type { PanelModel } from './arch/DetailPanel';
+import { DetailPanel } from './arch/DetailPanel';
+import { DomainCards } from './arch/DomainCards';
+import { FeatureTable } from './arch/FeatureTable';
+import { GraphCanvas } from './arch/GraphCanvas';
 import type { AtlasState } from '../lib/url';
 import { ZOOM_STEPS } from '../lib/url';
 
@@ -107,22 +112,7 @@ export function ArchView({
       ]
     : [{ label: repo.label, onClick: () => {}, weight: 700, color: t.ink, sep: '' }];
 
-  let panel: {
-    kicker: string;
-    title: string;
-    role: string;
-    titleColor: string;
-    hasStatus: boolean;
-    status: string;
-    pillBg: string;
-    pillFg: string;
-    pillBorder: string;
-    files: string[];
-    /** Ce que les chemins cités donnent réellement dans le dépôt. */
-    real: string[];
-    notesLabel: string;
-    notes: string[];
-  };
+  let panel: PanelModel;
   if (feat && domain) {
     const p = pill(feat.status);
     const resolved = resolvedFor(check, domain.key, feat.files);
@@ -511,559 +501,50 @@ export function ArchView({
                 })}
               </span>
             </div>
-
-            <div
-              ref={canvas}
+            <GraphCanvas
+              t={t}
+              map={map}
+              zoom={zoom}
+              fromRepo={fromRepo}
+              hubName={repo.hubName}
+              hubUnit={fromRepo ? 'éléments' : repo.hubUnit}
+              hubCount={hubCount}
+              hubTone={hubTone}
+              domainKey={domainKey}
+              featName={featName}
+              canvas={canvas}
               onKeyDown={onKeyDown}
-              role="tree"
-              // Sans point d'entrée au clavier, l'arbre ne se pilote qu'après
-              // avoir cliqué dedans : la tabulation doit pouvoir y mener.
-              tabIndex={0}
-              aria-label={`Arbre ${fromRepo ? 'du dépôt' : 'des fonctionnalités'} — flèches pour naviguer`}
-              style={{
-                border: `1px solid ${t.line}`,
-                borderRadius: 14,
-                background: t.surface,
-                overflow: 'auto',
-                maxHeight: '76vh',
-                minHeight: 520,
-              }}
-            >
-              <div
-                style={{
-                  width: Math.round(CANVAS_WIDTH * zoom) + 'px',
-                  height: Math.round(parseFloat(map.canvasH) * zoom) + 'px',
-                  position: 'relative',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    transform: `scale(${zoom})`,
-                    transformOrigin: '0 0',
-                    width: map.canvasW,
-                    height: map.canvasH,
-                  }}
-                >
-                  <svg
-                    viewBox={map.viewBox}
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: 0,
-                      width: map.canvasW,
-                      height: map.canvasH,
-                    }}
-                  >
-                    {map.mapEdges.map((e) => (
-                      <path
-                        key={e.key}
-                        d={e.d}
-                        fill="none"
-                        stroke={e.stroke}
-                        strokeWidth={e.w}
-                        strokeLinecap="round"
-                      />
-                    ))}
-                  </svg>
-
-                  <button
-                    onClick={reset}
-                    data-noeud={nodeId({ domain: null, feat: null })}
-                    aria-label={`Projet ${repo.hubName}`}
-                    style={{
-                      position: 'absolute',
-                      left: map.rootLeft,
-                      top: map.rootTop,
-                      width: map.rootW,
-                      appearance: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      borderRadius: 12,
-                      background: hubTone.bg,
-                      color: hubTone.ink,
-                      border: `1px solid ${hubTone.border}`,
-                      padding: '16px 18px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 6,
-                    }}
-                  >
-                    <Kicker color={hubTone.inkSoft} size={9.5}>
-                      Projet
-                    </Kicker>
-                    <span style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.2 }}>
-                      {repo.hubName}
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                      <span
-                        style={{
-                          fontFamily: t.display,
-                          fontWeight: Number(t.displayWeight),
-                          fontSize: 30,
-                          lineHeight: 1,
-                        }}
-                      >
-                        {hubCount}
-                      </span>
-                      <Kicker color={hubTone.inkSoft} size={9.5}>
-                        {fromRepo ? 'éléments' : repo.hubUnit}
-                      </Kicker>
-                    </span>
-                  </button>
-
-                  {map.mapDomains.map((d) => (
-                    <button
-                      key={d.key}
-                      onClick={() => openDomain(d.key)}
-                      data-noeud={nodeId({ domain: d.key, feat: null })}
-                      aria-expanded={domainKey === d.key}
-                      style={{
-                        position: 'absolute',
-                        left: d.left,
-                        top: d.top,
-                        width: d.w,
-                        appearance: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        borderRadius: 11,
-                        background: d.bg,
-                        color: d.ink,
-                        border: `1px solid ${d.border}`,
-                        boxShadow: d.ring,
-                        padding: '13px 15px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 5,
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: 'flex',
-                          alignItems: 'baseline',
-                          justifyContent: 'space-between',
-                          gap: 10,
-                        }}
-                      >
-                        <span style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.25 }}>
-                          {d.name}
-                        </span>
-                        <span
-                          style={{
-                            fontFamily: MONO,
-                            fontSize: 10,
-                            letterSpacing: '0.1em',
-                            color: d.inkSoft,
-                          }}
-                        >
-                          {d.num}
-                        </span>
-                      </span>
-                      <span style={{ fontSize: 12, lineHeight: 1.4, color: d.inkSoft }}>
-                        {d.role}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: MONO,
-                          fontSize: 10,
-                          letterSpacing: '0.08em',
-                          color: d.inkSoft,
-                        }}
-                      >
-                        {d.count}
-                      </span>
-                    </button>
-                  ))}
-
-                  {map.mapLeaves.map((l) => (
-                    <button
-                      key={l.key}
-                      onClick={() => openFeat(l.domainKey, l.name)}
-                      data-noeud={nodeId({ domain: l.domainKey, feat: l.name })}
-                      aria-current={featName === l.name}
-                      style={{
-                        position: 'absolute',
-                        left: l.left,
-                        top: l.top,
-                        width: l.w,
-                        height: l.h,
-                        boxSizing: 'border-box',
-                        appearance: 'none',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        borderRadius: 9,
-                        background: l.bg,
-                        color: l.ink,
-                        border: `1px solid ${l.border}`,
-                        padding: '0 13px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          background: l.dot,
-                          flex: 'none',
-                        }}
-                      />
-                      <span
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 600,
-                          lineHeight: 1.25,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {l.name}
-                      </span>
-                      <span
-                        style={{
-                          marginLeft: 'auto',
-                          fontFamily: MONO,
-                          fontSize: 10,
-                          letterSpacing: '0.06em',
-                          textTransform: 'uppercase',
-                          color: l.statusFg,
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {l.status}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              onReset={reset}
+              onOpenDomain={openDomain}
+              onOpenFeat={openFeat}
+            />
           </div>
         )}
 
         {isList && domains.length > 0 && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: 10,
-            }}
-          >
-            {domains.map((d) => {
-              const tn = t.tones[d.tone];
-              return (
-                <button
-                  key={d.key}
-                  onClick={() => openDomain(d.key)}
-                  style={{
-                    appearance: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    border: `1px solid ${tn.border}`,
-                    borderRadius: 12,
-                    background: tn.bg,
-                    color: tn.ink,
-                    padding: '16px 17px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 11,
-                    minWidth: 0,
-                  }}
-                >
-                  <span
-                    style={{
-                      display: 'flex',
-                      alignItems: 'baseline',
-                      justifyContent: 'space-between',
-                      gap: 12,
-                    }}
-                  >
-                    <span style={{ fontSize: 14.5, fontWeight: 700, lineHeight: 1.25 }}>
-                      {d.name}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: MONO,
-                        fontSize: 10,
-                        letterSpacing: '0.1em',
-                        color: tn.inkSoft,
-                      }}
-                    >
-                      {d.num}
-                    </span>
-                  </span>
-                  <span style={{ fontSize: 12.5, lineHeight: 1.5, color: tn.inkSoft }}>
-                    {d.role}
-                  </span>
-                  <span style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                    {d.features.slice(0, 4).map((f) => (
-                      <span
-                        key={f.name}
-                        style={{
-                          fontFamily: MONO,
-                          fontSize: 10,
-                          padding: '4px 8px',
-                          borderRadius: 5,
-                          background: tn.chipBg,
-                        }}
-                      >
-                        {f.name}
-                      </span>
-                    ))}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <DomainCards t={t} domains={domains} onOpenDomain={openDomain} />
         )}
 
         {inDomain && domain && (
-          <div
-            style={{
-              border: `1px solid ${t.line}`,
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: t.surface,
-            }}
-          >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: narrow ? 'minmax(0, 1fr) 92px' : '250px minmax(0, 1fr) 100px',
-                gap: narrow ? 10 : 16,
-                padding: '10px 16px',
-                borderBottom: `1px solid ${t.line}`,
-                fontFamily: MONO,
-                fontSize: 9.5,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: t.inkFaint,
-              }}
-            >
-              <span>{domain.features.some((f) => f.status) ? 'Fonctionnalité' : 'Élément'}</span>
-              {!narrow && (
-                <span>{domain.features.some((f) => f.status) ? "Ce qu'elle fait" : 'Chemin'}</span>
-              )}
-              <span style={{ textAlign: 'right' }}>
-                {domain.features.some((f) => f.status) ? 'Statut' : 'Poids'}
-              </span>
-            </div>
-            {domain.features.map((f) => {
-              const on = featName === f.name;
-              const p = pill(f.status);
-              return (
-                <HoverButton
-                  key={f.name}
-                  onClick={() => navigate({ feat: f.name })}
-                  hoverBackground={t.surfaceAlt}
-                  style={{
-                    appearance: 'none',
-                    cursor: 'pointer',
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    textAlign: 'left',
-                    background: on ? t.surfaceAlt : 'transparent',
-                    border: 'none',
-                    borderBottom: `1px solid ${t.line}`,
-                    padding: '12px 16px',
-                    display: 'grid',
-                    gridTemplateColumns: narrow
-                      ? 'minmax(0, 1fr) 92px'
-                      : '250px minmax(0, 1fr) 100px',
-                    gap: narrow ? 10 : 16,
-                    alignItems: 'baseline',
-                    color: t.ink,
-                  }}
-                >
-                  <span
-                    style={{ display: 'flex', alignItems: 'baseline', gap: 9, minWidth: 0 }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: MONO,
-                        fontSize: 11,
-                        color: on ? t.tones[domain.tone].dot : t.inkFaint,
-                      }}
-                    >
-                      {on ? '▸' : '·'}
-                    </span>
-                    <span style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.35 }}>
-                      {f.name}
-                    </span>
-                  </span>
-                  {!narrow && (
-                    <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
-                      {f.what}
-                    </span>
-                  )}
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: 9,
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                      padding: '4px 7px',
-                      borderRadius: 999,
-                      background: f.status ? p.bg : 'transparent',
-                      color: f.status ? p.fg : t.inkSoft,
-                      border: `1px solid ${f.status ? p.border : t.line}`,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {badge(f)}
-                  </span>
-                </HoverButton>
-              );
-            })}
-          </div>
+          <FeatureTable
+            t={t}
+            domain={domain}
+            featName={featName}
+            narrow={narrow}
+            badge={badge}
+            pill={pill}
+            onOpenFeat={(name) => navigate({ feat: name })}
+          />
         )}
       </div>
 
-      <aside
-        style={{
-          borderLeft: narrow ? 'none' : `1px solid ${t.line}`,
-          borderTop: narrow ? `1px solid ${t.line}` : 'none',
-          background: t.surfaceAlt,
-          padding: narrow ? '20px clamp(18px, 3.5vw, 38px) 36px' : '22px 22px 44px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 20,
-          minHeight: narrow ? 0 : '68vh',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <Kicker color={t.inkFaint} size={9.5}>
-            {panel.kicker}
-          </Kicker>
-          <span
-            style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.3, color: panel.titleColor }}
-          >
-            {panel.title}
-          </span>
-          {panel.hasStatus && (
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: 9.5,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                padding: '5px 10px',
-                borderRadius: 999,
-                background: panel.pillBg,
-                color: panel.pillFg,
-                border: `1px solid ${panel.pillBorder}`,
-                alignSelf: 'flex-start',
-              }}
-            >
-              {panel.status}
-            </span>
-          )}
-          <span style={{ fontSize: 13, lineHeight: 1.6, color: t.inkSoft }}>{panel.role}</span>
-        </div>
-
-        {panel.files.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Kicker color={t.inkFaint} size={9.5}>
-              {fromRepo ? 'Chemin dans le dépôt' : 'Implémentée par'}
-            </Kicker>
-            {panel.files.map((f) => (
-              <span
-                key={f}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: 11.5,
-                  padding: '7px 10px',
-                  borderRadius: 6,
-                  background: t.surface,
-                  border: `1px solid ${t.line}`,
-                  wordBreak: 'break-word',
-                }}
-              >
-                {f}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {panel.real.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Kicker color={t.inkFaint} size={9.5}>
-              Dans le dépôt
-            </Kicker>
-            {panel.real.map((r) => (
-              <span
-                key={r}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: 11,
-                  lineHeight: 1.45,
-                  padding: '7px 10px',
-                  borderRadius: 6,
-                  background: t.surface,
-                  border: `1px solid ${r.startsWith('absent') ? t.warnBorder : t.line}`,
-                  color: r.startsWith('absent') ? t.warnFg : t.inkSoft,
-                  wordBreak: 'break-word',
-                }}
-              >
-                {r}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {panel.notes.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-            <Kicker color={t.inkFaint} size={9.5}>
-              {panel.notesLabel}
-            </Kicker>
-            {panel.notes.map((n) => (
-              <div
-                key={n}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '8px minmax(0, 1fr)',
-                  gap: 11,
-                  alignItems: 'start',
-                }}
-              >
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: 2,
-                    background: t.accent,
-                    marginTop: 7,
-                  }}
-                />
-                <span style={{ fontSize: 12.5, lineHeight: 1.5 }}>{n}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div
-          style={{
-            marginTop: 'auto',
-            borderTop: `1px solid ${t.line}`,
-            paddingTop: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 7,
-          }}
-        >
-          <Kicker color={t.inkFaint} size={9.5}>
-            Règle d'or du repo
-          </Kicker>
-          <span style={{ fontSize: 12.5, lineHeight: 1.55, color: t.inkSoft }}>
-            {repo.goldenRule}
-          </span>
-        </div>
-      </aside>
+      <DetailPanel
+        t={t}
+        panel={panel}
+        narrow={narrow}
+        fromRepo={fromRepo}
+        goldenRule={repo.goldenRule}
+      />
     </section>
   );
 }
