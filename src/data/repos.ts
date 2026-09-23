@@ -581,7 +581,7 @@ export const REPOS: Record<string, RepoData> = {
 
   atlas: {
     label: 'Atlas',
-    slug: 'Aminebousmah/Suivi-Projets · claude/eager-mayer-q2y5nz',
+    slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
     stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '51', k: 'fonctions' }, { v: '261', k: 'tests' } ],
