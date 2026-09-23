@@ -3,6 +3,7 @@ import { HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { resolvedFor } from '../lib/coverage';
+import { SourceBadge } from '../components/SourceBadge';
 import type { RepoCheck } from '../lib/verify';
 import { buildMap, buildOverview } from '../lib/graph';
 import { HANDLED, nextSelection, nodeId } from '../lib/keyboard';
@@ -24,6 +25,8 @@ interface Props {
   treeDomains: Domain[] | null;
   /** Confrontation des fichiers cités à l'arborescence, si le dépôt est lu. */
   check: RepoCheck | null;
+  /** Vrai quand l'arbre décrit vient de l'atlas.md du dépôt. */
+  fromAtlasFile: boolean;
   domainKey: string | null;
   featName: string | null;
   zoom: number;
@@ -37,6 +40,7 @@ export function ArchView({
   src,
   treeDomains,
   check,
+  fromAtlasFile,
   domainKey,
   featName,
   zoom,
@@ -264,6 +268,16 @@ export function ArchView({
             ))}
           </span>
         </div>
+
+        {!fromRepo && (
+          <SourceBadge
+            t={t}
+            live={fromAtlasFile}
+            what="Les domaines et leurs statuts"
+            from="atlas.md"
+            hint="Un atlas.md dans le dépôt ferait décrire cet arbre par le projet lui-même — voir ATLAS-PROMPT.md."
+          />
+        )}
 
         {fromRepo && domains.length === 0 && (
           <div

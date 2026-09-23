@@ -390,6 +390,11 @@ export function GitHubView({
                 </div>
               ))}
             </div>
+            <span style={{ fontSize: 12.5, lineHeight: 1.55, color: t.inkSoft }}>
+              {state.data.context.atlas
+                ? `atlas.md décrit ${state.data.context.atlas.domains.length} domaine(s) et ${state.data.context.atlas.domains.reduce((a, d) => a + d.features.length, 0)} fonctionnalité(s) : l'arbre décrit et la feuille de suivi viennent du dépôt.`
+                : "Ce dépôt ne fournit pas d'atlas.md : l'arbre décrit reste celui de src/data/repos.ts. ATLAS-PROMPT.md contient le prompt qui le produit."}
+            </span>
             <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
               {state.data.context.phases.length} phase(s) lue(s) dans plan.md,{' '}
               {state.data.context.ctxRules.length} règle(s) et{' '}

@@ -100,6 +100,7 @@ describe('parseNever', () => {
 describe('detectStatus', () => {
   it.each([
     ['Phase 1 — Foundation ✅', 'live'],
+    ['Les 10 portes — en ligne', 'live'],
     ['Phase 2 : Boutique (fait)', 'live'],
     ['Pivot 🚧', 'wip'],
     ['Phase 5 — Post-lancement 💡', 'idea'],

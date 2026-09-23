@@ -1,4 +1,6 @@
 import type { CtxFile, Phase, Status, ToneKey } from '../data/types';
+import type { AtlasDoc } from './atlasFile';
+import { parseAtlasFile } from './atlasFile';
 import type { TextFile } from './github';
 
 /**
@@ -122,7 +124,7 @@ const Z = '(?![\\p{L}])';
 const word = (...alts: string[]) => new RegExp(A + '(?:' + alts.join('|') + ')' + Z, 'iu');
 
 const STATUS_RULES: { status: Status; label: string; test: RegExp }[] = [
-  { status: 'live', label: 'fait', test: word('✅', '✔', '☑', 'faits?', 'termin[ée]e?s?', 'livr[ée]e?s?', 'done', 'ok') },
+  { status: 'live', label: 'fait', test: word('✅', '✔', '☑', 'faits?', 'termin[ée]e?s?', 'livr[ée]e?s?', 'en ligne', 'publi[ée]e?s?', 'done', 'ok') },
   { status: 'wip', label: 'en cours', test: word('🚧', '🔨', '⚙', 'en cours', 'wip', 'in progress', 'd[ée]marr[ée]e?') },
   { status: 'idea', label: 'idées', test: word('💡', 'id[ée]es?', 'backlog', 'exploratoire', 'plus tard', 'peut-[êe]tre') },
   { status: 'frozen', label: 'à venir', test: word('⏳', '🧊', '❄', 'à venir', 'pr[ée]vue?s?', 'planifi[ée]e?', 'gel[ée]e?', 'bloqu[ée]e?', 'todo', 'pas commenc[ée]e?') },
@@ -263,10 +265,12 @@ export interface LiveContext {
   absent: string[];
   /** Fichiers présents peut-être, mais que GitHub n'a pas rendus. */
   unreadable: string[];
+  /** Le fichier de suivi du dépôt, quand il en fournit un. */
+  atlas: AtlasDoc | null;
 }
 
-export const CONTEXT_FILES = ['CLAUDE.md', 'plan.md', 'README.md'];
-const TONES: ToneKey[] = ['a', 'b', 'd'];
+export const CONTEXT_FILES = ['CLAUDE.md', 'plan.md', 'README.md', 'atlas.md'];
+const TONES: ToneKey[] = ['a', 'b', 'd', 'c'];
 
 /** Ce qu'une tentative de lecture a donné : le fichier, son absence, ou un échec. */
 export type FileResult = TextFile | null | { failed: true };
@@ -280,6 +284,7 @@ export function buildLiveContext(files: FileResult[]): LiveContext {
   const claude = isFile(files[0]) ? files[0] : null;
   const plan = isFile(files[1]) ? files[1] : null;
   const readme = isFile(files[2]) ? files[2] : null;
+  const atlasFile = isFile(files[3]) ? files[3] : null;
 
   const ctxFiles: CtxFile[] = [];
   const found: string[] = [];
@@ -310,5 +315,6 @@ export function buildLiveContext(files: FileResult[]): LiveContext {
     found,
     absent,
     unreadable,
+    atlas: atlasFile ? parseAtlasFile(atlasFile) : null,
   };
 }

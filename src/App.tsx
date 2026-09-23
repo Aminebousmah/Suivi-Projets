@@ -26,6 +26,12 @@ export default function App() {
   const { state: source, reload } = useGitHub(repo, token, connected);
   const live = source.status === 'ready' ? source.data.context : null;
 
+  // Un dépôt qui fournit atlas.md décrit lui-même son arbre et son suivi :
+  // la description figée n'est plus qu'un repli.
+  const described = live?.atlas
+    ? { ...repo, domains: live.atlas.domains, tracking: live.atlas.tracking.length ? live.atlas.tracking : repo.tracking, does: live.atlas.does.length ? live.atlas.does : repo.does, todo: live.atlas.todo.length ? live.atlas.todo : repo.todo }
+    : repo;
+
   const connect = (nextToken: string) => {
     setToken(nextToken);
     setConnected(true);
@@ -294,15 +300,16 @@ export default function App() {
         {BLURBS[view]}
       </div>
 
-      {view === 'sheet' && <SheetView t={t} repo={repo} />}
+      {view === 'sheet' && <SheetView t={t} repo={described} live={!!live?.atlas} />}
       {view === 'arch' && (
         <ArchView
           t={t}
-          repo={repo}
+          repo={described}
           viz={viz}
           src={state.src}
           treeDomains={source.status === 'ready' ? source.data.treeDomains : null}
           check={source.status === 'ready' ? source.data.check : null}
+          fromAtlasFile={!!live?.atlas}
           domainKey={domainKey}
           featName={featName}
           zoom={zoom}
