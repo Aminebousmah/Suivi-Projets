@@ -4,9 +4,11 @@ Application de visualisation de projets GitHub : pour chaque dépôt suivi, elle
 ce que le projet fait, l'arbre de ses fonctionnalités, l'historique des sessions Claude
 Code, le contexte que Claude lit avant d'agir, et l'avancement des phases.
 
-Trois dépôts sont décrits : **Sole-Citron** (site éditorial Astro), **Eleven-Fields**
-(dashboard Streamlit) et **Atlas** lui-même. Chacun porte sa propre direction
-artistique, dérivée de ses tokens CSS.
+Sept dépôts sont suivis. Trois sont décrits en entier : **Sole-Citron** (site éditorial
+Astro), **Eleven-Fields** (dashboard Streamlit) et **Atlas** lui-même. Quatre attendent
+leur `atlas.md` : **Futuremoi** (veille freelance), **bottrading** (signaux Telegram vers
+MetaTrader 5), **Clip-Core** (clips Twitch) et **Happicture** (photos d'événement). Chacun
+porte sa propre direction artistique, dérivée de la palette qu'il déclare.
 
 ## Démarrage
 
@@ -273,18 +275,23 @@ Tout le style vient de `src/data/themes.ts` : un thème par dépôt, avec sa pal
 tons de domaine, ses pastilles de statut et sa typographie. Les composants ne codent
 aucune couleur en dur — ils lisent le thème actif.
 
-Polices : DM Serif Display, Manrope et JetBrains Mono, chargées depuis Google Fonts
-dans `index.html`.
+Polices : DM Serif Display, Manrope et JetBrains Mono, plus Sora et Space Grotesk pour
+Happicture et bottrading, chargées depuis Google Fonts dans `index.html`.
 
 ## Données
 
 Le contenu de `src/data/repos.ts` est écrit à la main : pour Sole-Citron et
-Eleven-Fields il est repris de la maquette, pour Atlas il décrit ce dépôt. C'est une
+Eleven-Fields il est repris de la maquette, pour Atlas il décrit ce dépôt. Pour les
+quatre autres, il ne contient que des faits lus dans leurs fichiers — README, CLAUDE.md,
+plan — et aucun domaine : leur arbre viendra de leur `atlas.md`. Leur thème est construit
+par `src/lib/palette.ts` à partir des couleurs que chacun déclare. C'est une
 description figée, pas une lecture du code — d'où la vue « Dépôt réel », qui sert
 justement à mesurer l'écart.
 
 Les règles, les interdits et les phases sont relus dans le dépôt quand il est connecté,
 l'arborescence et l'activité git viennent de GitHub, et les sessions des fichiers déposés.
+Ces quatre dépôts sont privés : les lire demande un jeton GitHub personnel, saisi dans la
+vue « Dépôt réel ».
 Ce qui reste écrit à la main, ce sont les domaines fonctionnels et leur avancement : c'est
 du sens, et aucune source mécanique ne le porte.
 

@@ -20,6 +20,7 @@ import {
 } from './github';
 import type { Domain } from '../data/types';
 import { buildDomainsFromTree } from './tree';
+import { alignDomainKeys } from './atlasFile';
 import type { RepoCheck } from './verify';
 import { checkRepo } from './verify';
 
@@ -143,16 +144,22 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
       .then(async ([meta, tree, commits, ...files]) => {
         if (cancelled) return;
 
-        // L'activité s'obtient en une requête pour toute la plage de commits :
-        // la demander fichier par fichier en coûterait une par fichier. Si la
-        // comparaison échoue, l'arbre reste affichable, sans les constats.
         // atlas.md, quand le dépôt en fournit un, remplace la description
         // figée : c'est le dépôt qui dit alors ce qu'il fait.
         const context = buildLiveContext(files);
+        if (context.atlas) {
+          context.atlas = {
+            ...context.atlas,
+            domains: alignDomainKeys(context.atlas.domains, repo.domains),
+          };
+        }
         const described = context.atlas
           ? { ...repo, domains: context.atlas.domains }
           : repo;
         const coverage = buildCoverage(described, tree.entries);
+        // L'activité s'obtient en une requête pour toute la plage de commits :
+        // la demander fichier par fichier en coûterait une par fichier. Si la
+        // comparaison échoue, l'arbre reste affichable, sans les constats.
         const range = windowFrom(commits);
         const changed = range
           ? await fetchCompare(ref, range.base, range.head, client).catch(() => [])

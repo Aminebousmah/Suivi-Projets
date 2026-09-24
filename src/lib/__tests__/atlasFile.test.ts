@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parseAtlasFile, tableRows } from '../atlasFile';
+import { alignDomainKeys, parseAtlasFile, tableRows } from '../atlasFile';
+import { REPOS } from '../../data/repos';
 import type { TextFile } from '../github';
 
 const file = (text: string, path = 'atlas.md'): TextFile => ({
@@ -134,5 +135,27 @@ describe('tableRows', () => {
 
   it('ignore ce qui n’est pas une ligne de tableau', () => {
     expect(tableRows(['du texte', '| a |', ''])).toEqual([['a']]);
+  });
+});
+
+describe('alignDomainKeys', () => {
+  const reference = REPOS.atlas.domains;
+
+  it('reprend la clé du domaine décrit qui porte le même nom', () => {
+    const live = [{ ...reference[0], key: 'coque-et-navigation', name: `  ${reference[0].name.toUpperCase()} ` }];
+    expect(alignDomainKeys(live, reference)[0].key).toBe(reference[0].key);
+  });
+
+  it('laisse sa clé à un domaine que les données ne connaissent pas', () => {
+    const live = [{ ...reference[0], key: 'nouveau', name: 'Nouveau domaine' }];
+    expect(alignDomainKeys(live, reference)[0]).toBe(live[0]);
+    expect(alignDomainKeys(live, [])[0]).toBe(live[0]);
+  });
+
+  it("retrouve les clés d'Atlas dans son propre atlas.md", () => {
+    const text = readFileSync('atlas.md', 'utf8');
+    const doc = parseAtlasFile({ path: 'atlas.md', text, bytes: text.length });
+    const keys = alignDomainKeys(doc!.domains, reference).map((d) => d.key);
+    expect(keys).toEqual(reference.map((d) => d.key));
   });
 });

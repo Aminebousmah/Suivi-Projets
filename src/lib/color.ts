@@ -77,3 +77,13 @@ export function readableOn(background: string, candidates: string[]): string {
   });
   return best;
 }
+
+/**
+ * La même couleur, rendue translucide : `withAlpha('#1c1814', 0.6)` donne
+ * `rgba(28,24,20,0.6)`. Une couleur illisible est rendue telle quelle.
+ */
+export function withAlpha(color: string, alpha: number): string {
+  const c = parseColor(color);
+  if (!c) return color;
+  return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${alpha})`;
+}

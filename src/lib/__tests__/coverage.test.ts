@@ -162,13 +162,21 @@ describe('folderNote', () => {
 });
 
 describe('sur les vraies données', () => {
-  it.each(Object.keys(REPOS))('%s : le croisement tient debout', (key) => {
+  const described = Object.keys(REPOS).filter((k) => REPOS[k].domains.length);
+
+  it.each(described)('%s : le croisement tient debout', (key) => {
     const entries = REPOS[key].domains.flatMap((d) =>
       d.features.flatMap((f) => f.files.map((path) => file(path.split('—')[0].trim()))),
     );
     const c = buildCoverage(REPOS[key], entries);
     expect(c.described).toBeGreaterThan(0);
     expect(c.described + c.orphans.length).toBe(c.total);
+  });
+
+  it("ne rattache rien à un dépôt qui attend son atlas.md", () => {
+    const c = buildCoverage(REPOS.futuremoi, [file('README.md')]);
+    expect(c.described).toBe(0);
+    expect(c.orphans.length).toBe(c.total);
   });
 });
 

@@ -4,6 +4,7 @@ import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { CHROME, THEMES } from './data/themes';
 import { useAtlasState } from './lib/useAtlasState';
+import { staticDomains } from './lib/url';
 import { useCenteredActive, useNarrow } from './lib/useMediaQuery';
 import { readConnected, readToken, useGitHub, writeConnected } from './lib/useGitHub';
 import { ArchView } from './views/ArchView';
@@ -16,7 +17,7 @@ import { SheetView } from './views/SheetView';
 const MONO = "'JetBrains Mono', monospace";
 
 export default function App() {
-  const [state, navigate] = useAtlasState();
+  const [state, navigate] = useAtlasState(domainsOf);
   const narrow = useNarrow();
   const repoStrip = useRef<HTMLDivElement>(null);
   const viewStrip = useRef<HTMLElement>(null);
@@ -36,6 +37,15 @@ export default function App() {
   const described = live?.atlas
     ? { ...repo, domains: live.atlas.domains, tracking: live.atlas.tracking.length ? live.atlas.tracking : repo.tracking, does: live.atlas.does.length ? live.atlas.does : repo.does, todo: live.atlas.todo.length ? live.atlas.todo : repo.todo }
     : repo;
+
+  // La sélection se vérifie contre l'arbre réellement affiché — celui d'atlas.md
+  // une fois lu —, et non contre la seule description figée.
+  function domainsOf(repoAsked: string, src: typeof state.src) {
+    if (src === 'described' && repoAsked === repoKey && described.domains.length) {
+      return described.domains;
+    }
+    return staticDomains(repoAsked, src);
+  }
 
   const connect = (nextToken: string) => {
     setToken(nextToken);
@@ -238,10 +248,13 @@ export default function App() {
                 background: t.hairline,
               }}
             >
-              {repo.stats.map((s) => (
+              {repo.stats.map((s, i, all) => (
                 <div
                   key={s.k}
                   style={{
+                    // Deux colonnes en étroit : un nombre impair laisserait une case vide.
+                    gridColumn:
+                      narrow && all.length % 2 === 1 && i === all.length - 1 ? 'span 2' : undefined,
                     background: t.primary,
                     padding: '11px 16px',
                     minWidth: 82,

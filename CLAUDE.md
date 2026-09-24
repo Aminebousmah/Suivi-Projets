@@ -27,6 +27,8 @@ Un seul écart est assumé : dans la vue Fonctionnalités, la maquette partageai
 - Une fonctionnalité décrit une question à laquelle un fichier répond ; deux fichiers qui répondent à la même question vont ensemble, deux questions distinctes se séparent.
 - Tout fichier suivi par git est cité par au moins une fonctionnalité — un test le vérifie et nomme les oubliés.
 - Le cache est une optimisation, jamais une source : un stockage refusé, plein ou corrompu n'empêche rien.
+- Un nouveau dépôt part de la palette qu'il déclare, complétée par `buildTheme`, et de faits cités dans ses fichiers ; son arbre, son suivi et ses statuts viennent de son atlas.md, jamais des données figées.
+- Un bloc vide dit quel fichier le remplirait (`EmptyNote`) : il ne disparaît pas en silence et ne fait pas planter la vue.
 
 ## À ne jamais faire
 

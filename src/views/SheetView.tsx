@@ -1,6 +1,6 @@
 import { SourceBadge } from '../components/SourceBadge';
 import type { RepoReader } from '../components/SourceBadge';
-import { Kicker, MONO } from '../components/ui';
+import { EmptyNote, Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import { useNarrow } from '../lib/useMediaQuery';
 
@@ -79,6 +79,7 @@ export function SheetView({ t, repo, live, reader }: Props) {
           ))}
         </div>
 
+        {repo.todo.length > 0 && (
         <div
           style={{
             border: `1px solid ${t.line}`,
@@ -115,8 +116,10 @@ export function SheetView({ t, repo, live, reader }: Props) {
             </div>
           ))}
         </div>
+        )}
       </div>
 
+      {lastSession && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
         <Kicker color={t.inkFaint}>Dernière session</Kicker>
         <div
@@ -149,6 +152,7 @@ export function SheetView({ t, repo, live, reader }: Props) {
           </span>
         </div>
       </div>
+      )}
 
       <div
         style={{
@@ -206,6 +210,13 @@ export function SheetView({ t, repo, live, reader }: Props) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
           <Kicker color={t.inkFaint}>Feuille de suivi</Kicker>
+          {repo.tracking.length === 0 ? (
+            <EmptyNote t={t}>
+              Aucun indicateur n'est écrit pour ce projet. La section « Suivi » d'atlas.md les
+              fournit : le prompt de mise en place d'ATLAS-PROMPT.md l'écrit à partir de ce que le
+              projet permet de mesurer.
+            </EmptyNote>
+          ) : (
           <div
             style={{
               border: `1px solid ${t.line}`,
@@ -291,6 +302,7 @@ export function SheetView({ t, repo, live, reader }: Props) {
               );
             })}
           </div>
+          )}
         </div>
       </div>
     </section>

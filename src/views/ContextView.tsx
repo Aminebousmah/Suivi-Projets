@@ -1,6 +1,6 @@
 import { SourceBadge } from '../components/SourceBadge';
 import type { RepoReader } from '../components/SourceBadge';
-import { Kicker, MONO } from '../components/ui';
+import { EmptyNote, Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { LiveContext } from '../lib/context';
 
@@ -117,6 +117,12 @@ export function ContextView({ t, repo, live, reader }: Props) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
           <Kicker color={t.inkFaint}>Règles actives</Kicker>
+          {ctxRules.length === 0 && (
+            <EmptyNote t={t}>
+              Aucune règle lue. Atlas les cherche dans CLAUDE.md, sous un titre qui contient
+              « Conventions », « Règles », « Contraintes » ou « Workflow ».
+            </EmptyNote>
+          )}
           {ctxRules.map((r) => (
             <div
               key={r}
@@ -156,6 +162,12 @@ export function ContextView({ t, repo, live, reader }: Props) {
             }}
           >
             <Kicker color={t.warnFg}>À ne jamais faire</Kicker>
+            {ctxNever.length === 0 && (
+              <span style={{ fontSize: 12.5, lineHeight: 1.5, color: t.inkSoft }}>
+                Aucun interdit écrit. Atlas les lit dans CLAUDE.md, sous « À ne jamais faire » ou
+                « Jamais », y compris en sous-section.
+              </span>
+            )}
             {ctxNever.map((n) => (
               <span key={n} style={{ fontSize: 12.5, lineHeight: 1.5, color: t.ink }}>
                 {n}
@@ -163,6 +175,7 @@ export function ContextView({ t, repo, live, reader }: Props) {
             ))}
           </div>
 
+          {repo.ctxOpen.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <Kicker color={t.inkFaint}>Décisions encore ouvertes</Kicker>
             {repo.ctxOpen.map((o) => (
@@ -188,6 +201,7 @@ export function ContextView({ t, repo, live, reader }: Props) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </div>
     </section>

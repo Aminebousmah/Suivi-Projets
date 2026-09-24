@@ -1,6 +1,6 @@
 import { REPOS } from '../data/repos';
 import { VIEWS } from '../data/labels';
-import type { TreeSource, ViewId, VizMode } from '../data/types';
+import type { Domain, TreeSource, ViewId, VizMode } from '../data/types';
 
 export const ZOOM_STEPS = [0.45, 0.62, 0.85, 1.15];
 
@@ -26,11 +26,25 @@ export interface AtlasState {
 }
 
 /**
+ * Les domaines contre lesquels une sélection se vérifie, ou `null` quand rien ne
+ * permet de la vérifier : l'arbre du dépôt a ses propres clés, et un dépôt décrit
+ * seulement par son atlas.md n'a pas de domaine connu avant qu'on l'ait lu.
+ */
+export type DomainsOf = (repo: string, src: TreeSource) => Domain[] | null;
+
+/** Les domaines écrits dans les données, quand il y en a. */
+export const staticDomains: DomainsOf = (repo, src) => {
+  if (src === 'repo') return null;
+  const domains = REPOS[repo]?.domains ?? [];
+  return domains.length ? domains : null;
+};
+
+/**
  * Lit un état complet depuis une query string, en retombant sur les valeurs par
  * défaut dès qu'un paramètre ne correspond à rien de connu — une URL trafiquée
  * ouvre l'application, elle ne la casse pas.
  */
-export function parseState(search: string): AtlasState {
+export function parseState(search: string, domainsOf: DomainsOf = staticDomains): AtlasState {
   const q = new URLSearchParams(search);
 
   const repo = q.get('repo');
@@ -45,12 +59,16 @@ export function parseState(search: string): AtlasState {
   const src = q.get('src');
   const safeSrc: TreeSource = src === 'repo' ? 'repo' : DEFAULTS.src;
 
-  const domains = REPOS[safeRepo].domains;
   const domainKey = q.get('domain');
-  const domain = domains.find((d) => d.key === domainKey) ?? null;
-
   const featName = q.get('feat');
-  const feat = domain?.features.find((f) => f.name === featName) ?? null;
+  const known = domainsOf(safeRepo, safeSrc);
+  let domain: string | null = domainKey;
+  let feat: string | null = domainKey ? featName : null;
+  if (known) {
+    const found = known.find((d) => d.key === domainKey);
+    domain = found ? found.key : null;
+    feat = found?.features.find((f) => f.name === featName)?.name ?? null;
+  }
 
   const rawZoom = Number(q.get('zoom'));
   const zoom = ZOOM_STEPS.find((z) => Math.abs(z - rawZoom) < 0.001) ?? DEFAULTS.zoom;
@@ -60,8 +78,8 @@ export function parseState(search: string): AtlasState {
     view: safeView,
     viz: safeViz,
     src: safeSrc,
-    domain: domain ? domain.key : null,
-    feat: feat ? feat.name : null,
+    domain,
+    feat,
     zoom,
   };
 }
@@ -81,7 +99,11 @@ export function buildSearch(s: AtlasState): string {
 }
 
 /** Applique un changement partiel, en purgeant la sélection devenue invalide. */
-export function reduceState(prev: AtlasState, patch: Partial<AtlasState>): AtlasState {
+export function reduceState(
+  prev: AtlasState,
+  patch: Partial<AtlasState>,
+  domainsOf: DomainsOf = staticDomains,
+): AtlasState {
   const next = { ...prev, ...patch };
 
   if (
@@ -92,11 +114,17 @@ export function reduceState(prev: AtlasState, patch: Partial<AtlasState>): Atlas
     next.feat = patch.feat ?? null;
   }
 
-  // L'arbre du dépôt a ses propres clés, qu'on ne peut pas valider ici : seule
-  // la description écrite est vérifiable contre les données.
-  if (next.src === 'repo') return next;
+  // Un autre domaine sans fonctionnalité désignée : l'ancienne n'y est pas.
+  if (patch.domain !== undefined && patch.domain !== prev.domain && patch.feat === undefined) {
+    next.feat = null;
+  }
 
-  const domain = REPOS[next.repo].domains.find((d) => d.key === next.domain) ?? null;
+  // Sans domaines connus, la sélection est gardée telle quelle : la vue qui
+  // l'affiche ignore une clé qu'elle ne trouve pas.
+  const known = domainsOf(next.repo, next.src);
+  if (!known) return next;
+
+  const domain = known.find((d) => d.key === next.domain) ?? null;
   if (!domain) {
     next.domain = null;
     next.feat = null;

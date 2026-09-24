@@ -186,3 +186,17 @@ export function parseAtlasFile(file: TextFile): AtlasDoc | null {
   if (!domains.length) return null;
   return { title, tagline, domains, tracking, does, todo };
 }
+
+/**
+ * Reprend les clés des domaines déjà décrits dans les données quand atlas.md
+ * les nomme pareil : un permalien reste valable une fois le fichier lu, et la
+ * sélection ne saute pas quand l'arbre passe de la description figée au fichier.
+ */
+export function alignDomainKeys(live: Domain[], reference: Domain[]): Domain[] {
+  const norm = (name: string) => name.trim().toLowerCase();
+  const byName = new Map(reference.map((d) => [norm(d.name), d.key]));
+  return live.map((d) => {
+    const key = byName.get(norm(d.name));
+    return key && key !== d.key ? { ...d, key } : d;
+  });
+}

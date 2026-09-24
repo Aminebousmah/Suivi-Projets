@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { REPOS } from '../../data/repos';
-import { buildSearch, DEFAULTS, parseState, reduceState } from '../url';
+import { buildSearch, DEFAULTS, parseState, reduceState, staticDomains } from '../url';
 
 const firstDomain = REPOS.sole.domains[0];
 const firstFeat = firstDomain.features[0];
@@ -123,5 +123,39 @@ describe('reduceState', () => {
   it('accepte domaine et fonctionnalité posés ensemble', () => {
     const next = reduceState(DEFAULTS, { domain: firstDomain.key, feat: firstFeat.name });
     expect(next).toMatchObject({ domain: firstDomain.key, feat: firstFeat.name });
+  });
+});
+
+describe('domaines connus', () => {
+  const live = [{ ...firstDomain, key: 'lu-dans-atlas-md' }];
+
+  it('vérifie la sélection contre les domaines réellement affichés', () => {
+    const next = reduceState(DEFAULTS, { domain: 'lu-dans-atlas-md', feat: firstFeat.name }, () => live);
+    expect(next).toMatchObject({ domain: 'lu-dans-atlas-md', feat: firstFeat.name });
+    expect(reduceState(DEFAULTS, { domain: firstDomain.key }, () => live).domain).toBeNull();
+  });
+
+  it('garde une sélection que rien ne permet encore de vérifier', () => {
+    const next = reduceState(DEFAULTS, { domain: 'a-venir', feat: 'plus tard' }, () => null);
+    expect(next).toMatchObject({ domain: 'a-venir', feat: 'plus tard' });
+    expect(parseState('?domain=a-venir&feat=x', () => null)).toMatchObject({
+      domain: 'a-venir',
+      feat: 'x',
+    });
+  });
+
+  it('oublie la fonctionnalité en changeant de domaine, même sans vérification', () => {
+    const prev = { ...DEFAULTS, domain: 'un', feat: 'f' };
+    expect(reduceState(prev, { domain: 'deux' }, () => null).feat).toBeNull();
+  });
+
+  it("ne garde pas de fonctionnalité sans domaine dans l'URL", () => {
+    expect(parseState('?feat=seule', () => null).feat).toBeNull();
+  });
+
+  it("ne connaît aucun domaine pour un dépôt qui n'en décrit pas", () => {
+    expect(staticDomains('sole', 'described')).toBe(REPOS.sole.domains);
+    expect(staticDomains('sole', 'repo')).toBeNull();
+    expect(staticDomains('inconnu', 'described')).toBeNull();
   });
 });
