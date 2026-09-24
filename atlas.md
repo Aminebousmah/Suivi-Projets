@@ -24,6 +24,7 @@ Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres
 > Les valeurs par défaut ne sont pas écrites dans l'URL
 > Un paramètre inconnu retombe sur le défaut au lieu de casser la page
 > Une sélection qui n'existe plus après changement de dépôt est purgée
+> Elle se vérifie contre l'arbre réellement affiché — celui d'atlas.md une fois lu — et reste en place tant qu'aucun domaine n'est connu
 
 ### Historique navigateur — en ligne
 Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépôt.
@@ -115,10 +116,11 @@ Métadonnées GitHub, derniers commits, fichiers de contexte lus, et écarts ent
 - `src/lib/useGitHub.ts`
 
 ### Primitives d'interface — en ligne
-Le bouton de ligne qui s'éclaire au survol, et le sur-titre mono qui coiffe chaque section.
+Le bouton de ligne qui s'éclaire au survol, le sur-titre mono qui coiffe chaque section, et la note qui tient lieu d'un bloc vide.
 - `src/components/ui.tsx`
 > Les styles en ligne hérités de la maquette ne savent pas exprimer un survol : le bouton le porte lui-même
 > C'est l'équivalent du style-hover du prototype
+> Un bloc vide ne disparaît pas en silence : la note dit quel fichier le remplirait
 
 ### Bandeau de provenance — en ligne
 Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figée.
@@ -139,6 +141,8 @@ Domaines, fonctionnalités, sessions, phases et feuille de suivi de chaque dép�
 - `src/data/repos.ts`
 > Écrit à la main, repris de la maquette
 > C'est ce fichier que la vue Dépôt réel confronte à GitHub
+> Sept dépôts : trois décrits en entier, quatre qui attendent leur atlas.md et ne montrent que des faits lus dans leurs fichiers
+> Un dépôt en attente n'a ni domaine, ni suivi, ni session : un test refuse qu'on en invente
 
 ### Encre lisible sur chaque ton — en ligne
 Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fond donné.
@@ -151,6 +155,15 @@ Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fon
 Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.
 - `src/data/themes.ts`
 
+### Thème déduit d'une palette — en ligne
+Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.
+- `src/lib/palette.ts`
+- `src/lib/__tests__/palette.test.ts`
+> Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture
+> Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1
+> Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1
+> En sombre, une carte reste sombre et la couleur passe au liseré
+
 ### Lecture du fichier de suivi — en ligne
 Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.
 - `src/lib/atlasFile.ts`
@@ -159,12 +172,15 @@ Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fic
 > C'est la seule source qui porte du sens : ni l'arborescence ni git ne disent à quoi sert un fichier
 > Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli
 > Un fichier hors format n'est pas une panne : il est simplement laissé de côté
+> Un domaine qui porte le nom d'un domaine décrit reprend sa clé : un permalien survit à la lecture du fichier
 
-### Le prompt de suivi — en ligne
-Le texte à coller dans une session Claude Code pour qu'un projet produise et tienne à jour son atlas.md.
+### Les prompts de suivi — en ligne
+Deux prompts à coller dans une session Claude Code ouverte sur un projet local : la mise en place, puis le point de suivi.
 - `ATLAS-PROMPT.md`
-> Il donne la grammaire du fichier et les règles de suivi : ne rien inventer, ne citer que des chemins réels, couvrir tout le dépôt
-> Relancé plus tard, il met à jour au lieu de réécrire
+> Écrits d'après les CLAUDE.md et plan.md de six projets réels, pas d'après un projet idéal
+> La mise en place respecte la structure existante : un plan rangé dans docs/ y reste, une section n'est pas renommée
+> Elle installe dans CLAUDE.md une section « Suivi du projet » : chaque tâche qui touche au code met ensuite le suivi à jour
+> Aucun statut inventé, aucun chemin qui n'existe pas, tout le projet couvert
 
 ### Le suivi d'Atlas lui-même — en ligne
 Atlas décrit son propre arbre avec le format qu'il propose aux autres.
@@ -224,10 +240,13 @@ Saisi dans la vue, gardé dans le navigateur, effaçable d'un bouton.
 ### Lecture des fichiers de contexte — en ligne
 Lit CLAUDE.md, plan.md et README.md dans le dépôt et en tire règles, interdits, phases et cases à cocher.
 - `src/lib/context.ts`
-- `src/lib/github.ts — fetchTextFile`
+- `src/lib/github.ts — fetchTextFile, fetchFirstTextFile`
 > Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné
 > Un fichier absent est une information affichée, pas une panne
 > Les titres pris dans un bloc de code sont ignorés
+> Le plan est cherché dans docs/ s'il n'est pas à la racine, CLAUDE.md dans .claude/
+> Une sous-section hérite du titre de sa section : « Règles pour Claude Code › Jamais » se lit comme des interdits
+> Le statut d'une phase se lit dans son titre — ✅, ✓, EN COURS, un pourcentage — puis dans ses cases à cocher
 
 ### Cache des réponses — en ligne
 Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne coûte rien au quota.
@@ -372,9 +391,10 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 261 | — | 100% |
+| Tests au vert | 341 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
-| Dépôts décrits | 3 | 3 | 100% |
+| Dépôts suivis | 7 | — | 100% |
+| Dépôts décrits par leur atlas.md | 1 / 7 | 7 | 14% |
 | Fichiers du dépôt décrits | tous | tous | 100% |
 | Données lues depuis le dépôt | large | complet | 95% |
 | Application publiée | workflow prêt | en ligne | 80% |
@@ -390,9 +410,11 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 - Garde les réponses GitHub en cache et les revalide par ETag, pour épargner le quota.
 - Lit les fichiers de session Claude Code déposés dans la page, sans qu'ils en sortent.
 - Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.
+- Suit sept projets réels, chacun dans la palette qu'il déclare, avec seulement des faits lus dans ses fichiers.
 
 ## À faire
 
 - Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour publier.
-- Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.
+- Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.
+- Lancer le prompt de mise en place dans les six autres projets et pousser leur atlas.md.
 - Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.

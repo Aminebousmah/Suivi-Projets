@@ -1,8 +1,14 @@
+import type { PaletteSpec } from '../lib/palette';
+import { buildTheme } from '../lib/palette';
 import type { Theme } from './types';
 
 /* Palettes lues dans le code de chaque dépôt :
    Sole-Citron   → src/styles/tokens.css
-   Eleven-Fields → assets/style.css */
+   Eleven-Fields → assets/style.css
+   Futuremoi     → src/freelance_radar/web/templates/base.html.j2
+   bottrading    → app/web/static/index.html, elon-brand-identity-v2.html
+   Clip-Core     → frontend/tailwind.config.ts, frontend/app/globals.css
+   Happicture    → CLAUDE.md › Design system › Palette */
 
 /**
  * La barre d'application — le bandeau « Atlas » et les onglets de dépôt — ne
@@ -14,6 +20,90 @@ export const CHROME = {
   ink: '#FAFAF8',
   inkSoft: 'rgba(250,250,248,0.6)',
   swatchTray: '#7A7A82',
+};
+
+/**
+ * Les dépôts suivants partent de la palette que chacun déclare ; le reste du
+ * thème — encres sur fond, pastilles, tons de domaine — se déduit par contraste.
+ * Quand une palette n'a pas de variante utilisable, c'est dit en commentaire.
+ */
+export const PALETTES: Record<string, PaletteSpec> = {
+  futuremoi: {
+    mode: 'light',
+    page: '#FBFBFA', surface: '#FFFFFF', surfaceAlt: '#F3F4F6',
+    ink: '#1F2328', inkSoft: '#6B7280', inkFaint: 'rgba(31,35,40,0.5)', line: '#E5E7EB',
+    // L'en-tête prend l'encre ; l'accent vert foncé s'y perdrait, on y pose
+    // donc celui que le projet déclare pour son mode sombre.
+    primary: '#1F2328', accent: '#6BBF8F',
+    tones: ['#2F6F4F', '#B45309', '#1F2328'],
+    live: '#2F6F4F', wip: '#B45309', warn: '#B91C1C',
+    display: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    displayWeight: '700', emStyle: 'normal',
+    swatches: [
+      { hex: '#2F6F4F', title: '--accent #2f6f4f' },
+      { hex: '#6BBF8F', title: '--accent sombre #6bbf8f' },
+      { hex: '#B45309', title: '--warn #b45309' },
+      { hex: '#1F2328', title: '--ink #1f2328' },
+      { hex: '#FBFBFA', title: '--bg #fbfbfa' },
+    ],
+    source: 'palette lue dans src/freelance_radar/web/templates/base.html.j2',
+  },
+  bottrading: {
+    mode: 'dark',
+    page: '#0A0B0F', surface: '#131620', surfaceAlt: '#1A1E2B',
+    ink: '#F0F1F5', inkSoft: '#9497A8', inkFaint: '#5C5F70', line: 'rgba(255,255,255,0.09)',
+    primary: '#131620', accent: '#8B5CF6',
+    tones: ['#8B5CF6', '#06B6D4', '#EC4899'],
+    live: '#10B981', wip: '#F59E0B', warn: '#FB7185',
+    display: "'Space Grotesk', Manrope, sans-serif", displayWeight: '700', emStyle: 'normal',
+    swatches: [
+      { hex: '#0A0B0F', title: '--bg #0a0b0f' },
+      { hex: '#131620', title: '--surface #131620' },
+      { hex: '#8B5CF6', title: '--violet #8b5cf6' },
+      { hex: '#06B6D4', title: '--cyan #06b6d4' },
+      { hex: '#EC4899', title: '--magenta #ec4899' },
+      { hex: '#10B981', title: '--success #10b981' },
+    ],
+    source: 'palette lue dans app/web/static/index.html',
+  },
+  clipcore: {
+    mode: 'dark',
+    // Tailwind neutral 950 / 900 / 800, texte 100 / 400 / 500.
+    page: '#0A0A0A', surface: '#171717', surfaceAlt: '#262626',
+    ink: '#F5F5F5', inkSoft: '#A3A3A3', inkFaint: '#737373', line: '#262626',
+    primary: '#171717', accent: '#9146FF',
+    // twitch, emerald-400, amber-400 : les trois couleurs que l'interface emploie.
+    tones: ['#9146FF', '#34D399', '#FBBF24'],
+    live: '#34D399', wip: '#FBBF24', warn: '#F87171',
+    display: 'Manrope, Helvetica, sans-serif', displayWeight: '800', emStyle: 'normal',
+    swatches: [
+      { hex: '#9146FF', title: 'twitch #9146FF' },
+      { hex: '#772CE8', title: 'twitch.dark #772CE8' },
+      { hex: '#0A0A0A', title: 'neutral-950 #0a0a0a' },
+      { hex: '#171717', title: 'neutral-900 #171717' },
+      { hex: '#34D399', title: 'emerald-400 #34d399' },
+    ],
+    source: 'palette lue dans frontend/tailwind.config.ts',
+  },
+  happicture: {
+    mode: 'light',
+    page: '#E7E2D6', surface: '#FFFFFF', surfaceAlt: '#FBF8F1',
+    // « faint » (#9a9085) ne se lit pas sur le canevas : muted en tient lieu.
+    ink: '#1C1814', inkSoft: '#4A4239', inkFaint: '#6B6258', line: '#D8CDB4',
+    primary: '#1C1814', accent: '#C2542A',
+    tones: ['#C2542A', '#6B7A5A', '#4A5C8B'],
+    live: '#6B7A5A', wip: '#B8862A', warn: '#C2542A',
+    display: "Sora, Manrope, sans-serif", displayWeight: '600', emStyle: 'normal',
+    swatches: [
+      { hex: '#C2542A', title: 'accent #c2542a' },
+      { hex: '#1C1814', title: 'ink #1c1814' },
+      { hex: '#6B7A5A', title: 'green #6b7a5a' },
+      { hex: '#4A5C8B', title: 'en diffusion #4a5c8b' },
+      { hex: '#FBF8F1', title: 'paper #fbf8f1' },
+      { hex: '#E7E2D6', title: 'canvas #e7e2d6' },
+    ],
+    source: 'palette lue dans CLAUDE.md › Design system',
+  },
 };
 
 export const THEMES: Record<string, Theme> = {
@@ -110,5 +200,9 @@ export const THEMES: Record<string, Theme> = {
       { hex: '#FAFAF8', title: '--papier #FAFAF8' }
     ],
     source: 'palette lue dans src/index.css et src/data/themes.ts'
-  }
+  },
+  futuremoi: buildTheme(PALETTES.futuremoi),
+  bottrading: buildTheme(PALETTES.bottrading),
+  clipcore: buildTheme(PALETTES.clipcore),
+  happicture: buildTheme(PALETTES.happicture),
 };

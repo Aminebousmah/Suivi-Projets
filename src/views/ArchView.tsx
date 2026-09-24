@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { HoverButton, Kicker, MONO } from '../components/ui';
+import { EmptyNote, HoverButton, Kicker, MONO } from '../components/ui';
 import { LABELS, ORDER } from '../data/labels';
 import type { Domain, RepoData, Theme, TreeSource, VizMode } from '../data/types';
 import { resolvedFor } from '../lib/coverage';
@@ -288,25 +288,21 @@ export function ArchView({
         )}
 
         {fromRepo && domains.length === 0 && (
-          <div
-            style={{
-              border: `1px dashed ${t.line}`,
-              borderRadius: 12,
-              background: t.surfaceAlt,
-              padding: '18px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
-            <Kicker color={t.inkFaint}>Arbre du dépôt</Kicker>
-            <span style={{ fontSize: 13, lineHeight: 1.6, color: t.inkSoft }}>
-              Cet arbre est construit depuis l'arborescence réelle : dossiers et fichiers, avec
-              leur poids et ce que les derniers commits ont touché. Aucun statut n'y figure —
-              rien dans une arborescence ne dit qu'une chose est en cours ou gelée. Connectez le
-              dépôt depuis la vue « Dépôt réel » pour le voir.
-            </span>
-          </div>
+          <EmptyNote t={t} title="Arbre du dépôt">
+            Cet arbre est construit depuis l'arborescence réelle : dossiers et fichiers, avec
+            leur poids et ce que les derniers commits ont touché. Aucun statut n'y figure —
+            rien dans une arborescence ne dit qu'une chose est en cours ou gelée. Connectez le
+            dépôt depuis la vue « Dépôt réel » pour le voir.
+          </EmptyNote>
+        )}
+
+        {!fromRepo && domains.length === 0 && (
+          <EmptyNote t={t} title="Arbre décrit">
+            Aucune fonctionnalité n'est encore décrite pour ce projet. Elles viendront de son
+            atlas.md : lancez dans le projet le prompt de mise en place d'ATLAS-PROMPT.md,
+            poussez le fichier, puis lisez le dépôt. En attendant, la source « dépôt » montre
+            son arborescence réelle.
+          </EmptyNote>
         )}
 
         {isGraph && domains.length > 0 && (

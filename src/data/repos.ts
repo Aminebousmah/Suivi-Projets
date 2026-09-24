@@ -15,9 +15,6 @@ export const REPOS: Record<string, RepoData> = {
       "Collecte des inscriptions newsletter et des messages de contact sans backend propre."
     ],
     todo: [
-      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
-      "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
       "Activer l'aile marchande : compte Snipcart, clé dans Vercel, flag commerce à true.",
       "Compléter les mentions légales avec SIREN et TVA intracommunautaire.",
       "Créer les pages manquantes : /drop, /drop/archive, /coffrets, /carte-cadeau.",
@@ -305,9 +302,6 @@ export const REPOS: Record<string, RepoData> = {
       "Enrichit joueurs et clubs avec les logos, photos et valeurs marché de Transfermarkt."
     ],
     todo: [
-      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
-      "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
       "Compléter la couverture : quatre saisons sur cinq n'ont que cinq stat_types sur onze.",
       "Relancer l'extraction FBref dès que le rate-limit retombe, via la vue Big 5 Combined.",
       "Figer l'environnement : requirements.txt régénéré, soccerdata pinné en 1.8.8.",
@@ -584,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '51', k: 'fonctions' }, { v: '261', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '52', k: 'fonctions' }, { v: '341', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -600,7 +594,7 @@ export const REPOS: Record<string, RepoData> = {
     ],
     todo: [
       "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
       "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
     ],
     stack: [
@@ -608,20 +602,21 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Framework', v: 'React 19', note: "Composants de fonction, aucun state manager : l'état de navigation vit dans l'URL." },
       { cat: 'Build', v: 'Vite 8', note: "Build de production en moins d'une seconde, un seul bundle." },
       { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant." },
-      { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html." },
+      { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html, avec Sora et Space Grotesk pour Happicture et bottrading." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "261 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "341 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "261", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "341", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
-      { k: "Dépôts décrits", v: "3", target: "3", pct: '100%', tone: 'live' },
+      { k: "Dépôts suivis", v: "7", target: "—", pct: '100%', tone: 'live' },
+      { k: "Dépôts décrits par leur atlas.md", v: "1 / 7", target: "7", pct: '14%', tone: 'wip' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
-      { k: "Fichiers du dépôt décrits", v: "61 / 61", target: "tous", pct: '100%', tone: 'live' },
+      { k: "Fichiers du dépôt décrits", v: "79 / 79", target: "tous", pct: '100%', tone: 'live' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
       { k: "Application déployée", v: "workflow prêt", target: "en ligne", pct: '80%', tone: 'wip' }
     ],
@@ -637,7 +632,7 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/data/labels.ts — VIEWS, BLURBS', 'src/App.tsx'] },
           { name: "État dans l'URL", status: 'live', what: "Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres.",
             files: ['src/lib/url.ts', 'src/lib/useAtlasState.ts'],
-            notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée"] },
+            notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée", "Elle se vérifie contre l'arbre réellement affiché — celui d'atlas.md une fois lu — et reste en place tant qu'aucun domaine n'est connu"] },
           { name: "Historique navigateur", status: 'live', what: "Précédent et suivant rejouent la sélection ; le titre d'onglet suit le dépôt.",
             files: ['src/lib/useAtlasState.ts — popstate', 'src/App.tsx'] },
           { name: "Barrière d'erreur", status: 'live', what: "Une vue qui plante laisse l'en-tête, les onglets et les autres vues utilisables.",
@@ -676,9 +671,9 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/views/ProgressView.tsx'] },
           { name: "Dépôt réel", status: 'live', what: "Métadonnées GitHub, derniers commits, fichiers de contexte lus, et écarts entre les fichiers cités et l'arborescence.",
             files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts'] },
-          { name: "Primitives d'interface", status: 'live', what: "Le bouton de ligne qui s'éclaire au survol, et le sur-titre mono qui coiffe chaque section.",
+          { name: "Primitives d'interface", status: 'live', what: "Le bouton de ligne qui s'éclaire au survol, le sur-titre mono qui coiffe chaque section, et la note qui tient lieu d'un bloc vide.",
             files: ['src/components/ui.tsx'],
-            notes: ["Les styles en ligne hérités de la maquette ne savent pas exprimer un survol : le bouton le porte lui-même", "C'est l'équivalent du style-hover du prototype"] },
+            notes: ["Les styles en ligne hérités de la maquette ne savent pas exprimer un survol : le bouton le porte lui-même", "C'est l'équivalent du style-hover du prototype", "Un bloc vide ne disparaît pas en silence : la note dit quel fichier le remplirait"] },
           { name: "Bandeau de provenance", status: 'live', what: "Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figée.",
             files: ['src/components/SourceBadge.tsx'],
             notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place", "Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit"] }
@@ -691,18 +686,21 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/data/types.ts'] },
           { name: "Description des dépôts", status: 'wip', what: "Domaines, fonctionnalités, sessions, phases et feuille de suivi de chaque dépôt.",
             files: ['src/data/repos.ts'],
-            notes: ["Écrit à la main, repris de la maquette", "C'est ce fichier que la vue Dépôt réel confronte à GitHub"] },
+            notes: ["Écrit à la main, repris de la maquette", "C'est ce fichier que la vue Dépôt réel confronte à GitHub", "Sept dépôts : trois décrits en entier, quatre qui attendent leur atlas.md et ne montrent que des faits lus dans leurs fichiers", "Un dépôt en attente n'a ni domaine, ni suivi, ni session : un test refuse qu'on en invente"] },
           { name: "Encre lisible sur chaque ton", status: 'live', what: "Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fond donné.",
             files: ['src/lib/color.ts', 'src/lib/__tests__/color.test.ts'],
             notes: ["Choisie à la main, dépôt par dépôt, l'encre avait produit un texte noir sur fond noir", "Un test vérifie, pour chaque ton de chaque thème, un contraste d'au moins 3:1"] },
           { name: "Thèmes par dépôt", status: 'live', what: "Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.",
             files: ['src/data/themes.ts'] },
+          { name: "Thème déduit d'une palette", status: 'live', what: "Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.",
+            files: ['src/lib/palette.ts', 'src/lib/__tests__/palette.test.ts'],
+            notes: ["Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture", "Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1", "Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1", "En sombre, une carte reste sombre et la couleur passe au liseré"] },
           { name: "Lecture du fichier de suivi", status: 'live', what: "Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.",
             files: ['src/lib/atlasFile.ts', 'src/lib/__tests__/atlasFile.test.ts', 'src/lib/__tests__/fixtures/atlas.md'],
-            notes: ["C'est la seule source qui porte du sens : ni l'arborescence ni git ne disent à quoi sert un fichier", "Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli", "Un fichier hors format n'est pas une panne : il est simplement laissé de côté"] },
-          { name: "Le prompt de suivi", status: 'live', what: "Le texte à coller dans une session Claude Code pour qu'un projet produise et tienne à jour son atlas.md.",
+            notes: ["C'est la seule source qui porte du sens : ni l'arborescence ni git ne disent à quoi sert un fichier", "Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli", "Un fichier hors format n'est pas une panne : il est simplement laissé de côté", "Un domaine qui porte le nom d'un domaine décrit reprend sa clé : un permalien survit à la lecture du fichier"] },
+          { name: "Les prompts de suivi", status: 'live', what: "Deux prompts à coller dans une session Claude Code ouverte sur un projet local : la mise en place, puis le point de suivi.",
             files: ['ATLAS-PROMPT.md'],
-            notes: ["Il donne la grammaire du fichier et les règles de suivi : ne rien inventer, ne citer que des chemins réels, couvrir tout le dépôt", "Relancé plus tard, il met à jour au lieu de réécrire"] },
+            notes: ["Écrits d'après les CLAUDE.md et plan.md de six projets réels, pas d'après un projet idéal", "La mise en place respecte la structure existante : un plan rangé dans docs/ y reste, une section n'est pas renommée", "Elle installe dans CLAUDE.md une section « Suivi du projet » : chaque tâche qui touche au code met ensuite le suivi à jour", "Aucun statut inventé, aucun chemin qui n'existe pas, tout le projet couvert"] },
           { name: "Le suivi d'Atlas lui-même", status: 'live', what: "Atlas décrit son propre arbre avec le format qu'il propose aux autres.",
             files: ['atlas.md', 'src/lib/__tests__/atlasSelf.test.ts'],
             notes: ["Un test compare ce fichier à la description figée : toute dérive entre les deux est signalée", "C'est aussi la démonstration que le format tient sur un vrai projet"] },
@@ -732,8 +730,8 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/lib/useGitHub.ts — readToken, writeToken'],
             notes: ["Jamais envoyé ailleurs qu'à api.github.com", "Le stockage refusé en navigation privée ne bloque pas la vue"] },
           { name: "Lecture des fichiers de contexte", status: 'live', what: "Lit CLAUDE.md, plan.md et README.md dans le dépôt et en tire règles, interdits, phases et cases à cocher.",
-            files: ['src/lib/context.ts', 'src/lib/github.ts — fetchTextFile'],
-            notes: ["Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné", "Un fichier absent est une information affichée, pas une panne", "Les titres pris dans un bloc de code sont ignorés"] },
+            files: ['src/lib/context.ts', 'src/lib/github.ts — fetchTextFile, fetchFirstTextFile'],
+            notes: ["Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné", "Un fichier absent est une information affichée, pas une panne", "Les titres pris dans un bloc de code sont ignorés", "Le plan est cherché dans docs/ s'il n'est pas à la racine, CLAUDE.md dans .claude/", "Une sous-section hérite du titre de sa section : « Règles pour Claude Code › Jamais » se lit comme des interdits", "Le statut d'une phase se lit dans son titre — ✅, ✓, EN COURS, un pourcentage — puis dans ses cases à cocher"] },
           { name: "Cache des réponses", status: 'live', what: "Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne coûte rien au quota.",
             files: ['src/lib/cache.ts', 'src/lib/github.ts — request'],
             notes: ["Cinq minutes de fraîcheur pendant lesquelles aucune requête n'est émise", "Au-delà, requête conditionnelle : GitHub répond 304 sans décompter le quota", "Le stockage plein fait place nette en sacrifiant les entrées les plus anciennes", "Un stockage refusé n'empêche rien : le cache est une optimisation, pas une source"] },
@@ -851,7 +849,7 @@ export const REPOS: Record<string, RepoData> = {
       "Pas de dépendance ajoutée sans usage réel dans le code."
     ],
     ctxOpen: [
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux trois décrits ici.",
+      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
       "Rapprocher les sessions du reste : dire quels fichiers une session a touchés, et quelles fonctionnalités ils servent.",
       "Publier : le workflow attend que GitHub Pages soit activé dans les réglages, et que la branche rejoigne main."
     ],
@@ -866,6 +864,247 @@ export const REPOS: Record<string, RepoData> = {
         detail: "Domaines déduits de l'arborescence, activité git en une requête, et sessions lues depuis les fichiers déposés dans la page." },
       { num: 'Phase 5', status: 'idées', title: "Finition", tone: 'idea',
         detail: "Navigation au clavier dans le graphe, mise en page mobile du panneau, tests de rendu par vue, publication du build." }
+    ]
+  },
+  futuremoi: {
+    label: 'Futuremoi',
+    slug: 'Aminebousmah/Futuremoi · main',
+    titleA: 'freelance-', titleB: 'radar',
+    tagline: "Veille automatisée d'offres freelance Data, en France et en remote, et brouillons de candidature adaptés au profil. Rien n'est envoyé : l'outil produit des fichiers à relire.",
+    stats: [ { v: '126', k: 'fichiers' }, { v: '3', k: 'étapes' }, { v: '34', k: 'modules de test' } ],
+    does: [
+      "Collecte les annonces freelance Data sur plusieurs sources : APIs publiques et scraping poli.",
+      "Trie et note chaque offre selon les compétences, le TJM et les contraintes du profil, avec l'explication du score.",
+      "Rédige un dossier de candidature pour les offres qui passent le seuil : lettre par modèle, ou par Claude sur confirmation.",
+      "Génère un CV en PDF adapté à chaque offre, modifiable depuis son aperçu.",
+      "Prépare une fiche d'entretien hors ligne et suit le cycle de vie des candidatures, de new à won.",
+      "Se pilote en ligne de commande (radar) ou depuis une interface web locale, qui appelle le même moteur."
+    ],
+    todo: [
+      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
+      "Poser un CLAUDE.md et un plan.md : le dépôt n'a aujourd'hui que son README."
+    ],
+    stack: [
+      { cat: 'Langage', v: 'Python ≥ 3.10', note: "Paquet freelance_radar sous src/, installé en mode éditable." },
+      { cat: 'Collecte', v: 'httpx · BeautifulSoup · lxml', note: "APIs publiques et scraping poli, source par source." },
+      { cat: 'Modèle', v: 'pydantic', note: "Les offres et le profil sont typés." },
+      { cat: 'CLI', v: 'typer · rich', note: "La commande radar : scrape, list, show, apply, track, report, stats." },
+      { cat: 'Interface', v: 'FastAPI · Jinja2 · uvicorn', note: "Écoute 127.0.0.1 seulement, sauf mot de passe défini." },
+      { cat: 'Documents', v: 'fpdf2 · pypdf', note: "Le CV en PDF, sans Canva : le README explique pourquoi." },
+      { cat: 'Rédaction', v: 'anthropic — optionnel', note: "Chaque appel facturé demande une confirmation explicite." },
+      { cat: 'Données', v: 'SQLite, ou Turso en ligne', note: "Une base partagée avec le PC quand l'interface est publiée sur Vercel." },
+      { cat: 'Qualité', v: 'pytest · ruff', note: "Extra [dev] du pyproject." }
+    ],
+    tracking: [],
+    domains: [],
+    goldenRule: "Rien n'est envoyé automatiquement. L'outil produit des fichiers à relire : aucun formulaire n'est soumis, aucun mail n'est expédié.",
+    hubName: 'freelance-radar', hubUnit: 'fonctionnalités',
+    sessions: [],
+    memories: [],
+    ctxFiles: [
+      { name: 'README.md', size: '37,4 ko', tone: 'd', role: "Installation, interface web, commandes, sources, scoring, génération de candidature, CV, fiche d'entretien.",
+        chips: ['install', 'sources', 'scoring', 'CV'] }
+    ],
+    ctxRules: [],
+    ctxNever: [],
+    ctxOpen: [
+      "Le dépôt n'a ni CLAUDE.md ni plan.md : ni règles, ni interdits, ni phases à lire."
+    ],
+    phases: []
+  },
+  bottrading: {
+    label: 'bottrading',
+    slug: 'Aminebousmah/bottrading · main',
+    titleA: 'ELON ', titleB: 'bottrading',
+    tagline: "Lit les signaux publiés sur un canal Telegram, les transforme en ordres structurés, les exécute en paper ou sur MetaTrader 5 sous contrôle de risque, et suit le tout dans un dashboard temps réel.",
+    stats: [ { v: '66', k: 'fichiers' }, { v: '6', k: 'étapes' }, { v: '10', k: 'modules de test' } ],
+    does: [
+      "Écoute un ou plusieurs canaux Telegram avec un compte utilisateur, via Telethon.",
+      "Lit chaque signal par expressions régulières, avec Claude en repli, et lui attribue un score de confiance.",
+      "Vérifie la géométrie du signal, puis dimensionne l'ordre et applique les garde-fous de risque.",
+      "Exécute en paper ou sur MetaTrader 5, avec yfinance en repli pour les prix.",
+      "Persiste chaque étape, du message brut au résultat de l'ordre : un trade du dashboard remonte à son message d'origine.",
+      "Affiche un dashboard temps réel en FastAPI et WebSocket."
+    ],
+    todo: [
+      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
+      "Poser un CLAUDE.md et un plan.md : le dépôt n'a aujourd'hui que son README."
+    ],
+    stack: [
+      { cat: 'Langage', v: 'Python', note: "Point d'entrée run.py ; --no-telegram lance le moteur et le dashboard seuls." },
+      { cat: 'Ingestion', v: 'Telethon', note: "Un compte utilisateur, pas un bot : l'API bot ne lit pas un canal sans y être admin." },
+      { cat: 'Parser', v: 'regex + anthropic', note: "Claude n'intervient qu'en repli du parser par règles." },
+      { cat: 'Données', v: 'SQLAlchemy · aiosqlite', note: "Chaque étape du signal est persistée." },
+      { cat: 'Dashboard', v: 'FastAPI · uvicorn · websockets', note: "Sur http://127.0.0.1:8000." },
+      { cat: 'Broker', v: 'MetaTrader5 · yfinance', note: "MetaTrader5 ne s'installe que sous Windows." },
+      { cat: 'Config', v: 'pydantic-settings · PyYAML · dotenv', note: "Secrets dans .env, réglages dans config.yaml." },
+      { cat: 'Tests', v: 'pytest · pytest-asyncio', note: "Chaque format de message mal lu devient un cas de test du parser." }
+    ],
+    tracking: [],
+    domains: [],
+    goldenRule: "Valider le parser sur les messages réels du canal, passer plusieurs semaines en paper, puis sur un compte démo MT5, avant d'envisager le réel.",
+    hubName: 'ELON', hubUnit: 'fonctionnalités',
+    sessions: [],
+    memories: [],
+    ctxFiles: [
+      { name: 'README.md', size: '9,9 ko', tone: 'd', role: "Pipeline, démarrage, secrets, précautions avant l'argent réel, hébergement, configuration, garde-fous.",
+        chips: ['pipeline', 'install', 'risque', 'garde-fous'] }
+    ],
+    ctxRules: [],
+    ctxNever: [],
+    ctxOpen: [
+      "Le dépôt n'a ni CLAUDE.md ni plan.md : ni règles, ni interdits, ni phases à lire."
+    ],
+    phases: []
+  },
+  clipcore: {
+    label: 'Clip-Core',
+    slug: 'Aminebousmah/Clip-Core · claude/project-mvp-cfh8ir',
+    titleA: 'TwitchClip', titleB: 'Factory',
+    tagline: "Transforme des VODs Twitch en clips courts : les moments forts sont détectés par l'analyse du chat — vélocité, emotes, majuscules — puis découpés par ffmpeg.",
+    stats: [ { v: '72', k: 'fichiers' }, { v: '6', k: 'phases' }, { v: '0', k: 'module de test' } ],
+    does: [
+      "Liste les chaînes et leurs VODs par l'API publique GraphQL de Twitch, sans compte ni clé.",
+      "Télécharge le chat d'une VOD en Python, sans binaire externe.",
+      "Détecte les moments forts sur le chat, avec une sensibilité réglable.",
+      "Récupère seulement les secondes autour de chaque moment, jamais la VOD entière.",
+      "Télécharge une VOD publique par son URL, entière ou sur un intervalle."
+    ],
+    todo: [
+      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
+      "Mettre à jour les cases de « Phases de développement » dans CLAUDE.md : aucune n'est cochée.",
+      "Porter ces phases dans un plan.md, qu'Atlas sait lire."
+    ],
+    stack: [
+      { cat: 'Frontend', v: 'Next.js 14 · Tailwind · shadcn/ui', note: "Sous frontend/, App Router." },
+      { cat: 'Backend', v: 'FastAPI', note: "Sous backend/, documentation sur /docs." },
+      { cat: 'Twitch', v: 'GraphQL public, Helix en option', note: "Trois modes : gql par défaut, helix avec des clés, demo avec un chat simulé." },
+      { cat: 'Vidéo', v: 'yt-dlp · ffmpeg', note: "Sans eux, les clips sont détectés mais sans fichier vidéo." },
+      { cat: 'Analyse', v: 'pandas · scipy', note: "Vélocité du chat, détection des pics." },
+      { cat: 'Captions', v: 'Whisper local', note: "Pas d'API OpenAI, pour éviter les coûts." },
+      { cat: 'Tâches lourdes', v: 'Celery + Redis', note: "Téléchargement, Whisper et rendu ffmpeg durent plusieurs minutes." }
+    ],
+    tracking: [],
+    domains: [],
+    goldenRule: "Captions Whisper en local, pas d'API OpenAI, pour éviter les coûts.",
+    hubName: 'TwitchClipFactory', hubUnit: 'fonctionnalités',
+    sessions: [],
+    memories: [],
+    ctxFiles: [
+      { name: 'CLAUDE.md', size: '12,3 ko', tone: 'a', role: "Vue d'ensemble, stack, architecture, modules fonctionnels, structure, configuration, phases, contraintes.",
+        chips: ['stack', 'modules', 'phases', 'contraintes'] },
+      { name: 'README.md', size: '6,4 ko', tone: 'd', role: "Démarrage, accès Twitch sans clé, récupération du chat, binaires vidéo.",
+        chips: ['install', 'twitch', 'binaires'] }
+    ],
+    ctxRules: [
+      "VODs publiques uniquement sans token (Client ID suffit)",
+      "Captions Whisper en local (pas d'API OpenAI) pour éviter les coûts",
+      "CapCut deep link disponible sur Windows/Mac si installé ; fallback = ouverture dossier",
+      "TikTok Content Posting API nécessite validation app (délai ~2 semaines)",
+      "Celery + Redis obligatoire : download + Whisper + ffmpeg render sont bloquants (plusieurs minutes)",
+      "yt-dlp peut nécessiter --cookies-from-browser chrome pour VODs age-restricted"
+    ],
+    ctxNever: [],
+    ctxOpen: [
+      "Les phases vivent dans CLAUDE.md, cases toutes vides, alors que le README décrit un MVP qui tourne."
+    ],
+    phases: [
+      { num: 'Phase 1', status: 'à venir', title: 'Core pipeline', tone: 'frozen',
+        detail: "Téléchargement de la VOD et du chat, vélocité du chat, détection des pics, clip ffmpeg, API /analyze et /clips." },
+      { num: 'Phase 2', status: 'à venir', title: 'Frontend Browse', tone: 'frozen',
+        detail: "Pages chaînes, VODs avec statuts, curseur de sensibilité, grille de clips avec aperçu." },
+      { num: 'Phase 3', status: 'à venir', title: 'Signaux avancés', tone: 'frozen',
+        detail: "Score des emotes, taux de majuscules, RMS audio, score composite pondéré." },
+      { num: 'Phase 4', status: 'à venir', title: 'Éditeur', tone: 'frozen',
+        detail: "Modèles ffmpeg 9:16, captions Whisper incrustées, découpe avec aperçu, export CapCut." },
+      { num: 'Phase 5', status: 'à venir', title: 'Publication', tone: 'frozen',
+        detail: "OAuth TikTok, Instagram et YouTube Shorts, envoi avec métadonnées, planification." },
+      { num: 'Phase 6', status: 'à venir', title: 'Polish', tone: 'frozen',
+        detail: "Multi-compte, publication par lots, tableau de bord analytique." }
+    ]
+  },
+  happicture: {
+    label: 'Happicture',
+    slug: 'Aminebousmah/Happicture · main',
+    titleA: 'Happi', titleB: 'cture',
+    tagline: "Retrouvez vos photos d'événement. SaaS B2B2C de diffusion de photos événementielles, avec reconnaissance faciale optionnelle — en production sur happicture.com.",
+    stats: [ { v: '313', k: 'fichiers' }, { v: '3', k: 'rôles' }, { v: '8', k: 'phases' } ],
+    does: [
+      "Le studio photo crée un shoot, importe les photos et les livre à son client organisme en un clic.",
+      "L'organisme active ou non la reconnaissance faciale et crée des liens de diffusion segmentés.",
+      "Le participant retrouve ses photos par lien : selfie avec consentement, ou galerie complète.",
+      "Favoris, téléchargement HD et droit à l'oubli en deux clics côté participant.",
+      "Hébergement strictement européen : Scaleway Paris et Supabase EU.",
+      "En production sur happicture.com, en Docker derrière Caddy."
+    ],
+    todo: [
+      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui."
+    ],
+    stack: [
+      { cat: 'Frontend', v: 'Next.js 14 · TypeScript · Tailwind · shadcn/ui', note: "apps/web, re-thémé au design system Happicture." },
+      { cat: 'Backend', v: 'FastAPI · Celery · Redis', note: "apps/api, Python 3.12+, mypy --strict." },
+      { cat: 'Base', v: 'Postgres + pgvector', note: "Supabase EU, RLS sur les tables sensibles." },
+      { cat: 'ML', v: 'insightface', note: "RetinaFace + ArcFace, embeddings 512d." },
+      { cat: 'Auth', v: 'Supabase Auth ES256', note: "Studio et organisme ; le participant entre par lien." },
+      { cat: 'Email', v: 'Brevo SMTP', note: "Domaine authentifié DKIM et DMARC." },
+      { cat: 'Hébergement', v: 'Scaleway Paris + Caddy', note: "HTTPS automatique, toute la stack en Docker." }
+    ],
+    tracking: [],
+    domains: [],
+    goldenRule: "Hébergement EU strict : aucun service US (pas d'AWS US, pas de Vercel hors EU, pas d'OpenAI). Scaleway Paris + Supabase EU.",
+    hubName: 'Happicture', hubUnit: 'fonctionnalités',
+    sessions: [],
+    memories: [],
+    ctxFiles: [
+      { name: 'CLAUDE.md', size: '23,7 ko', tone: 'a', role: "Commandes, contraintes RGPD, design system, conventions de code, règles pour Claude Code.",
+        chips: ['RGPD', 'design system', 'conventions', 'jamais'] },
+      { name: 'docs/plan.md', size: '45,9 ko', tone: 'b', role: "Phase actuelle et huit phases, avec leurs cases à cocher.",
+        chips: ['8 phases', 'cases à cocher'] },
+      { name: 'README.md', size: '5,8 ko', tone: 'd', role: "Les trois rôles, la stack, le RGPD, le développement local.",
+        chips: ['rôles', 'stack', 'RGPD'] }
+    ],
+    ctxRules: [
+      "Hébergement EU strict : aucun service US (pas d'AWS US, pas de Vercel hors EU, pas d'OpenAI). Scaleway Paris + Supabase EU.",
+      "✅ Lire docs/plan.md en début de session pour connaître la phase en cours",
+      "✅ Respecter les contraintes RGPD dans tout code généré",
+      "✅ Utiliser uniquement les libs de la stack verrouillée",
+      "✅ Respecter le design system (palette, typo, composants) dans tout le front",
+      "✅ Écrire les tests en même temps que le code",
+      "✅ Mettre à jour docs/plan.md à la fin d'une tâche",
+      "✅ Annoncer explicitement les transitions de phase",
+      "✅ Demander avant toute action destructive"
+    ],
+    ctxNever: [
+      "Pas de réutilisation cross-événement : les embeddings d'un événement ne servent JAMAIS à matcher dans un autre événement.",
+      "Pas de logique métier dans les routers : router → service → repository",
+      "❌ Introduire une nouvelle dépendance sans demander",
+      "❌ Changer de modèle ML ou de techno sans validation",
+      "❌ Logger des embeddings, photos, ou données personnelles",
+      "❌ Utiliser un service hébergé hors UE",
+      "❌ Conserver l'embedding selfie d'un participant au-delà de 24h",
+      "❌ Confondre responsable de traitement (organisme) et sous-traitant (studio/Happicture)",
+      "❌ Sauter une phase du plan.md sans validation explicite d'Amine"
+    ],
+    ctxOpen: [
+      "Phase 6 : faire valider les CGU et la politique de confidentialité par un juriste ou un DPO."
+    ],
+    phases: [
+      { num: 'Phase 0', status: 'fait', title: 'Foundations', tone: 'live',
+        detail: "Monorepo, prototype Colab archivé, docker-compose Postgres + pgvector + Redis, API et front minimaux, CI GitHub Actions, projet Supabase EU." },
+      { num: 'Phase 1', status: 'en cours', title: 'Pipeline ML standalone', tone: 'wip',
+        detail: "Objectif : prouver que le matching fonctionne en CLI, avant toute UI. Role-agnostique." },
+      { num: 'Phase 2', status: 'fait', title: 'Design system & refonte du front', tone: 'live',
+        detail: "Objectif : poser l'identité visuelle Happicture et le squelette des 3 consoles." },
+      { num: 'Phase 3', status: 'fait', title: 'Galerie participant', tone: 'live',
+        detail: "Objectif : l'expérience invité, mobile-first. Construite d'abord en front, câblée au backend en Phase 5." },
+      { num: 'Phase 4', status: 'à venir', title: 'Consoles authentifiées (Studio + Organisme)', tone: 'frozen',
+        detail: "Objectif : les deux consoles compte, en front (mock), d'après les maquettes." },
+      { num: 'Phase 5', status: 'fait', title: 'Backend API 3 rôles + câblage', tone: 'live',
+        detail: "Objectif : refondre l'API pour le modèle 3 rôles et brancher le front." },
+      { num: 'Phase 6', status: 'en cours', title: 'RGPD & legal', tone: 'wip',
+        detail: "CGU et politique de confidentialité en ligne ; leur validation juridique reste due." },
+      { num: 'Phase 7', status: 'fait', title: 'Billing & go-to-market', tone: 'live',
+        detail: "Stripe, quotas par plan, landing publique, email transactionnel EU. Facturation en ligne volontairement fermée au lancement." }
     ]
   }
 };

@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { memoryStore } from '../cache';
-import { createClient, fetchRepoMeta, fetchTextFile, GitHubError, parseSlug } from '../github';
+import {
+  createClient,
+  fetchFirstTextFile,
+  fetchRepoMeta,
+  fetchTextFile,
+  GitHubError,
+  parseSlug,
+} from '../github';
 
 const REF = parseSlug('Aminebousmah/Atlas · main')!;
 
@@ -233,5 +240,42 @@ describe('fetchTextFile', () => {
     await expect(
       fetchTextFile(REF, 'plan.md', createClient(null, memoryStore())),
     ).rejects.toThrow(GitHubError);
+  });
+});
+
+describe('fetchFirstTextFile', () => {
+  it('va chercher le plan dans docs/ quand il n’est pas à la racine', async () => {
+    const fetchMock = vi.fn(async (url: string) =>
+      url.includes('/contents/docs/plan.md')
+        ? new Response('# Plan', { status: 200 })
+        : new Response(null, { status: 404 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const file = await fetchFirstTextFile(
+      REF,
+      ['plan.md', 'docs/plan.md'],
+      createClient(null, memoryStore()),
+    );
+
+    expect(file?.path).toBe('docs/plan.md');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('s’arrête au premier chemin trouvé', async () => {
+    const fetchMock = vi.fn(async () => new Response('# Plan', { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const file = await fetchFirstTextFile(REF, ['plan.md', 'docs/plan.md'], createClient(null, memoryStore()));
+
+    expect(file?.path).toBe('plan.md');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rend null quand aucun chemin n’existe', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(null, { status: 404 })));
+    await expect(
+      fetchFirstTextFile(REF, ['plan.md', 'docs/plan.md'], createClient(null, memoryStore())),
+    ).resolves.toBeNull();
   });
 });

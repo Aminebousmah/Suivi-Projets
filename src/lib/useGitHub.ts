@@ -5,7 +5,7 @@ import { buildCoverage } from './coverage';
 import type { CacheStore } from './cache';
 import { ageMinutes, localStorageStore } from './cache';
 import type { FileResult, LiveContext } from './context';
-import { CONTEXT_FILES, buildLiveContext } from './context';
+import { CONTEXT_PATHS, buildLiveContext } from './context';
 import type { ActivitySummary } from './activity';
 import { activityIndex, summarize, windowFrom } from './activity';
 import type { CommitInfo, Origin, RateInfo, RepoMeta, RepoTree } from './github';
@@ -14,12 +14,13 @@ import {
   fetchCommits,
   fetchCompare,
   fetchRepoMeta,
-  fetchTextFile,
+  fetchFirstTextFile,
   fetchTree,
   parseSlug,
 } from './github';
 import type { Domain } from '../data/types';
 import { buildDomainsFromTree } from './tree';
+import { alignDomainKeys } from './atlasFile';
 import type { RepoCheck } from './verify';
 import { checkRepo } from './verify';
 
@@ -136,23 +137,29 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
       fetchCommits(ref, client),
       // Les fichiers de contexte sont facultatifs : ni leur absence ni leur
       // échec de lecture ne doit empêcher d'afficher le dépôt.
-      ...CONTEXT_FILES.map((path) =>
-        fetchTextFile(ref, path, client).catch((): FileResult => ({ failed: true })),
+      ...CONTEXT_PATHS.map((paths) =>
+        fetchFirstTextFile(ref, paths, client).catch((): FileResult => ({ failed: true })),
       ),
     ])
       .then(async ([meta, tree, commits, ...files]) => {
         if (cancelled) return;
 
-        // L'activité s'obtient en une requête pour toute la plage de commits :
-        // la demander fichier par fichier en coûterait une par fichier. Si la
-        // comparaison échoue, l'arbre reste affichable, sans les constats.
         // atlas.md, quand le dépôt en fournit un, remplace la description
         // figée : c'est le dépôt qui dit alors ce qu'il fait.
         const context = buildLiveContext(files);
+        if (context.atlas) {
+          context.atlas = {
+            ...context.atlas,
+            domains: alignDomainKeys(context.atlas.domains, repo.domains),
+          };
+        }
         const described = context.atlas
           ? { ...repo, domains: context.atlas.domains }
           : repo;
         const coverage = buildCoverage(described, tree.entries);
+        // L'activité s'obtient en une requête pour toute la plage de commits :
+        // la demander fichier par fichier en coûterait une par fichier. Si la
+        // comparaison échoue, l'arbre reste affichable, sans les constats.
         const range = windowFrom(commits);
         const changed = range
           ? await fetchCompare(ref, range.base, range.head, client).catch(() => [])

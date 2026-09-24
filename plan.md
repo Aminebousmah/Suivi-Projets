@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, huit phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
+État : fonctionnellement terminé, neuf phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -48,7 +48,7 @@ Les fichiers cités par les fonctionnalités et les fichiers du dépôt sont rap
 - [x] Un fichier du dépôt dit quelles fonctionnalités il sert
 - [x] Une fonctionnalité dit où ses chemins atterrissent vraiment
 - [x] Chaque dossier annonce sa part décrite, et la vue Dépôt réel la part du projet
-- [x] Les fichiers qu'aucune fonctionnalité ne citait sont décrits : 61 sur 61
+- [x] Les fichiers qu'aucune fonctionnalité ne citait sont décrits : 61 sur 61 à l'époque
 - [x] Un test échoue dès qu'un fichier ajouté n'est décrit nulle part
 
 Le rapprochement ne juge rien : un fichier que rien ne cite n'est ni mort ni superflu, il est seulement non décrit.
@@ -74,15 +74,39 @@ Une passe à l'écran, captures à l'appui, en large comme en étroit.
 - [x] React livré à part, pour qu'une mise à jour d'Atlas ne le fasse pas retélécharger
 - [x] Plus aucun hex dans un composant
 
+## Phase 9 — Un suivi taillé pour les vrais projets ✅
+
+Le prompt et le lecteur, confrontés aux CLAUDE.md et plan.md de six projets réels.
+
+- [x] Le prompt parle du dossier local, et respecte la structure qu'un projet a déjà
+- [x] La mise en place installe dans CLAUDE.md une section « Suivi du projet », qui fait tenir les fichiers à jour à chaque tâche
+- [x] Un second prompt, court, pour faire le point de temps en temps
+- [x] Le plan est cherché dans docs/ quand il n'est pas à la racine, CLAUDE.md dans .claude/
+- [x] Les consignes rangées en sous-sections sont lues — « Règles pour Claude Code › Jamais »
+- [x] ✓, un pourcentage dans le titre ou les cases à cocher disent le statut d'une phase ; « Phase actuelle » n'en est pas une
+
+## Phase 10 — Les projets réels dans Atlas ✅
+
+Futuremoi, bottrading, Clip-Core et Happicture rejoignent la barre de dépôts.
+
+- [x] Un thème se construit à partir de la seule palette d'un projet, encres choisies par le contraste
+- [x] Chaque nouveau dépôt ne montre que des faits lus dans ses fichiers, sans domaine ni statut inventé
+- [x] Chaque bloc vide dit quel fichier le remplirait, au lieu de disparaître ou de planter
+- [x] La sélection se vérifie contre l'arbre affiché, celui d'atlas.md une fois lu : les clés du fichier ne sont plus purgées
+- [x] Les « à faire » d'Atlas, recopiés par erreur chez Sole-Citron et Eleven-Fields, en sont retirés
+
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
 - **Publier** — le workflow est écrit et vérifié, mais GitHub Pages s'active dans les
   réglages du dépôt, et la publication se déclenche sur `main`. Deux gestes qui
   appartiennent au propriétaire du dépôt.
 - **Ouvrir Atlas à un dépôt quelconque** — depuis `atlas.md`, un dépôt décrit lui-même
-  ses domaines ; il reste à l'enregistrer dans `src/data/repos.ts` pour sa palette et son
-  slug. Accepter un dépôt saisi à la volée demanderait d'en déduire aussi la direction
-  artistique, ou d'assumer qu'il n'en a pas.
+  ses domaines ; il reste à l'enregistrer dans `src/data/repos.ts` pour son slug, et dans
+  `src/data/themes.ts` pour sa palette, que `buildTheme` complète. Accepter un dépôt saisi
+  à la volée demanderait de lire cette palette dans son code.
+- **Décrire les projets suivis** — Futuremoi, bottrading, Clip-Core et Happicture n'ont
+  pas encore d'`atlas.md` : c'est le prompt de mise en place, lancé dans chaque projet,
+  qui l'écrit.
 - **Rapprocher les sessions du reste** — une session sait quels fichiers elle a touchés,
   et le croisement sait ce que ces fichiers servent : les brancher l'un sur l'autre dirait
   quelles fonctionnalités une session a fait avancer.

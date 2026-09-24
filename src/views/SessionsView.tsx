@@ -242,6 +242,7 @@ export function SessionsView({ t, repo }: Props) {
         );
       })}
 
+      {repo.memories.length > 0 && (
       <div
         style={{
           border: `1px solid ${t.warnBorder}`,
@@ -279,6 +280,7 @@ export function SessionsView({ t, repo }: Props) {
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }

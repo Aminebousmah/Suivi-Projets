@@ -164,10 +164,28 @@ describe('données des dépôts', () => {
     });
   });
 
-  it.each(Object.keys(REPOS))('%s : les statistiques annoncent le bon nombre de fonctions', (key) => {
+  // Un dépôt qui n'est pas décrit ici attend son atlas.md : rien n'y est inventé.
+  const described = Object.keys(REPOS).filter((k) => REPOS[k].domains.length);
+  const awaiting = Object.keys(REPOS).filter((k) => !REPOS[k].domains.length);
+
+  it.each(described)('%s : les statistiques annoncent le bon nombre de fonctions', (key) => {
     const total = REPOS[key].domains.reduce((a, d) => a + d.features.length, 0);
     const stat = REPOS[key].stats.find((s) => s.k === 'fonctions');
     if (stat) expect(Number(stat.v)).toBe(total);
     expect(total).toBeGreaterThan(0);
+  });
+
+  it.each(awaiting)("%s : sans atlas.md, aucun domaine, suivi ni session n'est inventé", (key) => {
+    const repo = REPOS[key];
+    expect(repo.stats.map((s) => s.k)).not.toContain('fonctions');
+    expect(repo.stats.map((s) => s.k)).not.toContain('domaines');
+    expect(repo.tracking).toEqual([]);
+    expect(repo.sessions).toEqual([]);
+    expect(repo.memories).toEqual([]);
+  });
+
+  it('garde des dépôts décrits et des dépôts en attente de leur atlas.md', () => {
+    expect(described.length).toBeGreaterThan(0);
+    expect(awaiting.length).toBeGreaterThan(0);
   });
 });

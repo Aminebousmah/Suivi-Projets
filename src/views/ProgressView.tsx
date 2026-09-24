@@ -1,6 +1,6 @@
 import { SourceBadge } from '../components/SourceBadge';
 import type { RepoReader } from '../components/SourceBadge';
-import { Kicker, MONO } from '../components/ui';
+import { EmptyNote, Kicker, MONO } from '../components/ui';
 import type { RepoData, Theme } from '../data/types';
 import type { LiveContext } from '../lib/context';
 import { useNarrow } from '../lib/useMediaQuery';
@@ -34,6 +34,14 @@ export function ProgressView({ t, repo, live, reader }: Props) {
         hint="Le dépôt n'a pas de plan.md, ou aucune phase n'y est reconnue."
         {...reader}
       />
+
+      {phases.length === 0 && (
+        <EmptyNote t={t}>
+          Aucune phase à montrer. Atlas les lit dans plan.md, à la racine ou dans docs/ : un
+          titre par phase, qui commence par « Phase » et porte un statut. Le prompt de mise en
+          place d'ATLAS-PROMPT.md le crée à partir de ce que le projet annonce.
+        </EmptyNote>
+      )}
 
       {phases.map((p) => {
         const pl = t.pills[p.tone] || t.pills.idea;

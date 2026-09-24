@@ -27,6 +27,8 @@ Un seul écart est assumé : dans la vue Fonctionnalités, la maquette partageai
 - Une fonctionnalité décrit une question à laquelle un fichier répond ; deux fichiers qui répondent à la même question vont ensemble, deux questions distinctes se séparent.
 - Tout fichier suivi par git est cité par au moins une fonctionnalité — un test le vérifie et nomme les oubliés.
 - Le cache est une optimisation, jamais une source : un stockage refusé, plein ou corrompu n'empêche rien.
+- Un nouveau dépôt part de la palette qu'il déclare, complétée par `buildTheme`, et de faits cités dans ses fichiers ; son arbre, son suivi et ses statuts viennent de son atlas.md, jamais des données figées.
+- Un bloc vide dit quel fichier le remplirait (`EmptyNote`) : il ne disparaît pas en silence et ne fait pas planter la vue.
 
 ## À ne jamais faire
 
@@ -53,3 +55,14 @@ npm run build    # typecheck puis build de production
 npm run test     # vitest
 npm run lint     # oxlint
 ```
+
+## Suivi du projet
+
+Ce projet est suivi par Atlas lui-même, qui lit atlas.md, plan.md et ce fichier sur GitHub.
+
+À la fin de chaque tâche qui modifie le code :
+
+- mets à jour `src/data/repos.ts` et `atlas.md` ensemble : le statut des fonctionnalités touchées, les fichiers ajoutés, renommés ou supprimés, et une nouvelle fonctionnalité si la tâche en crée une — deux tests refusent que ces deux descriptions divergent, ou qu'un fichier n'y soit cité nulle part ;
+- coche dans plan.md ce qui vient d'être terminé, et change le statut d'une phase qui démarre ou s'achève ;
+- si une convention ou un interdit a été décidé pendant la tâche, ajoute-le ici ;
+- termine ton récapitulatif par une ligne « Suivi : … » qui dit ce que tu as mis à jour, ou « Suivi : rien à changer ».

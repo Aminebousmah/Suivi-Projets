@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
+import type { Theme } from '../data/types';
 
 export const MONO = "'JetBrains Mono', monospace";
 
@@ -45,5 +46,34 @@ export function Kicker({ color, children, size = 10 }: KickerProps) {
     >
       {children}
     </span>
+  );
+}
+
+interface EmptyNoteProps {
+  t: Theme;
+  title?: string;
+  children: ReactNode;
+}
+
+/**
+ * Ce qui tient lieu d'un bloc vide : une absence est une information, elle se
+ * dit, avec ce qu'il faut faire pour la combler.
+ */
+export function EmptyNote({ t, title, children }: EmptyNoteProps) {
+  return (
+    <div
+      style={{
+        border: `1px dashed ${t.line}`,
+        borderRadius: 12,
+        background: t.surfaceAlt,
+        padding: '18px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+      }}
+    >
+      {title && <Kicker color={t.inkFaint}>{title}</Kicker>}
+      <span style={{ fontSize: 13, lineHeight: 1.6, color: t.inkSoft }}>{children}</span>
+    </div>
   );
 }

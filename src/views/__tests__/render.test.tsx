@@ -167,3 +167,17 @@ describe('modes d’affichage', () => {
     expect(screen.getByText(/Aucun statut n'y figure/)).toBeInTheDocument();
   });
 });
+
+describe('un dépôt qui attend son atlas.md', () => {
+  const awaiting = Object.keys(REPOS).filter((k) => !REPOS[k].domains.length);
+  const views = ['sheet', 'arch', 'sessions', 'context', 'progress', 'github'];
+
+  it.each(awaiting.flatMap((k) => views.map((v) => [k, v])))(
+    '%s, vue %s : rend sans erreur',
+    (key, view) => {
+      open(`?repo=${key}&view=${view}`);
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(REPOS[key].titleB);
+      expect(screen.queryByText(/cette vue n’a pas pu s’afficher|n'a pas pu s'afficher/i)).not.toBeInTheDocument();
+    },
+  );
+});

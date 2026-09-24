@@ -76,14 +76,32 @@ export function listItems(lines: string[]): string[] {
   return items;
 }
 
-const RULE_HEADING = /r[èe]gle|convention|workflow|process|principe|guideline|m[ée]thode|à faire/i;
+const RULE_HEADING = /r[èe]gle|convention|contraintes?|toujours|workflow|process|principe|guideline|m[ée]thode|à faire/i;
 const NEVER_HEADING = /jamais|interdit|interdiction|ne pas|never|don'?t|anti-?pattern|à [ée]viter/i;
 const NEVER_ITEM = /^(?:ne\s+)?jamais\b|^ne\s+pas\b|^[ée]viter\b|^pas\s+de\b|^aucun[e]?\s/i;
+
+/**
+ * Chaque section, avec le titre de sa section parente de niveau 2 devant le sien.
+ *
+ * Beaucoup de CLAUDE.md rangent leurs consignes en sous-sections : « Règles pour
+ * Claude Code › Jamais », « Conventions de code › Python ». Lu seul, « Jamais »
+ * ne dit pas de quoi il parle, et « Python » encore moins.
+ */
+export function withParentHeadings(md: string): Section[] {
+  let parent = '';
+  return splitSections(md).map((s) => {
+    if (s.level <= 2) {
+      parent = s.level === 2 ? s.heading : '';
+      return s;
+    }
+    return { ...s, heading: parent ? `${parent} › ${s.heading}` : s.heading };
+  });
+}
 
 /** Règles actives : les listes des sections qui en parlent, hors interdits. */
 export function parseRules(md: string): string[] {
   const out: string[] = [];
-  splitSections(md).forEach((s) => {
+  withParentHeadings(md).forEach((s) => {
     if (!RULE_HEADING.test(s.heading) || NEVER_HEADING.test(s.heading)) return;
     listItems(s.lines).forEach((item) => {
       if (!NEVER_ITEM.test(item)) out.push(item);
@@ -95,7 +113,7 @@ export function parseRules(md: string): string[] {
 /** Interdits : sections dédiées, plus les items formulés comme une interdiction. */
 export function parseNever(md: string): string[] {
   const out: string[] = [];
-  splitSections(md).forEach((s) => {
+  withParentHeadings(md).forEach((s) => {
     const dedicated = NEVER_HEADING.test(s.heading);
     listItems(s.lines).forEach((item) => {
       if (dedicated || NEVER_ITEM.test(item)) out.push(item);
@@ -124,11 +142,45 @@ const Z = '(?![\\p{L}])';
 const word = (...alts: string[]) => new RegExp(A + '(?:' + alts.join('|') + ')' + Z, 'iu');
 
 const STATUS_RULES: { status: Status; label: string; test: RegExp }[] = [
-  { status: 'live', label: 'fait', test: word('✅', '✔', '☑', 'faits?', 'termin[ée]e?s?', 'livr[ée]e?s?', 'en ligne', 'publi[ée]e?s?', 'done', 'ok') },
+  { status: 'live', label: 'fait', test: word('✅', '✔', '✓', '☑', 'faits?', 'termin[ée]e?s?', 'livr[ée]e?s?', 'en ligne', 'publi[ée]e?s?', 'done', 'ok') },
   { status: 'wip', label: 'en cours', test: word('🚧', '🔨', '⚙', 'en cours', 'wip', 'in progress', 'd[ée]marr[ée]e?') },
   { status: 'idea', label: 'idées', test: word('💡', 'id[ée]es?', 'backlog', 'exploratoire', 'plus tard', 'peut-[êe]tre') },
   { status: 'frozen', label: 'à venir', test: word('⏳', '🧊', '❄', 'à venir', 'pr[ée]vue?s?', 'planifi[ée]e?', 'gel[ée]e?', 'bloqu[ée]e?', 'todo', 'pas commenc[ée]e?') },
 ];
+
+/**
+ * Un avancement chiffré dans le titre d'une phase — « Pipeline ML (90 %) » — est
+ * une source explicite : 100 % est fait, entre les deux c'est en cours. Il n'est
+ * lu que dans le titre, où il ne peut désigner que la phase elle-même.
+ */
+export function percentStatus(heading: string): { status: Status; label: string } | null {
+  const m = /(\d{1,3})\s*%/.exec(heading);
+  if (!m) return null;
+  const pct = Number(m[1]);
+  if (pct >= 100) return { status: 'live', label: 'fait' };
+  if (pct > 0) return { status: 'wip', label: 'en cours' };
+  return { status: 'frozen', label: 'à venir' };
+}
+
+/**
+ * Les cases à cocher d'une phase disent où elle en est, sans rien deviner :
+ * toutes cochées, elle est faite ; certaines, elle est en cours ; aucune, elle
+ * est à venir. Sans case, on ne conclut rien.
+ */
+export function checklistStatus(lines: string[]): { status: Status; label: string } | null {
+  let done = 0;
+  let total = 0;
+  lines.forEach((line) => {
+    const m = /^\s*[-*+]\s+\[([ xX])\]/.exec(line);
+    if (!m) return;
+    total++;
+    if (m[1] !== ' ') done++;
+  });
+  if (!total) return null;
+  if (done === total) return { status: 'live', label: 'fait' };
+  if (done > 0) return { status: 'wip', label: 'en cours' };
+  return { status: 'frozen', label: 'à venir' };
+}
 
 /** Devine le statut d'une phase depuis son titre ou ses premières lignes. */
 export function detectStatus(text: string): { status: Status; label: string } | null {
@@ -139,6 +191,8 @@ export function detectStatus(text: string): { status: Status; label: string } | 
 }
 
 const PHASE_HEADING = /^[^\w]*(phase|[ée]tape|etape|pivot|sprint|jalon|lot)\b/i;
+/** « Phase actuelle » résume où en est le projet : ce n'est pas une phase. */
+const PHASE_SUMMARY = /phase\s+(actuelle|courante|en cours|suivante|précédente)\b/i;
 const SPLIT = /\s*(?:—|–|:|·|\||-{1,2}\s)\s*/;
 
 /**
@@ -148,14 +202,21 @@ const SPLIT = /\s*(?:—|–|:|·|\||-{1,2}\s)\s*/;
  */
 export function parsePhases(md: string): Phase[] {
   return splitSections(md)
-    .filter((s) => PHASE_HEADING.test(s.heading))
+    .filter((s) => PHASE_HEADING.test(s.heading) && !PHASE_SUMMARY.test(s.heading))
     .map((s) => {
       const heading = cleanInline(s.heading);
       const body = s.lines.filter((l) => l.trim()).slice(0, 4).join(' ');
-      const found = detectStatus(heading) ?? detectStatus(body);
+      // Du plus explicite au moins sûr : le titre, un pourcentage, les cases,
+      // puis seulement les premières lignes du texte.
+      const found =
+        detectStatus(heading) ??
+        percentStatus(heading) ??
+        checklistStatus(s.lines) ??
+        detectStatus(body);
 
       const parts = heading.split(SPLIT);
-      const num = cleanStatusWords(parts[0]);
+      // Un emoji en tête de titre — « 🟢 Phase 0 » — est un décor, pas un numéro.
+      const num = cleanStatusWords(parts[0]).replace(/^[^\p{L}\p{N}]+/u, '');
       const title = cleanStatusWords(parts.slice(1).join(' — ')) || num;
 
       const paragraph: string[] = [];
@@ -181,8 +242,12 @@ export function parsePhases(md: string): Phase[] {
 /** Retire les marqueurs de statut d'un titre pour n'en garder que le texte. */
 export function cleanStatusWords(text: string): string {
   return text
-    .replace(/[✅✔☑🚧🔨⚙⏳🧊❄💡]/gu, '')
+    .replace(/[✅✔✓☑🚧🔨⚙⏳🧊❄💡]/gu, '')
     .replace(/\((?:fait|termin[ée]e?|en cours|à venir|gel[ée]e?|id[ée]es?|done|wip|todo)\)/gi, '')
+    .replace(/\(\s*\d{1,3}\s*%\s*\)/g, '')
+    // Un statut en capitales au bout du titre — « … des données EN COURS » — est
+    // un marqueur, pas un mot du titre. En minuscules, on ne s'y risque pas.
+    .replace(/\s+(?:EN COURS|FAIT|TERMINÉE?|À VENIR|GELÉE?|IDÉES?)\s*$/u, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -270,6 +335,17 @@ export interface LiveContext {
 }
 
 export const CONTEXT_FILES = ['CLAUDE.md', 'plan.md', 'README.md', 'atlas.md'];
+
+/**
+ * Où chercher chacun, dans l'ordre. Un projet déjà structuré ne se réorganise pas
+ * pour Atlas : c'est Atlas qui va chercher le plan dans docs/ quand il y est.
+ */
+export const CONTEXT_PATHS: string[][] = [
+  ['CLAUDE.md', '.claude/CLAUDE.md'],
+  ['plan.md', 'docs/plan.md'],
+  ['README.md'],
+  ['atlas.md'],
+];
 const TONES: ToneKey[] = ['a', 'b', 'd', 'c'];
 
 /** Ce qu'une tentative de lecture a donné : le fichier, son absence, ou un échec. */
