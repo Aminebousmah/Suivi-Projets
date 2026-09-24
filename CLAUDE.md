@@ -53,3 +53,14 @@ npm run build    # typecheck puis build de production
 npm run test     # vitest
 npm run lint     # oxlint
 ```
+
+## Suivi du projet
+
+Ce projet est suivi par Atlas lui-même, qui lit atlas.md, plan.md et ce fichier sur GitHub.
+
+À la fin de chaque tâche qui modifie le code :
+
+- mets à jour `src/data/repos.ts` et `atlas.md` ensemble : le statut des fonctionnalités touchées, les fichiers ajoutés, renommés ou supprimés, et une nouvelle fonctionnalité si la tâche en crée une — deux tests refusent que ces deux descriptions divergent, ou qu'un fichier n'y soit cité nulle part ;
+- coche dans plan.md ce qui vient d'être terminé, et change le statut d'une phase qui démarre ou s'achève ;
+- si une convention ou un interdit a été décidé pendant la tâche, ajoute-le ici ;
+- termine ton récapitulatif par une ligne « Suivi : … » qui dit ce que tu as mis à jour, ou « Suivi : rien à changer ».

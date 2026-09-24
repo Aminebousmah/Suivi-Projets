@@ -134,12 +134,15 @@ describe('parsePhases', () => {
     expect(phases[2].title).toBe('Passage en mode éditorial');
   });
 
-  it('lit le statut dans le titre', () => {
-    expect(phases.map((p) => p.tone)).toEqual(['live', 'live', 'wip', 'frozen', 'idea']);
+  it('lit le statut dans le titre, sinon dans les cases à cocher', () => {
+    // La Phase 4 n'a pas de marqueur, mais une case cochée sur trois.
+    expect(phases.map((p) => p.tone)).toEqual(['live', 'live', 'wip', 'wip', 'idea']);
   });
 
   it('retient « à venir » quand aucun statut ne se lit', () => {
-    expect(phases[3].status).toBe('à venir');
+    const [p] = parsePhases('## Phase 9 — Refonte du tableau de bord\n\nRien de décidé.');
+    expect(p.status).toBe('à venir');
+    expect(p.tone).toBe('frozen');
   });
 
   it('prend le premier paragraphe comme détail', () => {
@@ -155,6 +158,67 @@ describe('parsePhases', () => {
 
   it('ne rend rien sur un plan vide', () => {
     expect(parsePhases('')).toEqual([]);
+  });
+});
+
+describe('ce que font vraiment les projets', () => {
+  // Formes relevées dans des CLAUDE.md et plan.md réels, reproduites ici.
+
+  it('lit ✓ comme « fait » et le retire du titre', () => {
+    const [p] = parsePhases('## Phase 1 — Foundation + Home ✓\n\n- [x] Socle');
+    expect(p.tone).toBe('live');
+    expect(p.title).toBe('Foundation + Home');
+  });
+
+  it('retire un statut en capitales accolé au titre', () => {
+    const [p] = parsePhases('## Phase 1 — Compléter les données ⏳ EN COURS\n\nTexte.');
+    expect(p.tone).toBe('wip');
+    expect(p.title).toBe('Compléter les données');
+  });
+
+  it('lit un avancement chiffré dans le titre', () => {
+    const [p] = parsePhases('## 🔬 Phase 1 — Pipeline ML *(90 %)*\n\nTexte.');
+    expect(p.tone).toBe('wip');
+    expect(p.title).toBe('Pipeline ML');
+    expect(p.num).toBe('Phase 1');
+  });
+
+  it('tire le statut des cases quand le titre n’en porte pas', () => {
+    const toutes = parsePhases('## Phase 7 — Billing\n\n- [x] Stripe\n- [x] Quotas');
+    const aucune = parsePhases('## Phase 8 — Suite\n\n- [ ] Une\n- [ ] Deux');
+    expect(toutes[0].tone).toBe('live');
+    expect(aucune[0].tone).toBe('frozen');
+  });
+
+  it('ne prend pas « Phase actuelle » pour une phase', () => {
+    const phases = parsePhases(
+      '## 📌 Phase actuelle\n\nEN PRODUCTION.\n\n## Phase 0 — Socle ✅\n\nFait.',
+    );
+    expect(phases.map((p) => p.num)).toEqual(['Phase 0']);
+  });
+
+  it('lit les consignes rangées en sous-sections', () => {
+    const md = [
+      '## Règles pour Claude Code',
+      '### Toujours',
+      '- Lancer les tests avant de committer.',
+      '### Jamais',
+      '- Pousser sur main sans relecture.',
+      '## Conventions de code',
+      '### Python',
+      '- Typage strict partout.',
+    ].join('\n');
+    expect(parseRules(md)).toEqual([
+      'Lancer les tests avant de committer.',
+      'Typage strict partout.',
+    ]);
+    expect(parseNever(md)).toEqual(['Pousser sur main sans relecture.']);
+  });
+
+  it('lit une section « Contraintes » comme des règles', () => {
+    expect(parseRules('## Contraintes & décisions\n\n- Tout tourne en local.')).toEqual([
+      'Tout tourne en local.',
+    ]);
   });
 });
 

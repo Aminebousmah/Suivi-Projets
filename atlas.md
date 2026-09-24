@@ -160,11 +160,13 @@ Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fic
 > Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli
 > Un fichier hors format n'est pas une panne : il est simplement laissé de côté
 
-### Le prompt de suivi — en ligne
-Le texte à coller dans une session Claude Code pour qu'un projet produise et tienne à jour son atlas.md.
+### Les prompts de suivi — en ligne
+Deux prompts à coller dans une session Claude Code ouverte sur un projet local : la mise en place, puis le point de suivi.
 - `ATLAS-PROMPT.md`
-> Il donne la grammaire du fichier et les règles de suivi : ne rien inventer, ne citer que des chemins réels, couvrir tout le dépôt
-> Relancé plus tard, il met à jour au lieu de réécrire
+> Écrits d'après les CLAUDE.md et plan.md de six projets réels, pas d'après un projet idéal
+> La mise en place respecte la structure existante : un plan rangé dans docs/ y reste, une section n'est pas renommée
+> Elle installe dans CLAUDE.md une section « Suivi du projet » : chaque tâche qui touche au code met ensuite le suivi à jour
+> Aucun statut inventé, aucun chemin qui n'existe pas, tout le projet couvert
 
 ### Le suivi d'Atlas lui-même — en ligne
 Atlas décrit son propre arbre avec le format qu'il propose aux autres.
@@ -224,10 +226,13 @@ Saisi dans la vue, gardé dans le navigateur, effaçable d'un bouton.
 ### Lecture des fichiers de contexte — en ligne
 Lit CLAUDE.md, plan.md et README.md dans le dépôt et en tire règles, interdits, phases et cases à cocher.
 - `src/lib/context.ts`
-- `src/lib/github.ts — fetchTextFile`
+- `src/lib/github.ts — fetchTextFile, fetchFirstTextFile`
 > Aucun schéma n'est supposé : ce qui n'est pas reconnu est laissé de côté, jamais deviné
 > Un fichier absent est une information affichée, pas une panne
 > Les titres pris dans un bloc de code sont ignorés
+> Le plan est cherché dans docs/ s'il n'est pas à la racine, CLAUDE.md dans .claude/
+> Une sous-section hérite du titre de sa section : « Règles pour Claude Code › Jamais » se lit comme des interdits
+> Le statut d'une phase se lit dans son titre — ✅, ✓, EN COURS, un pourcentage — puis dans ses cases à cocher
 
 ### Cache des réponses — en ligne
 Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne coûte rien au quota.
@@ -372,7 +377,7 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 261 | — | 100% |
+| Tests au vert | 271 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
 | Dépôts décrits | 3 | 3 | 100% |
 | Fichiers du dépôt décrits | tous | tous | 100% |

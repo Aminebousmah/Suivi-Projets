@@ -49,7 +49,7 @@ src/
     useMediaQuery.ts  ce que les composants savent de la place disponible
     color.ts          l'encre la plus lisible sur un fond donné
     useGitHub.ts      chargement du dépôt réel et jeton gardé dans le navigateur
-    __tests__/        261 tests Vitest, logique pure et rendu compris
+    __tests__/        271 tests Vitest, logique pure et rendu compris
   views/
     SheetView.tsx     01 Fiche projet — ce que le projet fait, pile technique, feuille de suivi
     ArchView.tsx      02 Fonctionnalités — graphe ou liste, plus le panneau de détail
@@ -209,10 +209,17 @@ quoi la moitié des « prompts » affichés seraient des sorties de commandes.
 
 ## Faire décrire un projet par lui-même
 
-`ATLAS-PROMPT.md` contient un prompt à coller dans une session Claude Code ouverte sur
-n'importe quel projet. Il en fait produire un `atlas.md` à la racine : les domaines, leurs
-fonctionnalités, le statut de chacune, les fichiers qui l'implémentent, et une feuille de
-suivi. Relancé plus tard, il met à jour au lieu de réécrire.
+`ATLAS-PROMPT.md` contient deux prompts, à coller dans une session Claude Code ouverte
+**dans le dossier local** du projet :
+
+1. **La mise en place**, une fois par projet. Elle lit le projet tel qu'il est — son
+   `CLAUDE.md`, son plan où qu'il soit rangé, son README, ses derniers commits — puis crée
+   ou complète `atlas.md`, `plan.md` et `CLAUDE.md` **sans bousculer la structure
+   existante**. Elle installe surtout, à la fin de `CLAUDE.md`, une section « Suivi du
+   projet » : comme Claude Code relit ce fichier à chaque session, chaque tâche qui touche
+   au code met ensuite le suivi à jour d'elle-même.
+2. **Le point de suivi**, court, pour rattraper ce qui aurait glissé depuis la dernière
+   mise à jour d'`atlas.md`.
 
 ```md
 ## Domaine · Navigation & parcours
@@ -224,26 +231,31 @@ Grille d'entrée vers les dix univers du citron.
 > La porte Boutique disparaît quand le commerce est coupé.
 ```
 
-Quand un dépôt fournit ce fichier, **c'est lui qui décrit son arbre** : les domaines, les
+Ces prompts ont été écrits d'après les fichiers de six projets réels, pas d'après un
+projet idéal : des `CLAUDE.md` rangés en sous-sections, des plans à la racine ou dans
+`docs/`, des phases marquées `✓`, `⏳ EN COURS` ou `(90 %)`, des projets sans aucun fichier
+de suivi. Atlas lit toutes ces formes.
+
+Quand un dépôt fournit `atlas.md`, **c'est lui qui décrit son arbre** : les domaines, les
 statuts, la feuille de suivi et le croisement en viennent, et la description figée de
 `src/data/repos.ts` n'est plus qu'un repli. Chaque vue dit laquelle des deux elle affiche.
+Atlas lisant GitHub, les fichiers ne comptent qu'une fois commités et poussés.
 
-Le prompt porte aussi les règles de suivi : ne jamais inventer un statut, ne citer que des
-chemins qui existent, couvrir tout le dépôt, et n'écrire dans une fonctionnalité que ce
-qui est — le reste va dans `À faire`.
-
-Atlas se décrit avec son propre `atlas.md`, et deux tests veillent : l'un refuse que ce
-fichier et la description figée divergent, l'autre qu'un fichier du dépôt n'y soit cité
-nulle part.
+Atlas se décrit avec son propre `atlas.md` et suit la même section « Suivi du projet » ;
+deux tests veillent à ce que ce fichier et la description figée ne divergent pas, et
+qu'aucun fichier du dépôt n'y manque.
 
 ## Lecture des fichiers de contexte
 
 Une fois le dépôt connecté, `CLAUDE.md`, `plan.md` et `README.md` y sont lus et analysés :
 
 - les **règles** et les **interdits** viennent des sections de `CLAUDE.md` qui en parlent,
-  les seconds étant reconnus par leur titre ou par leur formulation ;
-- les **phases** viennent des titres de `plan.md`, avec leur statut lu dans le titre ou
-  juste en dessous — un « ✅ », un « (fait) », un « en cours » ;
+  sous-sections comprises — « Règles pour Claude Code › Jamais » se lit comme des
+  interdits —, les seconds étant reconnus par leur titre ou par leur formulation ;
+- les **phases** viennent des titres de `plan.md` — cherché à la racine, puis dans
+  `docs/` — avec leur statut lu dans le titre (« ✅ », « ✓ », « (FAIT) », « EN COURS »,
+  un pourcentage), puis dans leurs cases à cocher ; un titre comme « Phase actuelle », qui
+  résume au lieu de planifier, n'est pas pris pour une phase ;
 - les **cases à cocher** de `plan.md` sont reprises telles quelles.
 
 Ces fichiers sont écrits pour des humains, sans schéma garanti : l'analyse est « au mieux »

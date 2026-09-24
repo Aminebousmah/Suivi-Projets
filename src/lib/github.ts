@@ -288,6 +288,22 @@ export async function fetchTextFile(
  * Demander l'activité fichier par fichier coûterait une requête par fichier ;
  * une comparaison de plage en coûte une pour tout l'intervalle.
  */
+/**
+ * Le premier des chemins qui existe, ou null si aucun. Un chemin absent (404)
+ * passe au suivant ; toute autre erreur remonte, pour être signalée.
+ */
+export async function fetchFirstTextFile(
+  ref: RepoRef,
+  paths: string[],
+  client: Client,
+): Promise<TextFile | null> {
+  for (const path of paths) {
+    const file = await fetchTextFile(ref, path, client);
+    if (file) return file;
+  }
+  return null;
+}
+
 export async function fetchCompare(
   ref: RepoRef,
   base: string,

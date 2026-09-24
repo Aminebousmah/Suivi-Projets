@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, huit phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
+État : fonctionnellement terminé, neuf phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -73,6 +73,17 @@ Une passe à l'écran, captures à l'appui, en large comme en étroit.
 - [x] Une vue qui plante n'emporte plus l'application
 - [x] React livré à part, pour qu'une mise à jour d'Atlas ne le fasse pas retélécharger
 - [x] Plus aucun hex dans un composant
+
+## Phase 9 — Un suivi taillé pour les vrais projets ✅
+
+Le prompt et le lecteur, confrontés aux CLAUDE.md et plan.md de six projets réels.
+
+- [x] Le prompt parle du dossier local, et respecte la structure qu'un projet a déjà
+- [x] La mise en place installe dans CLAUDE.md une section « Suivi du projet », qui fait tenir les fichiers à jour à chaque tâche
+- [x] Un second prompt, court, pour faire le point de temps en temps
+- [x] Le plan est cherché dans docs/ quand il n'est pas à la racine, CLAUDE.md dans .claude/
+- [x] Les consignes rangées en sous-sections sont lues — « Règles pour Claude Code › Jamais »
+- [x] ✓, un pourcentage dans le titre ou les cases à cocher disent le statut d'une phase ; « Phase actuelle » n'en est pas une
 
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
