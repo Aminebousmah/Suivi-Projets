@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '52', k: 'fonctions' }, { v: '341', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '52', k: 'fonctions' }, { v: '344', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -593,7 +593,6 @@ export const REPOS: Record<string, RepoData> = {
       "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit."
     ],
     todo: [
-      "Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour déclencher la première publication.",
       "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
       "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
     ],
@@ -601,24 +600,24 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Langage', v: 'TypeScript strict', note: "Aucun any dans le code applicatif. Les données sont typées par src/data/types.ts." },
       { cat: 'Framework', v: 'React 19', note: "Composants de fonction, aucun state manager : l'état de navigation vit dans l'URL." },
       { cat: 'Build', v: 'Vite 8', note: "Build de production en moins d'une seconde, un seul bundle." },
-      { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant." },
-      { cat: 'Typographie', v: 'DM Serif Display · Manrope · JetBrains Mono', note: "Chargées depuis Google Fonts dans index.html, avec Sora et Space Grotesk pour Happicture et bottrading." },
+      { cat: 'Style', v: 'Styles en ligne pilotés par le thème', note: "Reprise fidèle de la maquette. Aucune couleur codée en dur dans un composant. Palette propre : Black Forest, Maroon, Vanilla Custard." },
+      { cat: 'Typographie', v: 'Marion · Manrope · JetBrains Mono', note: "Titres en Marion, Georgia à défaut. Google Fonts charge le reste, dont les polices des autres dépôts." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "341 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "344 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
-      { cat: 'Déploiement', v: 'Aucun pour l’instant', note: "npm run build produit dist/, à publier sur l'hébergeur de votre choix." }
+      { cat: 'Déploiement', v: 'GitHub Pages', note: "Publié à chaque fusion dans main, une fois lint, tests et build au vert." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "341", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "344", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts suivis", v: "7", target: "—", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits par leur atlas.md", v: "1 / 7", target: "7", pct: '14%', tone: 'wip' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
       { k: "Fichiers du dépôt décrits", v: "79 / 79", target: "tous", pct: '100%', tone: 'live' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
-      { k: "Application déployée", v: "workflow prêt", target: "en ligne", pct: '80%', tone: 'wip' }
+      { k: "Application déployée", v: "en ligne", target: "en ligne", pct: '100%', tone: 'live' }
     ],
     domains: [
       { key: 'shell', num: '01', name: 'Coque et navigation', tone: 'a',
@@ -691,7 +690,8 @@ export const REPOS: Record<string, RepoData> = {
             files: ['src/lib/color.ts', 'src/lib/__tests__/color.test.ts'],
             notes: ["Choisie à la main, dépôt par dépôt, l'encre avait produit un texte noir sur fond noir", "Un test vérifie, pour chaque ton de chaque thème, un contraste d'au moins 3:1"] },
           { name: "Thèmes par dépôt", status: 'live', what: "Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.",
-            files: ['src/data/themes.ts'] },
+            files: ['src/data/themes.ts'],
+            notes: ["Atlas a sa propre palette — Black Forest, Maroon, Vanilla Custard — pour ne ressembler à aucun des projets qu'il montre"] },
           { name: "Thème déduit d'une palette", status: 'live', what: "Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.",
             files: ['src/lib/palette.ts', 'src/lib/__tests__/palette.test.ts'],
             notes: ["Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture", "Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1", "Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1", "En sombre, une carte reste sombre et la couleur passe au liseré"] },
@@ -787,7 +787,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Ils remplacent les vérifications manuelles au navigateur", "jsdom n'est monté que pour ces tests : la logique pure s'en passe", "C'est ce test qui a montré que l'arbre n'était pas atteignable au clavier", "GitHub y est simulé : la vue Dépôt réel est éprouvée sans toucher au réseau"] },
           { name: "Publication du build", status: 'live', what: "GitHub Pages à chaque poussée sur main, à condition que lint, tests et build passent.",
             files: ['.github/workflows/pages.yml', 'vite.config.ts — base, manualChunks'],
-            notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Une étape reste manuelle : Settings, Pages, source « GitHub Actions »", "Rien n'est publié sur une base rouge", "React est livré à part : une mise à jour d'Atlas ne le fait pas retélécharger"] }
+            notes: ["Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE", "Pages s'active une fois, côté GitHub : Settings, Pages, source « GitHub Actions » ; l'environnement github-pages doit autoriser main", "Rien n'est publié sur une base rouge", "React est livré à part : une mise à jour d'Atlas ne le fait pas retélécharger"] }
         ] }
     ],
     goldenRule: "Aucun composant ne code une couleur en dur : tout passe par le thème du dépôt affiché. Et rien n'est affirmé sur un dépôt qui ne soit lisible dans ses données ou dans GitHub.",
@@ -850,8 +850,7 @@ export const REPOS: Record<string, RepoData> = {
     ],
     ctxOpen: [
       "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
-      "Rapprocher les sessions du reste : dire quels fichiers une session a touchés, et quelles fonctionnalités ils servent.",
-      "Publier : le workflow attend que GitHub Pages soit activé dans les réglages, et que la branche rejoigne main."
+      "Rapprocher les sessions du reste : dire quels fichiers une session a touchés, et quelles fonctionnalités ils servent."
     ],
     phases: [
       { num: 'Phase 1', status: 'fait', title: "Portage de la maquette", tone: 'live',

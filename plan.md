@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, neuf phases livrées. La publication est prête et attend deux gestes hors du dépôt : activer GitHub Pages dans les réglages, et fusionner la branche de travail dans `main`.
+État : fonctionnellement terminé, onze phases livrées, publié sur GitHub Pages : https://aminebousmah.github.io/Suivi-Projets/
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -95,11 +95,15 @@ Futuremoi, bottrading, Clip-Core et Happicture rejoignent la barre de dépôts.
 - [x] La sélection se vérifie contre l'arbre affiché, celui d'atlas.md une fois lu : les clés du fichier ne sont plus purgées
 - [x] Les « à faire » d'Atlas, recopiés par erreur chez Sole-Citron et Eleven-Fields, en sont retirés
 
+## Phase 11 — En ligne, sous ses propres couleurs ✅
+
+- [x] Publié sur GitHub Pages : Pages activé, `main` branche par défaut et autorisée dans l'environnement `github-pages`
+- [x] Atlas quitte le noir et la terracotta, trop proches de Happicture, pour sa palette : Black Forest, Maroon, Vanilla Custard
+- [x] Son thème passe par `buildTheme`, comme les quatre derniers dépôts : ses contrastes sont testés
+- [x] Une pastille trop pâle pour sa carte, ou pour la barre de dépôts, prend une couleur qui s'y voit
+
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
-- **Publier** — le workflow est écrit et vérifié, mais GitHub Pages s'active dans les
-  réglages du dépôt, et la publication se déclenche sur `main`. Deux gestes qui
-  appartiennent au propriétaire du dépôt.
 - **Ouvrir Atlas à un dépôt quelconque** — depuis `atlas.md`, un dépôt décrit lui-même
   ses domaines ; il reste à l'enregistrer dans `src/data/repos.ts` pour son slug, et dans
   `src/data/themes.ts` pour sa palette, que `buildTheme` complète. Accepter un dépôt saisi

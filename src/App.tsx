@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { CHROME, THEMES } from './data/themes';
+import { readableOn } from './lib/color';
 import { useAtlasState } from './lib/useAtlasState';
 import { staticDomains } from './lib/url';
 import { useCenteredActive, useNarrow } from './lib/useMediaQuery';
@@ -83,7 +84,12 @@ export default function App() {
       Object.keys(REPOS).map((k) => ({
         key: k,
         label: REPOS[k].label,
-        dot: THEMES[k].accent,
+        // La pastille se pose sur la barre noire, ou sur l'en-tête pour l'onglet
+        // actif : l'accent s'il s'y voit, sinon la couleur d'en-tête.
+        dot: readableOn(k === repoKey ? THEMES[k].primary : CHROME.bar, [
+          THEMES[k].accent,
+          THEMES[k].primary,
+        ]),
         bg: k === repoKey ? THEMES[k].primary : 'transparent',
         fg: k === repoKey ? THEMES[k].onPrimary : CHROME.inkSoft,
       })),

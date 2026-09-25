@@ -63,6 +63,9 @@ describe('les thèmes construits', () => {
       expect(contrast(t.statusFg.live, t.page)).toBeGreaterThanOrEqual(3);
       expect(contrast(t.statusFg.wip, t.page)).toBeGreaterThanOrEqual(3);
       expect(contrast(t.inkFaint, t.page)).toBeGreaterThanOrEqual(3);
+      (['a', 'b', 'c'] as const).forEach((k) => {
+        expect(contrast(t.tones[k].dot, t.surface)).toBeGreaterThanOrEqual(3);
+      });
     });
 
     it(`${key} : chaque nuancier montre une couleur déclarée par le projet`, () => {

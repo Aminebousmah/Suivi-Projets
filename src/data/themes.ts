@@ -28,6 +28,24 @@ export const CHROME = {
  * Quand une palette n'a pas de variante utilisable, c'est dit en commentaire.
  */
 export const PALETTES: Record<string, PaletteSpec> = {
+  atlas: {
+    mode: 'light',
+    // Trois couleurs de marque : Black Forest, Maroon, Vanilla Custard. La page
+    // et les cartes en sont des teintes plus claires ; l'encre est le maroon.
+    page: '#FBF5E1', surface: '#FFFDF6', surfaceAlt: '#F7E7AF',
+    ink: '#800000', inkSoft: 'rgba(128,0,0,0.78)', inkFaint: 'rgba(128,0,0,0.6)',
+    line: 'rgba(128,0,0,0.16)',
+    primary: '#F7E7AF', accent: '#004800',
+    tones: ['#004800', '#800000', '#F7E7AF'],
+    live: '#004800', wip: '#800000', warn: '#800000',
+    display: "Marion, Georgia, 'Times New Roman', serif", displayWeight: '700', emStyle: 'normal',
+    swatches: [
+      { hex: '#004800', title: 'Black Forest #004800' },
+      { hex: '#800000', title: 'Maroon #800000' },
+      { hex: '#F7E7AF', title: 'Vanilla Custard #F7E7AF' },
+    ],
+    source: 'palette Black Forest · Maroon · Vanilla Custard',
+  },
   futuremoi: {
     mode: 'light',
     page: '#FBFBFA', surface: '#FFFFFF', surfaceAlt: '#F3F4F6',
@@ -170,37 +188,7 @@ export const THEMES: Record<string, Theme> = {
     ],
     source: 'palette lue dans assets/style.css'
   },
-  atlas: {
-    page: '#FAFAF8', surface: '#FFFFFF', surfaceAlt: '#F1EFEA',
-    ink: '#101014', inkSoft: 'rgba(16,16,20,0.68)', inkFaint: 'rgba(16,16,20,0.45)',
-    line: 'rgba(16,16,20,0.14)',
-    primary: '#101014', onPrimary: '#FAFAF8', onPrimarySoft: 'rgba(250,250,248,0.8)',
-    hairline: 'rgba(250,250,248,0.2)',
-    accent: '#D97757', onAccent: '#101014',
-    display: 'Manrope, Helvetica, sans-serif', displayWeight: '800', emStyle: 'normal',
-    warnBg: '#F1EFEA', warnBorder: '#101014', warnFg: '#101014',
-    statusFg: { live: '#2F7D5B', wip: '#B4762B', frozen: 'rgba(16,16,20,0.7)', idea: 'rgba(16,16,20,0.5)' },
-    pills: {
-      live:   { bg: '#2F7D5B', fg: '#FAFAF8', border: '#2F7D5B' },
-      wip:    { bg: '#D97757', fg: '#101014', border: '#D97757' },
-      frozen: { bg: 'transparent', fg: 'rgba(16,16,20,0.6)', border: 'rgba(16,16,20,0.28)' },
-      idea:   { bg: 'transparent', fg: 'rgba(16,16,20,0.5)', border: 'rgba(16,16,20,0.2)' }
-    },
-    tones: {
-      a: { bg: '#101014', ink: '#FAFAF8', inkSoft: 'rgba(250,250,248,0.76)', border: '#101014', dot: '#101014', chipBg: 'rgba(250,250,248,0.16)' },
-      b: { bg: '#D97757', ink: '#101014', inkSoft: 'rgba(16,16,20,0.72)', border: '#D97757', dot: '#D97757', chipBg: 'rgba(16,16,20,0.12)' },
-      c: { bg: '#2F7D5B', ink: '#FAFAF8', inkSoft: 'rgba(250,250,248,0.78)', border: '#2F7D5B', dot: '#2F7D5B', chipBg: 'rgba(250,250,248,0.16)' },
-      d: { bg: '#F1EFEA', ink: '#101014', inkSoft: 'rgba(16,16,20,0.64)', border: 'rgba(16,16,20,0.18)', dot: 'rgba(16,16,20,0.45)', chipBg: 'rgba(16,16,20,0.08)' }
-    },
-    swatches: [
-      { hex: '#101014', title: '--encre #101014' },
-      { hex: '#D97757', title: '--accent #D97757' },
-      { hex: '#2F7D5B', title: '--vert #2F7D5B' },
-      { hex: '#F1EFEA', title: '--papier-chaud #F1EFEA' },
-      { hex: '#FAFAF8', title: '--papier #FAFAF8' }
-    ],
-    source: 'palette lue dans src/index.css et src/data/themes.ts'
-  },
+  atlas: buildTheme(PALETTES.atlas),
   futuremoi: buildTheme(PALETTES.futuremoi),
   bottrading: buildTheme(PALETTES.bottrading),
   clipcore: buildTheme(PALETTES.clipcore),
