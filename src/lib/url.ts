@@ -44,11 +44,18 @@ export const staticDomains: DomainsOf = (repo, src) => {
  * défaut dès qu'un paramètre ne correspond à rien de connu — une URL trafiquée
  * ouvre l'application, elle ne la casse pas.
  */
-export function parseState(search: string, domainsOf: DomainsOf = staticDomains): AtlasState {
+export function parseState(
+  search: string,
+  domainsOf: DomainsOf = staticDomains,
+  repoKeys: string[] = Object.keys(REPOS),
+  fallback: string = DEFAULTS.repo,
+): AtlasState {
   const q = new URLSearchParams(search);
 
+  // Un dépôt masqué reste joignable par son URL ; un dépôt inconnu retombe sur
+  // le premier de la barre.
   const repo = q.get('repo');
-  const safeRepo = repo && REPOS[repo] ? repo : DEFAULTS.repo;
+  const safeRepo = repo && repoKeys.includes(repo) ? repo : fallback;
 
   const view = q.get('view');
   const safeView = VIEWS.some((v) => v.id === view) ? (view as ViewId) : DEFAULTS.view;

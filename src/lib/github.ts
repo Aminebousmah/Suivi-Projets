@@ -79,10 +79,20 @@ export interface Client {
   cache: CacheStore | null;
   rate: RateInfo | null;
   origins: Origin[];
+  /**
+   * Relecture : même une réponse récente est revalidée auprès de GitHub. Un
+   * dépôt qui a changé se voit tout de suite ; un dépôt inchangé répond 304,
+   * qui ne décompte pas le quota.
+   */
+  revalidate: boolean;
 }
 
-export function createClient(token: string | null, cache: CacheStore | null): Client {
-  return { token, cache, rate: null, origins: [] };
+export function createClient(
+  token: string | null,
+  cache: CacheStore | null,
+  revalidate = false,
+): Client {
+  return { token, cache, rate: null, origins: [], revalidate };
 }
 
 function readRate(headers: Headers): RateInfo | null {
@@ -131,7 +141,7 @@ async function request<T>(
   const cacheKey = (client.token ? 'auth:' : 'anon:') + key;
   const cached = client.cache?.read<T>(cacheKey) ?? null;
 
-  if (cached && isFresh(cached)) {
+  if (cached && isFresh(cached) && !client.revalidate) {
     client.origins.push('cache');
     return cached.data;
   }
@@ -350,5 +360,48 @@ export async function fetchCommits(
     author: c.author?.login ?? c.commit.author?.name ?? 'inconnu',
     date: c.commit.author?.date ?? '',
     url: c.html_url,
+  }));
+}
+
+/** Un dépôt du compte, tel que le sélecteur le propose. */
+export interface UserRepo {
+  owner: string;
+  name: string;
+  branch: string;
+  private: boolean;
+  description: string | null;
+  pushedAt: string;
+}
+
+/**
+ * Les dépôts du compte du jeton, les plus récemment poussés d'abord. Sans jeton,
+ * GitHub ne sait pas de quel compte il s'agit : on le dit plutôt que d'échouer
+ * sur un 401 obscur.
+ */
+export async function fetchUserRepos(client: Client): Promise<UserRepo[]> {
+  if (!client.token) {
+    throw new GitHubError(
+      'Un jeton GitHub est nécessaire pour lister vos dépôts — saisissez-le dans la vue « Dépôt réel ».',
+      401,
+    );
+  }
+  const raw = await getJson<
+    {
+      owner: { login: string };
+      name: string;
+      default_branch: string;
+      private: boolean;
+      description: string | null;
+      pushed_at: string;
+    }[]
+  >('/user/repos?per_page=100&sort=pushed&affiliation=owner,collaborator', client, 'vos dépôts');
+
+  return raw.map((r) => ({
+    owner: r.owner.login,
+    name: r.name,
+    branch: r.default_branch,
+    private: r.private,
+    description: r.description,
+    pushedAt: r.pushed_at,
   }));
 }

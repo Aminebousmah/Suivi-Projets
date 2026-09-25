@@ -159,3 +159,16 @@ describe('domaines connus', () => {
     expect(staticDomains('inconnu', 'described')).toBeNull();
   });
 });
+
+describe('dépôts connus', () => {
+  it('accepte un dépôt ajouté depuis le compte', () => {
+    expect(parseState('?repo=aminebousmah/pokedungeon', staticDomains, ['sole', 'aminebousmah/pokedungeon']).repo).toBe(
+      'aminebousmah/pokedungeon',
+    );
+  });
+
+  it('retombe sur le premier dépôt visible quand l’URL n’en vise aucun', () => {
+    expect(parseState('', staticDomains, ['eleven', 'atlas'], 'eleven').repo).toBe('eleven');
+    expect(parseState('?repo=inconnu', staticDomains, ['eleven'], 'eleven').repo).toBe('eleven');
+  });
+});

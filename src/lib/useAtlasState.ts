@@ -8,8 +8,16 @@ import { buildSearch, parseState, reduceState, staticDomains } from './url';
  */
 export function useAtlasState(
   domainsOf: DomainsOf = staticDomains,
+  repoKeys?: string[],
+  fallback?: string,
 ): [AtlasState, (patch: Partial<AtlasState>) => void] {
-  const [state, setState] = useState<AtlasState>(() => parseState(window.location.search));
+  // Les dépôts connus dépendent de la sélection de ce navigateur : on les relit
+  // à chaque retour dans l'historique.
+  const repos = useRef({ repoKeys, fallback });
+  repos.current = { repoKeys, fallback };
+  const read = () =>
+    parseState(window.location.search, staticDomains, repos.current.repoKeys, repos.current.fallback);
+  const [state, setState] = useState<AtlasState>(read);
   // Les domaines affichés changent quand atlas.md arrive : la sélection se
   // vérifie contre les derniers connus, sans recréer `navigate`.
   const known = useRef(domainsOf);
@@ -18,7 +26,7 @@ export function useAtlasState(
   });
 
   useEffect(() => {
-    const onPop = () => setState(parseState(window.location.search));
+    const onPop = () => setState(read());
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);

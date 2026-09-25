@@ -6,11 +6,21 @@ Application qui montre un projet GitHub sous six angles, croise ce qu'on en dit 
 La barre de dépôts, l'en-tête, les onglets de vue et l'état partagé.
 
 ### Barre de dépôts — en ligne
-Bascule entre les dépôts décrits, chacun avec sa palette et sa typographie.
+Bascule entre les dépôts suivis, chacun avec sa palette et sa typographie.
 - `src/App.tsx`
 - `src/data/themes.ts`
 > Changer de dépôt remet la sélection à zéro
 > La source de la palette est affichée à droite de la barre
+
+### Choix des dépôts — en ligne
+Ajoute un dépôt du compte GitHub à la barre, ou en masque un, depuis le bouton « ＋ Dépôts ».
+- `src/components/RepoPicker.tsx`
+- `src/lib/selection.ts`
+- `src/lib/__tests__/selection.test.ts`
+> Le choix est une préférence de ce navigateur : sans stockage, la barre reprend les dépôts décrits
+> Un dépôt ajouté n'a rien d'écrit : son nom, puis son atlas.md une fois lu
+> Un dépôt masqué reste joignable par son URL
+> Lister les dépôts du compte demande un jeton ; sans lui, le panneau dit où le saisir
 
 ### Onglets de vue — en ligne
 Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.
@@ -171,6 +181,15 @@ Construit un thème complet à partir des seules couleurs qu'un projet déclare 
 > Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1
 > En sombre, une carte reste sombre et la couleur passe au liseré
 
+### Direction artistique lue dans atlas.md — en ligne
+Construit le thème d'un projet à partir de la section « Direction artistique » de son atlas.md.
+- `src/lib/atlasPalette.ts`
+- `src/lib/__tests__/atlasPalette.test.ts`
+> Une palette recopiée vieillit dès que le projet change de charte : lue dans son atlas.md, elle suit
+> Fond, encre et accent sont exigés ; sans eux, le thème connu reste en place
+> Un dépôt sans palette ni thème connu prend un thème neutre
+> La police des titres nommée se charge depuis Google Fonts, et seul son nom y part
+
 ### Lecture du fichier de suivi — en ligne
 Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.
 - `src/lib/atlasFile.ts`
@@ -263,6 +282,13 @@ Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne
 > Au-delà, requête conditionnelle : GitHub répond 304 sans décompter le quota
 > Le stockage plein fait place nette en sacrifiant les entrées les plus anciennes
 > Un stockage refusé n'empêche rien : le cache est une optimisation, pas une source
+
+### Relecture en continu — en ligne
+Relit le dépôt au retour sur l'onglet, et toutes les deux minutes tant qu'on le regarde, sans vider l'écran.
+- `src/lib/useGitHub.ts — refresh, REFRESH_MS`
+- `src/lib/github.ts — revalidate`
+> La relecture passe outre les cinq minutes de fraîcheur, mais par ETag : un dépôt inchangé répond 304, sans quota
+> Une relecture qui échoue garde ce qui s'affiche, la suivante réessaie
 
 ### Quota et provenance affichés — en ligne
 Le compteur de quota, l'heure de remise à zéro, et l'origine de chaque réponse du chargement.
@@ -398,10 +424,10 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 347 | — | 100% |
+| Tests au vert | 375 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
-| Dépôts suivis | 7 | — | 100% |
-| Dépôts décrits par leur atlas.md | 1 / 7 | 7 | 14% |
+| Dépôts suivis | 7 + au choix | — | 100% |
+| Dépôts décrits par leur atlas.md | 7 / 7 | 7 | 100% |
 | Fichiers du dépôt décrits | tous | tous | 100% |
 | Données lues depuis le dépôt | large | complet | 95% |
 | Application publiée | en ligne | en ligne | 100% |
@@ -419,9 +445,26 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 - Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.
 - Est publié sur GitHub Pages à chaque fusion dans main.
 - Suit sept projets réels, chacun dans la palette qu'il déclare, avec seulement des faits lus dans ses fichiers.
+- Ajoute n'importe quel dépôt du compte GitHub depuis la barre, et relit chaque projet en direct.
 
 ## À faire
 
-- Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.
-- Lancer le prompt de mise en place dans les six autres projets et pousser leur atlas.md.
+- Ajouter la section « Direction artistique » aux atlas.md des six projets, avec le prompt « Point de suivi ».
 - Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.
+
+## Direction artistique
+
+| Rôle | Couleur | Usage |
+| --- | --- | --- |
+| Fond | `#FBF5E1` | page crème, teinte claire de la vanille |
+| Surface | `#FFFDF6` | cartes |
+| Surface secondaire | `#F7E7AF` | Vanilla Custard |
+| Encre | `#800000` | Maroon, texte principal |
+| En-tête | `#F7E7AF` | Vanilla Custard |
+| Accent | `#004800` | Black Forest |
+| Marque | `#004800` | Black Forest |
+| Marque | `#800000` | Maroon |
+| Marque | `#F7E7AF` | Vanilla Custard |
+| Succès | `#004800` | ce qui est en ligne |
+| En cours | `#800000` | ce qui avance |
+| Police des titres | Marion | Georgia à défaut |

@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '53', k: 'fonctions' }, { v: '347', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '56', k: 'fonctions' }, { v: '375', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -590,10 +590,11 @@ export const REPOS: Record<string, RepoData> = {
       "Montre l'arborescence réelle du dépôt, décorée de ce que les derniers commits ont touché.",
       "Lit vos fichiers de session Claude Code déposés dans la page, sans qu'ils quittent le navigateur.",
       "Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.",
-      "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit."
+      "Rapproche les deux arbres : ce qu'un fichier sert, où une fonctionnalité atterrit, et ce que personne ne décrit.",
+      "Ajoute n'importe quel dépôt du compte GitHub, et en masque d'autres, depuis la barre.",
+      "Suit chaque projet en direct : arbre, statuts et couleurs relus dans son atlas.md dès qu'il change."
     ],
     todo: [
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
       "Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.",
     ],
     stack: [
@@ -604,18 +605,18 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'Marion · Manrope · JetBrains Mono', note: "Titres en Marion, Georgia à défaut. Google Fonts charge le reste, dont les polices des autres dépôts." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "347 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "375 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'GitHub Pages', note: "Publié à chaque fusion dans main, une fois lint, tests et build au vert." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "347", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "375", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
-      { k: "Dépôts suivis", v: "7", target: "—", pct: '100%', tone: 'live' },
-      { k: "Dépôts décrits par leur atlas.md", v: "1 / 7", target: "7", pct: '14%', tone: 'wip' },
+      { k: "Dépôts suivis", v: "7 + au choix", target: "—", pct: '100%', tone: 'live' },
+      { k: "Dépôts décrits par leur atlas.md", v: "7 / 7", target: "7", pct: '100%', tone: 'live' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
-      { k: "Fichiers du dépôt décrits", v: "81 / 81", target: "tous", pct: '100%', tone: 'live' },
+      { k: "Fichiers du dépôt décrits", v: "86 / 86", target: "tous", pct: '100%', tone: 'live' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
       { k: "Application déployée", v: "en ligne", target: "en ligne", pct: '100%', tone: 'live' }
     ],
@@ -624,9 +625,12 @@ export const REPOS: Record<string, RepoData> = {
         role: "La barre de dépôts, l'en-tête, les onglets de vue et l'état partagé.",
         detail: "Tout ce qui encadre les vues et décide de ce qui est affiché. L'état de navigation n'est pas dans React : il est dans l'URL, React le relit.",
         features: [
-          { name: "Barre de dépôts", status: 'live', what: "Bascule entre les dépôts décrits, chacun avec sa palette et sa typographie.",
+          { name: "Barre de dépôts", status: 'live', what: "Bascule entre les dépôts suivis, chacun avec sa palette et sa typographie.",
             files: ['src/App.tsx', 'src/data/themes.ts'],
             notes: ["Changer de dépôt remet la sélection à zéro", "La source de la palette est affichée à droite de la barre"] },
+          { name: "Choix des dépôts", status: 'live', what: "Ajoute un dépôt du compte GitHub à la barre, ou en masque un, depuis le bouton « ＋ Dépôts ».",
+            files: ['src/components/RepoPicker.tsx', 'src/lib/selection.ts', 'src/lib/__tests__/selection.test.ts'],
+            notes: ["Le choix est une préférence de ce navigateur : sans stockage, la barre reprend les dépôts décrits", "Un dépôt ajouté n'a rien d'écrit : son nom, puis son atlas.md une fois lu", "Un dépôt masqué reste joignable par son URL", "Lister les dépôts du compte demande un jeton ; sans lui, le panneau dit où le saisir"] },
           { name: "Onglets de vue", status: 'live', what: "Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.",
             files: ['src/data/labels.ts — VIEWS, BLURBS', 'src/App.tsx'] },
           { name: "Chiffres de l'en-tête", status: 'live', what: "Les compteurs du projet, dont domaines et fonctions recomptés sur l'arbre affiché.",
@@ -698,6 +702,9 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Thème déduit d'une palette", status: 'live', what: "Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.",
             files: ['src/lib/palette.ts', 'src/lib/__tests__/palette.test.ts'],
             notes: ["Atlas et les quatre derniers dépôts en viennent : Futuremoi, Elon, Clip-Core, Happicture", "Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1", "Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1", "En sombre, une carte reste sombre et la couleur passe au liseré"] },
+          { name: "Direction artistique lue dans atlas.md", status: 'live', what: "Construit le thème d'un projet à partir de la section « Direction artistique » de son atlas.md.",
+            files: ['src/lib/atlasPalette.ts', 'src/lib/__tests__/atlasPalette.test.ts'],
+            notes: ["Une palette recopiée vieillit dès que le projet change de charte : lue dans son atlas.md, elle suit", "Fond, encre et accent sont exigés ; sans eux, le thème connu reste en place", "Un dépôt sans palette ni thème connu prend un thème neutre", "La police des titres nommée se charge depuis Google Fonts, et seul son nom y part"] },
           { name: "Lecture du fichier de suivi", status: 'live', what: "Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.",
             files: ['src/lib/atlasFile.ts', 'src/lib/__tests__/atlasFile.test.ts', 'src/lib/__tests__/fixtures/atlas.md'],
             notes: ["C'est la seule source qui porte du sens : ni l'arborescence ni git ne disent à quoi sert un fichier", "Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli", "Un fichier hors format n'est pas une panne : il est simplement laissé de côté", "Un domaine qui porte le nom d'un domaine décrit reprend sa clé : un permalien survit à la lecture du fichier"] },
@@ -738,6 +745,9 @@ export const REPOS: Record<string, RepoData> = {
           { name: "Cache des réponses", status: 'live', what: "Garde les réponses GitHub et les revalide par ETag : une réponse inchangée ne coûte rien au quota.",
             files: ['src/lib/cache.ts', 'src/lib/github.ts — request'],
             notes: ["Cinq minutes de fraîcheur pendant lesquelles aucune requête n'est émise", "Au-delà, requête conditionnelle : GitHub répond 304 sans décompter le quota", "Le stockage plein fait place nette en sacrifiant les entrées les plus anciennes", "Un stockage refusé n'empêche rien : le cache est une optimisation, pas une source"] },
+          { name: "Relecture en continu", status: 'live', what: "Relit le dépôt au retour sur l'onglet, et toutes les deux minutes tant qu'on le regarde, sans vider l'écran.",
+            files: ['src/lib/useGitHub.ts — refresh, REFRESH_MS', 'src/lib/github.ts — revalidate'],
+            notes: ["La relecture passe outre les cinq minutes de fraîcheur, mais par ETag : un dépôt inchangé répond 304, sans quota", "Une relecture qui échoue garde ce qui s'affiche, la suivante réessaie"] },
           { name: "Quota et provenance affichés", status: 'live', what: "Le compteur de quota, l'heure de remise à zéro, et l'origine de chaque réponse du chargement.",
             files: ['src/views/GitHubView.tsx', 'src/lib/useGitHub.ts — describeOrigins'] },
           { name: "Activité git", status: 'live', what: "Ce que les derniers commits ont touché, obtenu en une seule requête de comparaison de plage.",
@@ -852,7 +862,6 @@ export const REPOS: Record<string, RepoData> = {
       "Pas de dépendance ajoutée sans usage réel dans le code."
     ],
     ctxOpen: [
-      "Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.",
       "Rapprocher les sessions du reste : dire quels fichiers une session a touchés, et quelles fonctionnalités ils servent."
     ],
     phases: [

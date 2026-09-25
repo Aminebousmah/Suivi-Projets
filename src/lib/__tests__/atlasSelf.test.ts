@@ -2,7 +2,9 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { REPOS } from '../../data/repos';
+import { PALETTES } from '../../data/themes';
 import { parseAtlasFile } from '../atlasFile';
+import { paletteSpecFrom } from '../atlasPalette';
 import { buildCoverage } from '../coverage';
 import type { RepoData } from '../../data/types';
 import type { TreeEntry } from '../github';
@@ -28,6 +30,21 @@ describe('atlas.md et la description figée se répondent', () => {
     expect(doc.domains.length).toBeGreaterThan(0);
     expect(doc.tracking.length).toBeGreaterThan(0);
     expect(doc.does.length).toBeGreaterThan(0);
+  });
+
+  it('déclare la même charte que celle d’Atlas', () => {
+    const spec = paletteSpecFrom(doc.palette!)!;
+    const { page, surface, surfaceAlt, ink, primary, accent, tones } = PALETTES.atlas;
+    expect({ page, surface, surfaceAlt, ink, primary, accent, tones }).toEqual({
+      page: spec.page,
+      surface: spec.surface,
+      surfaceAlt: spec.surfaceAlt,
+      ink: spec.ink,
+      primary: spec.primary,
+      accent: spec.accent,
+      tones: spec.tones,
+    });
+    expect(spec.display).toContain('Marion');
   });
 
   it('décrit les mêmes domaines', () => {

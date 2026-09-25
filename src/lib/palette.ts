@@ -1,4 +1,6 @@
 import type { Swatch, Theme, Tone, ToneKey } from '../data/types';
+import type { AtlasPalette } from './atlasPalette';
+import { paletteSpecFrom } from './atlasPalette';
 import { contrast, readableOn, withAlpha } from './color';
 
 /**
@@ -139,4 +141,14 @@ export function buildTheme(spec: PaletteSpec): Theme {
     swatches: spec.swatches,
     source: spec.source,
   };
+}
+
+/**
+ * Le thème à afficher : celui que le projet déclare dans son atlas.md s'il est
+ * lu et complet, sinon celui recopié dans Atlas, sinon le thème neutre.
+ */
+export function themeFor(known: Theme | undefined, palette: AtlasPalette | null, neutral: Theme): Theme {
+  const spec = palette ? paletteSpecFrom(palette) : null;
+  if (spec) return buildTheme(spec);
+  return known ?? neutral;
 }

@@ -28,6 +28,8 @@ Un seul écart est assumé : dans la vue Fonctionnalités, la maquette partageai
 - Tout fichier suivi par git est cité par au moins une fonctionnalité — un test le vérifie et nomme les oubliés.
 - Le cache est une optimisation, jamais une source : un stockage refusé, plein ou corrompu n'empêche rien.
 - Un nouveau dépôt part de la palette qu'il déclare, complétée par `buildTheme`, et de faits cités dans ses fichiers ; son arbre, son suivi et ses statuts viennent de son atlas.md, jamais des données figées.
+- Les couleurs d'un projet se lisent dans la section « Direction artistique » de son atlas.md ; la palette recopiée dans `themes.ts` n'est qu'un repli, et un dépôt sans l'une ni l'autre prend `NEUTRAL_THEME`.
+- Le choix des dépôts de la barre est une préférence du navigateur (`selection.ts`), jamais une donnée : sans stockage, la barre reprend les dépôts décrits.
 - Un bloc vide dit quel fichier le remplirait (`EmptyNote`) : il ne disparaît pas en silence et ne fait pas planter la vue.
 
 ## À ne jamais faire

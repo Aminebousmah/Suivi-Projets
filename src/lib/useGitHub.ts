@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { RepoData } from '../data/types';
 import type { Coverage } from './coverage';
 import { buildCoverage } from './coverage';
@@ -107,10 +107,36 @@ export type LoadState =
   | { status: 'error'; message: string }
   | { status: 'ready'; data: GitHubData };
 
+/** Tant que la page est visible, le dépôt est relu à ce rythme. */
+export const REFRESH_MS = 2 * 60 * 1000;
+
 export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
   const [state, setState] = useState<LoadState>({ status: 'idle' });
   const [nonce, setNonce] = useState(0);
+  // Une relecture de fond garde l'écran tel quel pendant qu'elle travaille.
+  const quiet = useRef(false);
   const reload = useCallback(() => setNonce((n) => n + 1), []);
+  const refresh = useCallback(() => {
+    quiet.current = true;
+    setNonce((n) => n + 1);
+  }, []);
+
+  // Le dépôt se relit tout seul : au retour sur l'onglet, et à intervalle
+  // régulier tant qu'on le regarde. Un dépôt inchangé répond 304, sans quota.
+  useEffect(() => {
+    if (!enabled) return;
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') refresh();
+    }, REFRESH_MS);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [enabled, refresh]);
 
   useEffect(() => {
     if (!enabled) {
@@ -128,9 +154,11 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
     }
 
     let cancelled = false;
-    setState({ status: 'loading' });
+    const background = quiet.current;
+    quiet.current = false;
+    if (!background) setState({ status: 'loading' });
 
-    const client = createClient(token || null, store);
+    const client = createClient(token || null, store, background);
     Promise.all([
       fetchRepoMeta(ref, client),
       fetchTree(ref, client),
@@ -192,10 +220,12 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
       })
       .catch((e: unknown) => {
         if (cancelled) return;
-        setState({
-          status: 'error',
-          message: e instanceof Error ? e.message : 'Erreur inconnue.',
-        });
+        const message = e instanceof Error ? e.message : 'Erreur inconnue.';
+        // Une relecture de fond qui échoue — réseau coupé, quota — ne retire pas
+        // ce qui s'affiche déjà : la prochaine relecture réessaiera.
+        setState((prev) =>
+          background && prev.status === 'ready' ? prev : { status: 'error', message },
+        );
       });
 
     return () => {
@@ -203,5 +233,5 @@ export function useGitHub(repo: RepoData, token: string, enabled: boolean) {
     };
   }, [repo, token, enabled, nonce]);
 
-  return { state, reload };
+  return { state, reload, refresh };
 }
