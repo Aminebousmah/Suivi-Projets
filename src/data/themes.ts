@@ -5,9 +5,9 @@ import type { Theme } from './types';
 /* Palettes lues dans le code de chaque dépôt :
    Sole-Citron   → src/styles/tokens.css
    Eleven-Fields → assets/style.css
-   Futuremoi     → src/freelance_radar/web/templates/base.html.j2
-   bottrading    → app/web/static/index.html, elon-brand-identity-v2.html
-   Clip-Core     → frontend/tailwind.config.ts, frontend/app/globals.css
+   Futuremoi     → src/freelance_radar/web/templates/base.html.j2 (charte du 25/09/2026)
+   Elon          → app/web/static/index.html, elon-brand-identity-v2.html
+   Clip-Core     → frontend/tailwind.config.ts (charte du 25/09/2026)
    Happicture    → CLAUDE.md › Design system › Palette */
 
 /**
@@ -48,21 +48,21 @@ export const PALETTES: Record<string, PaletteSpec> = {
   },
   futuremoi: {
     mode: 'light',
-    page: '#FBFBFA', surface: '#FFFFFF', surfaceAlt: '#F3F4F6',
-    ink: '#1F2328', inkSoft: '#6B7280', inkFaint: 'rgba(31,35,40,0.5)', line: '#E5E7EB',
-    // L'en-tête prend l'encre ; l'accent vert foncé s'y perdrait, on y pose
-    // donc celui que le projet déclare pour son mode sombre.
-    primary: '#1F2328', accent: '#6BBF8F',
-    tones: ['#2F6F4F', '#B45309', '#1F2328'],
-    live: '#2F6F4F', wip: '#B45309', warn: '#B91C1C',
-    display: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    displayWeight: '700', emStyle: 'normal',
+    // Charte crème, orange, jaune, bleu. Les tons « foncé » servent au texte :
+    // l'orange et le bleu vifs passent sous 4,5:1 sur le crème.
+    page: '#FFF8EC', surface: '#FFFDF7', surfaceAlt: '#FBEACE',
+    ink: '#0D2A46', inkSoft: 'rgba(13,42,70,0.78)', inkFaint: 'rgba(13,42,70,0.6)', line: '#F0DDBD',
+    primary: '#0D2A46', accent: '#FFC020',
+    tones: ['#F4581B', '#FFC020', '#1E8CE8'],
+    live: '#0B6BC2', wip: '#D2430B', warn: '#A81E0E',
+    display: "Fredoka, 'Segoe UI', system-ui, sans-serif",
+    displayWeight: '600', emStyle: 'normal',
     swatches: [
-      { hex: '#2F6F4F', title: '--accent #2f6f4f' },
-      { hex: '#6BBF8F', title: '--accent sombre #6bbf8f' },
-      { hex: '#B45309', title: '--warn #b45309' },
-      { hex: '#1F2328', title: '--ink #1f2328' },
-      { hex: '#FBFBFA', title: '--bg #fbfbfa' },
+      { hex: '#FFF8EC', title: '--creme #fff8ec' },
+      { hex: '#F4581B', title: '--orange #f4581b' },
+      { hex: '#FFC020', title: '--jaune #ffc020' },
+      { hex: '#1E8CE8', title: '--bleu #1e8ce8' },
+      { hex: '#0D2A46', title: '--bleu-nuit #0d2a46' },
     ],
     source: 'palette lue dans src/freelance_radar/web/templates/base.html.j2',
   },
@@ -85,21 +85,21 @@ export const PALETTES: Record<string, PaletteSpec> = {
     source: 'palette lue dans app/web/static/index.html',
   },
   clipcore: {
-    mode: 'dark',
-    // Tailwind neutral 950 / 900 / 800, texte 100 / 400 / 500.
-    page: '#0A0A0A', surface: '#171717', surfaceAlt: '#262626',
-    ink: '#F5F5F5', inkSoft: '#A3A3A3', inkFaint: '#737373', line: '#262626',
-    primary: '#171717', accent: '#9146FF',
-    // twitch, emerald-400, amber-400 : les trois couleurs que l'interface emploie.
-    tones: ['#9146FF', '#34D399', '#FBBF24'],
-    live: '#34D399', wip: '#FBBF24', warn: '#F87171',
-    display: 'Manrope, Helvetica, sans-serif', displayWeight: '800', emStyle: 'normal',
+    mode: 'light',
+    // Charte bleu, rose, crème et bleu ciel sur brun foncé. L'échelle neutral
+    // de Tailwind y est redéfinie : 950 est le fond crème, 100 le texte brun.
+    page: '#FFF4E5', surface: '#FFFFFF', surfaceAlt: '#EFE2CD',
+    ink: '#2F1C11', inkSoft: '#6B4F3A', inkFaint: '#8A6A50', line: '#DFCBB0',
+    primary: '#3B2416', accent: '#F3BBC8',
+    tones: ['#1746D1', '#F3BBC8', '#A9D4F5'],
+    live: '#0F6B4F', wip: '#8A5A00', warn: '#B3261E',
+    display: "DynaPuff, 'Segoe UI', system-ui, sans-serif", displayWeight: '700', emStyle: 'normal',
     swatches: [
-      { hex: '#9146FF', title: 'twitch #9146FF' },
-      { hex: '#772CE8', title: 'twitch.dark #772CE8' },
-      { hex: '#0A0A0A', title: 'neutral-950 #0a0a0a' },
-      { hex: '#171717', title: 'neutral-900 #171717' },
-      { hex: '#34D399', title: 'emerald-400 #34d399' },
+      { hex: '#1746D1', title: 'brand.blue #1746D1' },
+      { hex: '#F3BBC8', title: 'brand.rose #F3BBC8' },
+      { hex: '#FFF4E5', title: 'brand.cream #FFF4E5' },
+      { hex: '#A9D4F5', title: 'brand.sky #A9D4F5' },
+      { hex: '#3B2416', title: 'brand.brown #3B2416' },
     ],
     source: 'palette lue dans frontend/tailwind.config.ts',
   },
@@ -123,6 +123,28 @@ export const PALETTES: Record<string, PaletteSpec> = {
     source: 'palette lue dans CLAUDE.md › Design system',
   },
 };
+
+/**
+ * Le thème d'un dépôt ajouté qui ne déclare pas encore sa direction artistique :
+ * sobre, pour ne ressembler à aucun projet. Sa section « Direction artistique »
+ * dans atlas.md le remplace dès qu'elle est lue.
+ */
+export const NEUTRAL_THEME: Theme = buildTheme({
+  mode: 'light',
+  page: '#F6F6F4', surface: '#FFFFFF', surfaceAlt: '#ECECE8',
+  ink: '#1C1C1E', inkSoft: 'rgba(28,28,30,0.72)', inkFaint: 'rgba(28,28,30,0.55)',
+  line: 'rgba(28,28,30,0.14)',
+  primary: '#1C1C1E', accent: '#C9C9C2',
+  tones: ['#3A3A3C', '#8E8E86', '#C9C9C2'],
+  live: '#2E6B3F', wip: '#8A6100', warn: '#A33A2A',
+  display: 'Manrope, Helvetica, sans-serif', displayWeight: '800', emStyle: 'normal',
+  swatches: [
+    { hex: '#1C1C1E', title: 'neutre #1C1C1E' },
+    { hex: '#C9C9C2', title: 'neutre #C9C9C2' },
+    { hex: '#F6F6F4', title: 'neutre #F6F6F4' },
+  ],
+  source: 'aucune palette déclarée — ajoutez « Direction artistique » à atlas.md',
+});
 
 export const THEMES: Record<string, Theme> = {
   sole: {

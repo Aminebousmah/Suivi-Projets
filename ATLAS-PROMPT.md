@@ -64,6 +64,19 @@ qu'Atlas lit tel quel :
     ## À faire
     - <Ce qu'il reste à faire.>
 
+    ## Direction artistique
+    | Rôle | Couleur | Usage |
+    | --- | --- | --- |
+    | Fond | `#FFF4E5` | fond de page |
+    | Surface | `#FFFFFF` | cartes |
+    | Encre | `#2F1C11` | texte principal |
+    | Encre douce | `#6B4F3A` | texte secondaire |
+    | En-tête | `#3B2416` | bandeau du haut |
+    | Accent | `#F3BBC8` | onglet actif, liens |
+    | Marque | `#1746D1` | couleur de marque |
+    | Succès | `#0F6B4F` | ce qui est fait |
+    | Police des titres | DynaPuff | |
+
 Les statuts, après un tiret cadratin dans le titre de la fonctionnalité — quatre, pas un
 de plus :
 
@@ -75,6 +88,13 @@ de plus :
 Pour « Suivi », choisis des indicateurs que le projet permet de mesurer : phases
 terminées, tests au vert, pages, dashboards, couverture des données… Pas d'indicateur
 inventé pour remplir le tableau.
+
+Pour « Direction artistique », relève les couleurs là où le projet les déclare —
+variables CSS, config Tailwind, charte dans CLAUDE.md — sans en inventer. Fond, Encre et
+Accent sont indispensables : sans eux, Atlas garde son thème par défaut. Ajoute une
+ligne « Marque » par couleur de marque (jusqu'à trois), et « Mode : sombre » si
+l'interface est sombre. Atlas construit le thème du projet à partir de ce tableau, et
+choisit lui-même les encres lisibles.
 
 ## 3. plan.md — les phases du projet
 
@@ -113,6 +133,8 @@ inventé pour remplir le tableau.
         une ;
       - coche dans plan.md ce qui vient d'être terminé, et change le statut d'une phase
         qui démarre ou s'achève ;
+      - si la charte graphique a changé — couleurs, police des titres —, mets à jour
+        la section « Direction artistique » d'atlas.md ;
       - si une convention ou un interdit a été décidé pendant la tâche, ajoute-le ici ;
       - termine ton récapitulatif par une ligne « Suivi : … » qui dit ce que tu as mis à
         jour, ou « Suivi : rien à changer ».
@@ -169,7 +191,9 @@ Fais le point du suivi Atlas de ce projet.
    et la liste des fichiers suivis : `git ls-files`.
 3. Mets à jour atlas.md et plan.md en conséquence, dans leur format, en suivant les
    règles de la section « Suivi du projet » : aucun statut inventé, aucun chemin qui
-   n'existe pas, tout le projet couvert.
+   n'existe pas, tout le projet couvert. Vérifie que la section « Direction
+   artistique » d'atlas.md reprend les couleurs actuelles du code ; ajoute-la si elle
+   manque.
 4. Vérifie chaque chemin cité, et dis-moi combien de fichiers ne sont décrits nulle part.
 5. Respecte les règles de commit du projet, et fais-moi un récapitulatif court :
    ajouté, corrigé, retiré, et ce qui reste à trancher.
@@ -186,8 +210,20 @@ Atlas lit, sur la branche décrite :
 | `CLAUDE.md` | la racine, puis `.claude/` | les règles actives et les interdits, sous-sections comprises |
 | `plan.md` | la racine, puis `docs/` | les phases, leur statut — marqueur, pourcentage ou cases — et les cases à cocher |
 | `README.md` | la racine | le résumé du projet |
-| `atlas.md` | la racine | l'arbre des fonctionnalités, la feuille de suivi, ce qui est fait et ce qui reste |
+| `atlas.md` | la racine | l'arbre des fonctionnalités, la feuille de suivi, ce qui est fait et ce qui reste, et les couleurs du projet |
 
 Quand `atlas.md` est là, c'est lui qui décrit l'arbre, et le croisement avec
 l'arborescence réelle montre ce que personne ne décrit et ce qui est cité mais absent.
 Sans lui, Atlas continue de fonctionner : le fichier améliore le suivi, il n'est pas exigé.
+
+Atlas relit le dépôt tout seul : au retour sur son onglet, et toutes les deux minutes
+tant qu'on le regarde. Un changement poussé — une fonctionnalité, un statut, une
+couleur — apparaît donc sans rien toucher dans Atlas.
+
+## Ajouter un projet dans Atlas
+
+Le bouton « ＋ Dépôts », à droite des projets dans la barre du haut, liste les dépôts de
+ton compte GitHub (un jeton est nécessaire, saisi dans la vue « Dépôt réel »). Coche un
+dépôt pour l'ajouter, décoche-le pour le retirer. Le choix est retenu dans ton
+navigateur. Un dépôt ajouté est décrit par son seul atlas.md : lance d'abord la mise en
+place dans ce projet.

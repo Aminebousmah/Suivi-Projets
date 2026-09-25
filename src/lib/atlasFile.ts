@@ -2,6 +2,8 @@ import type { Domain, Feature, Status, ToneKey, TrackingRow } from '../data/type
 import { cleanInline, detectStatus, splitSections } from './context';
 import type { Section } from './context';
 import type { TextFile } from './github';
+import type { AtlasPalette } from './atlasPalette';
+import { parsePalette } from './atlasPalette';
 
 /**
  * Lecture d'`atlas.md`, le fichier de suivi qu'un projet peut fournir.
@@ -114,6 +116,8 @@ export interface AtlasDoc {
   tracking: TrackingRow[];
   does: string[];
   todo: string[];
+  /** La direction artistique déclarée, quand le fichier en porte une. */
+  palette: AtlasPalette | null;
 }
 
 /** Regroupe les sections d'un niveau donné sous celle qui les précède. */
@@ -184,7 +188,7 @@ export function parseAtlasFile(file: TextFile): AtlasDoc | null {
   });
 
   if (!domains.length) return null;
-  return { title, tagline, domains, tracking, does, todo };
+  return { title, tagline, domains, tracking, does, todo, palette: parsePalette(file.text) };
 }
 
 /**

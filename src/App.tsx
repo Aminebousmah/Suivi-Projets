@@ -2,11 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
-import { CHROME, THEMES } from './data/themes';
+import { CHROME, NEUTRAL_THEME, THEMES } from './data/themes';
+import { RepoPicker } from './components/RepoPicker';
+import { googleFontHref } from './lib/atlasPalette';
 import { readableOn } from './lib/color';
+import { themeFor } from './lib/palette';
+import { buildCatalog, readSelection, writeSelection } from './lib/selection';
+import type { Selection } from './lib/selection';
 import { statsFor } from './lib/stats';
 import { useAtlasState } from './lib/useAtlasState';
-import { staticDomains } from './lib/url';
+import { DEFAULTS, staticDomains } from './lib/url';
 import { useCenteredActive, useNarrow } from './lib/useMediaQuery';
 import { readConnected, readToken, useGitHub, writeConnected } from './lib/useGitHub';
 import { ArchView } from './views/ArchView';
@@ -19,7 +24,12 @@ import { SheetView } from './views/SheetView';
 const MONO = "'JetBrains Mono', monospace";
 
 export default function App() {
-  const [state, navigate] = useAtlasState(domainsOf);
+  // Les dépôts de la barre : ceux décrits, moins les masqués, plus ceux ajoutés
+  // depuis le compte GitHub — une préférence de ce navigateur.
+  const [selection, setSelection] = useState(readSelection);
+  const catalog = useMemo(() => buildCatalog(REPOS, selection), [selection]);
+  const fallback = catalog.visible[0] ?? DEFAULTS.repo;
+  const [state, navigate] = useAtlasState(domainsOf, Object.keys(catalog.repos), fallback);
   const narrow = useNarrow();
   const repoStrip = useRef<HTMLDivElement>(null);
   const viewStrip = useRef<HTMLElement>(null);
@@ -27,12 +37,16 @@ export default function App() {
   const [connected, setConnected] = useState(readConnected);
   const { repo: repoKey, view, viz, domain: domainKey, feat: featName, zoom } = state;
 
-  const t = THEMES[repoKey];
-  const repo = REPOS[repoKey];
+  const repo = catalog.repos[repoKey] ?? REPOS[DEFAULTS.repo];
 
   // Un seul chargement du dépôt pour toutes les vues qui en dépendent.
   const { state: source, reload } = useGitHub(repo, token, connected);
   const live = source.status === 'ready' ? source.data.context : null;
+
+  // La direction artistique déclarée dans atlas.md l'emporte sur la copie.
+  const palette = live?.atlas?.palette ?? null;
+  const t = themeFor(THEMES[repoKey], palette, NEUTRAL_THEME);
+  const themeOf = (k: string) => (k === repoKey ? t : (THEMES[k] ?? NEUTRAL_THEME));
 
   // Un dépôt qui fournit atlas.md décrit lui-même son arbre et son suivi :
   // la description figée n'est plus qu'un repli.
@@ -80,22 +94,37 @@ export default function App() {
     document.documentElement.style.setProperty('--focus', t.accent);
   }, [t.accent]);
 
-  const repoTabs = useMemo(
-    () =>
-      Object.keys(REPOS).map((k) => ({
-        key: k,
-        label: REPOS[k].label,
-        // La pastille se pose sur la barre noire, ou sur l'en-tête pour l'onglet
-        // actif : l'accent s'il s'y voit, sinon la couleur d'en-tête.
-        dot: readableOn(k === repoKey ? THEMES[k].primary : CHROME.bar, [
-          THEMES[k].accent,
-          THEMES[k].primary,
-        ]),
-        bg: k === repoKey ? THEMES[k].primary : 'transparent',
-        fg: k === repoKey ? THEMES[k].onPrimary : CHROME.inkSoft,
-      })),
-    [repoKey],
-  );
+  // La police de titres nommée dans atlas.md se charge à la demande.
+  const fontHref = googleFontHref(palette?.display ?? null);
+  useEffect(() => {
+    if (!fontHref || document.querySelector(`link[href="${fontHref}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = fontHref;
+    document.head.appendChild(link);
+  }, [fontHref]);
+
+  const changeSelection = (next: Selection) => {
+    setSelection(next);
+    writeSelection(next);
+  };
+
+  // Un dépôt masqué ouvert par son URL garde son onglet le temps qu'on y est.
+  const tabKeys = catalog.visible.includes(repoKey)
+    ? catalog.visible
+    : [...catalog.visible, repoKey];
+  const repoTabs = tabKeys.map((k) => ({
+    key: k,
+    label: catalog.repos[k]?.label ?? k,
+    // La pastille se pose sur la barre noire, ou sur l'en-tête pour l'onglet
+    // actif : l'accent s'il s'y voit, sinon la couleur d'en-tête.
+    dot: readableOn(k === repoKey ? themeOf(k).primary : CHROME.bar, [
+      themeOf(k).accent,
+      themeOf(k).primary,
+    ]),
+    bg: k === repoKey ? themeOf(k).primary : 'transparent',
+    fg: k === repoKey ? themeOf(k).onPrimary : CHROME.inkSoft,
+  }));
 
   return (
     <div
@@ -163,6 +192,12 @@ export default function App() {
             <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 500 }}>{r.label}</span>
           </button>
         ))}
+        <RepoPicker
+          described={REPOS}
+          selection={selection}
+          onChange={changeSelection}
+          token={token}
+        />
         {!narrow && (
           <span
             style={{

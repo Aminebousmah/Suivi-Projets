@@ -181,3 +181,34 @@ describe('un dépôt qui attend son atlas.md', () => {
     },
   );
 });
+
+describe('choix des dépôts', () => {
+  it('masque un dépôt décrit, et s’en souvient', async () => {
+    localStorage.clear();
+    const user = userEvent.setup();
+    const { unmount } = open();
+
+    const bar = () => screen.getAllByRole('button').map((b) => b.textContent ?? '');
+    expect(bar()).toContain('Eleven-Fields');
+
+    await user.click(screen.getByRole('button', { name: /dépôts/i }));
+    const panel = screen.getByRole('dialog', { name: 'Dépôts affichés' });
+    await user.click(within(panel).getByRole('checkbox', { name: /Eleven-Fields/ }));
+    await user.click(within(panel).getByRole('button', { name: 'Fermer' }));
+
+    expect(bar()).not.toContain('Eleven-Fields');
+    unmount();
+
+    open();
+    expect(bar()).not.toContain('Eleven-Fields');
+    localStorage.clear();
+  });
+
+  it('demande un jeton avant de lister le compte', async () => {
+    localStorage.clear();
+    const user = userEvent.setup();
+    open();
+    await user.click(screen.getByRole('button', { name: /dépôts/i }));
+    expect(screen.getByText(/saisissez un jeton github/i)).toBeInTheDocument();
+  });
+});

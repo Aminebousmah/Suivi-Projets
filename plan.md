@@ -1,6 +1,6 @@
 # Plan de développement
 
-État : fonctionnellement terminé, onze phases livrées, publié sur GitHub Pages : https://aminebousmah.github.io/Suivi-Projets/
+État : fonctionnellement terminé, douze phases livrées, publié sur GitHub Pages : https://aminebousmah.github.io/Suivi-Projets/
 
 ## Phase 1 — Portage de la maquette ✅
 
@@ -104,15 +104,20 @@ Futuremoi, bottrading, Clip-Core et Happicture rejoignent la barre de dépôts.
 - [x] Les six projets ont leur atlas.md, lu à 100 % par le lecteur ; les chiffres « domaines » et « fonctions » de l'en-tête suivent l'arbre affiché
 - [x] bottrading, renommé Elon sur GitHub, est lu sous son nouveau nom
 
+## Phase 12 — Dépôts au choix, suivis en direct ✅
+
+- [x] Le bouton « ＋ Dépôts » liste les dépôts du compte GitHub : on en ajoute, on masque les dépôts décrits
+- [x] Un dépôt ajouté n'a rien d'écrit dans Atlas : son nom, puis son atlas.md
+- [x] La section « Direction artistique » d'atlas.md donne les couleurs du projet ; Atlas en construit le thème
+- [x] Le dépôt se relit au retour sur l'onglet et toutes les deux minutes, par ETag, sans vider l'écran
+- [x] Les palettes recopiées de Clip-Core et Futuremoi suivent leur nouvelle charte, en attendant leur section « Direction artistique »
+- [x] ATLAS-PROMPT.md écrit la section et la fait tenir à jour quand la charte change
+
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
-- **Ouvrir Atlas à un dépôt quelconque** — depuis `atlas.md`, un dépôt décrit lui-même
-  ses domaines ; il reste à l'enregistrer dans `src/data/repos.ts` pour son slug, et dans
-  `src/data/themes.ts` pour sa palette, que `buildTheme` complète. Accepter un dépôt saisi
-  à la volée demanderait de lire cette palette dans son code.
-- **Décrire les projets suivis** — Futuremoi, bottrading, Clip-Core et Happicture n'ont
-  pas encore d'`atlas.md` : c'est le prompt de mise en place, lancé dans chaque projet,
-  qui l'écrit.
+- **La charte dans chaque atlas.md** — les six projets n'ont pas encore leur section
+  « Direction artistique » : le prompt « Point de suivi » l'ajoute. D'ici là, Atlas montre
+  la palette recopiée dans `src/data/themes.ts`.
 - **Rapprocher les sessions du reste** — une session sait quels fichiers elle a touchés,
   et le croisement sait ce que ces fichiers servent : les brancher l'un sur l'autre dirait
   quelles fonctionnalités une session a fait avancer.

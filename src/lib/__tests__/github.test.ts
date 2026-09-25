@@ -64,6 +64,39 @@ describe('fenêtre de fraîcheur', () => {
   });
 });
 
+describe('relecture', () => {
+  it('revalide une réponse récente auprès de GitHub', async () => {
+    const cache = memoryStore();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply(200, META, { etag: 'W/"abc"' }))
+      .mockResolvedValueOnce(reply(304, null, { etag: 'W/"abc"' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await fetchRepoMeta(REF, createClient(null, cache));
+    const again = createClient(null, cache, true);
+    await fetchRepoMeta(REF, again);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1][1].headers['If-None-Match']).toBe('W/"abc"');
+    expect(again.origins).toEqual(['inchangé']);
+  });
+
+  it('rapporte tout de suite un dépôt qui a changé', async () => {
+    const cache = memoryStore();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply(200, META, { etag: 'W/"1"' }))
+      .mockResolvedValueOnce(reply(200, { ...META, description: 'nouvelle' }, { etag: 'W/"2"' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await fetchRepoMeta(REF, createClient(null, cache));
+    const meta = await fetchRepoMeta(REF, createClient(null, cache, true));
+
+    expect(meta.description).toBe('nouvelle');
+  });
+});
+
 describe('revalidation par ETag', () => {
   it('envoie If-None-Match et réutilise le corps sur 304', async () => {
     const cache = memoryStore();

@@ -291,8 +291,14 @@ justement à mesurer l'écart.
 
 Les règles, les interdits et les phases sont relus dans le dépôt quand il est connecté,
 l'arborescence et l'activité git viennent de GitHub, et les sessions des fichiers déposés.
-Ces quatre dépôts sont privés : les lire demande un jeton GitHub personnel, saisi dans la
-vue « Dépôt réel ».
+Ces dépôts sont privés : les lire demande un jeton GitHub personnel, saisi dans la vue
+« Dépôt réel ».
+
+D'autres dépôts s'ajoutent sans toucher au code : le bouton « ＋ Dépôts » de la barre
+liste ceux du compte, à cocher ou décocher. Un dépôt ajouté est décrit par son seul
+`atlas.md`, couleurs comprises — sa section « Direction artistique » donne la palette, dont
+Atlas construit le thème. Le dépôt affiché se relit au retour sur l'onglet et toutes les
+deux minutes : un changement poussé apparaît sans rien faire.
 Ce qui reste écrit à la main, ce sont les domaines fonctionnels et leur avancement : c'est
 du sens, et aucune source mécanique ne le porte.
 
