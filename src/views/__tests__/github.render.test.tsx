@@ -227,8 +227,32 @@ describe('lire le dépôt sans quitter la vue', () => {
 
     await user.click(screen.getByRole('button', { name: /lire le dépôt/i }));
 
+    // L'échec se dit sur la vue même, pas seulement dans l'onglet « Dépôt réel ».
     expect(
-      await screen.findByRole('button', { name: /lire le dépôt/i }, { timeout: 3000 }),
+      await screen.findByRole('button', { name: /réessayer/i }, { timeout: 3000 }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/lecture impossible/i)).toBeInTheDocument();
+    expect(screen.getByText(/momentanément indisponible/i)).toBeInTheDocument();
+  });
+
+  it('montre l’arborescence réelle d’un dépôt ajouté sans atlas.md', async () => {
+    localStorage.setItem(
+      'atlas.selection',
+      JSON.stringify({ hidden: [], added: [{ owner: 'Aminebousmah', name: 'Nouveau', branch: 'main' }] }),
+    );
+    vi.stubGlobal(
+      'fetch',
+      fakeGitHub({ '/contents/atlas.md': () => new Response(null, { status: 404 }) }),
+    );
+    open('?repo=aminebousmah/nouveau&view=arch');
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /lire le dépôt/i }));
+
+    // Pas d'arbre décrit : l'arborescence réelle en tient lieu, avec ses dossiers.
+    expect(
+      await screen.findAllByText('modifié, 42 ligne(s)', {}, { timeout: 3000 }),
+    ).not.toHaveLength(0);
+    expect(screen.getByText(/rien n'est écrit pour ce dépôt dans Atlas/i)).toBeInTheDocument();
+    localStorage.clear();
   });
 });

@@ -21,6 +21,7 @@ Ajoute un dépôt du compte GitHub à la barre, ou en masque un, depuis le bouto
 > Un dépôt ajouté n'a rien d'écrit : son nom, puis son atlas.md une fois lu
 > Un dépôt masqué reste joignable par son URL
 > Lister les dépôts du compte demande un jeton ; sans lui, le panneau dit où le saisir
+> Sans atlas.md, l'arborescence réelle du dépôt tient lieu d'arbre, et la fiche dit quoi écrire
 
 ### Onglets de vue — en ligne
 Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.
@@ -144,6 +145,8 @@ Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figé
 > Une vue lue dans le dépôt cite le fichier d'où elle vient
 > Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place
 > Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit
+> Un échec de lecture se dit sur chaque vue, avec sa cause et un bouton Réessayer
+> Pour un dépôt ajouté, rien n'est écrit dans Atlas : le bandeau ne prétend pas le contraire
 
 ## Domaine · Modèle et données
 Ce qui décrit un dépôt, et d'où viennent les couleurs.
@@ -424,7 +427,7 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 375 | — | 100% |
+| Tests au vert | 376 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
 | Dépôts suivis | 7 + au choix | — | 100% |
 | Dépôts décrits par leur atlas.md | 7 / 7 | 7 | 100% |

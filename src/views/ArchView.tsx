@@ -51,7 +51,11 @@ export function ArchView({
 }: Props) {
   const narrow = useNarrow();
   const stacked = useStacked();
-  const fromRepo = src === 'repo';
+  // Sans arbre décrit — un dépôt ajouté sans atlas.md —, l'arborescence réelle
+  // tient lieu d'arbre plutôt qu'une page vide.
+  const noDescription = !repo.domains.length && !!treeDomains?.length;
+  const fromRepo = src === 'repo' || noDescription;
+  const shownSrc = fromRepo ? 'repo' : 'described';
   const domains = fromRepo ? (treeDomains ?? []) : repo.domains;
   const hasStatuses = domains.some((d) => d.features.some((f) => f.status));
   const domain = domainKey ? domains.find((d) => d.key === domainKey) ?? null : null;
@@ -238,9 +242,9 @@ export function ArchView({
                   textTransform: 'uppercase',
                   padding: '7px 14px',
                   borderRadius: 999,
-                  border: `1px solid ${m.id === src ? t.ink : t.line}`,
-                  background: m.id === src ? t.ink : 'transparent',
-                  color: m.id === src ? t.page : t.inkSoft,
+                  border: `1px solid ${m.id === shownSrc ? t.ink : t.line}`,
+                  background: m.id === shownSrc ? t.ink : 'transparent',
+                  color: m.id === shownSrc ? t.page : t.inkSoft,
                 }}
               >
                 {m.label}
@@ -276,7 +280,7 @@ export function ArchView({
           </span>
         </div>
 
-        {!fromRepo && (
+        {(!fromRepo || noDescription || reader.error) && (
           <SourceBadge
             t={t}
             live={fromAtlasFile}

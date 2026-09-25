@@ -112,6 +112,7 @@ Futuremoi, bottrading, Clip-Core et Happicture rejoignent la barre de dépôts.
 - [x] Le dépôt se relit au retour sur l'onglet et toutes les deux minutes, par ETag, sans vider l'écran
 - [x] Les palettes recopiées de Clip-Core et Futuremoi suivent leur nouvelle charte, en attendant leur section « Direction artistique »
 - [x] ATLAS-PROMPT.md écrit la section et la fait tenir à jour quand la charte change
+- [x] Un dépôt ajouté ne reste jamais vide : sans atlas.md, l'arborescence réelle tient lieu d'arbre ; un échec de lecture se dit sur chaque vue, avec « Réessayer »
 
 ## Ce qui reste, et pourquoi ce n'est pas fait
 
