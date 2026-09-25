@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '52', k: 'fonctions' }, { v: '344', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '53', k: 'fonctions' }, { v: '347', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -604,18 +604,18 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'Marion · Manrope · JetBrains Mono', note: "Titres en Marion, Georgia à défaut. Google Fonts charge le reste, dont les polices des autres dépôts." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "344 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "347 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'GitHub Pages', note: "Publié à chaque fusion dans main, une fois lint, tests et build au vert." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "344", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "347", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts suivis", v: "7", target: "—", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits par leur atlas.md", v: "1 / 7", target: "7", pct: '14%', tone: 'wip' },
       { k: "Données lues depuis GitHub", v: "large", target: "complet", pct: '95%', tone: 'wip' },
-      { k: "Fichiers du dépôt décrits", v: "79 / 79", target: "tous", pct: '100%', tone: 'live' },
+      { k: "Fichiers du dépôt décrits", v: "81 / 81", target: "tous", pct: '100%', tone: 'live' },
       { k: "Sessions réelles branchées", v: "sur dépôt de fichiers", target: "oui", pct: '100%', tone: 'live' },
       { k: "Application déployée", v: "en ligne", target: "en ligne", pct: '100%', tone: 'live' }
     ],
@@ -629,6 +629,9 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Changer de dépôt remet la sélection à zéro", "La source de la palette est affichée à droite de la barre"] },
           { name: "Onglets de vue", status: 'live', what: "Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.",
             files: ['src/data/labels.ts — VIEWS, BLURBS', 'src/App.tsx'] },
+          { name: "Chiffres de l'en-tête", status: 'live', what: "Les compteurs du projet, dont domaines et fonctions recomptés sur l'arbre affiché.",
+            files: ['src/lib/stats.ts', 'src/lib/__tests__/stats.test.ts'],
+            notes: ["Une fois atlas.md lu, les chiffres de la description figée ne disent plus vrai : Sole-Citron annonçait 44 fonctions, son atlas.md en décrit 21"] },
           { name: "État dans l'URL", status: 'live', what: "Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres.",
             files: ['src/lib/url.ts', 'src/lib/useAtlasState.ts'],
             notes: ["Les valeurs par défaut ne sont pas écrites dans l'URL", "Un paramètre inconnu retombe sur le défaut au lieu de casser la page", "Une sélection qui n'existe plus après changement de dépôt est purgée", "Elle se vérifie contre l'arbre réellement affiché — celui d'atlas.md une fois lu — et reste en place tant qu'aucun domaine n'est connu"] },
@@ -694,7 +697,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Atlas a sa propre palette — Black Forest, Maroon, Vanilla Custard — pour ne ressembler à aucun des projets qu'il montre"] },
           { name: "Thème déduit d'une palette", status: 'live', what: "Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.",
             files: ['src/lib/palette.ts', 'src/lib/__tests__/palette.test.ts'],
-            notes: ["Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture", "Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1", "Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1", "En sombre, une carte reste sombre et la couleur passe au liseré"] },
+            notes: ["Atlas et les quatre derniers dépôts en viennent : Futuremoi, Elon, Clip-Core, Happicture", "Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1", "Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1", "En sombre, une carte reste sombre et la couleur passe au liseré"] },
           { name: "Lecture du fichier de suivi", status: 'live', what: "Lit atlas.md dans le dépôt et en tire domaines, fonctionnalités, statuts, fichiers et feuille de suivi.",
             files: ['src/lib/atlasFile.ts', 'src/lib/__tests__/atlasFile.test.ts', 'src/lib/__tests__/fixtures/atlas.md'],
             notes: ["C'est la seule source qui porte du sens : ni l'arborescence ni git ne disent à quoi sert un fichier", "Quand le dépôt fournit ce fichier, la description figée n'est plus qu'un repli", "Un fichier hors format n'est pas une panne : il est simplement laissé de côté", "Un domaine qui porte le nom d'un domaine décrit reprend sa clé : un permalien survit à la lecture du fichier"] },
@@ -880,8 +883,7 @@ export const REPOS: Record<string, RepoData> = {
       "Se pilote en ligne de commande (radar) ou depuis une interface web locale, qui appelle le même moteur."
     ],
     todo: [
-      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
-      "Poser un CLAUDE.md et un plan.md : le dépôt n'a aujourd'hui que son README."
+      "Lire le dépôt : son atlas.md porte l'arbre, la feuille de suivi et ce qui reste à faire."
     ],
     stack: [
       { cat: 'Langage', v: 'Python ≥ 3.10', note: "Paquet freelance_radar sous src/, installé en mode éditable." },
@@ -906,14 +908,12 @@ export const REPOS: Record<string, RepoData> = {
     ],
     ctxRules: [],
     ctxNever: [],
-    ctxOpen: [
-      "Le dépôt n'a ni CLAUDE.md ni plan.md : ni règles, ni interdits, ni phases à lire."
-    ],
+    ctxOpen: [],
     phases: []
   },
   bottrading: {
-    label: 'bottrading',
-    slug: 'Aminebousmah/bottrading · main',
+    label: 'Elon',
+    slug: 'Aminebousmah/Elon · main',
     titleA: 'ELON ', titleB: 'bottrading',
     tagline: "Lit les signaux publiés sur un canal Telegram, les transforme en ordres structurés, les exécute en paper ou sur MetaTrader 5 sous contrôle de risque, et suit le tout dans un dashboard temps réel.",
     stats: [ { v: '66', k: 'fichiers' }, { v: '6', k: 'étapes' }, { v: '10', k: 'modules de test' } ],
@@ -926,8 +926,7 @@ export const REPOS: Record<string, RepoData> = {
       "Affiche un dashboard temps réel en FastAPI et WebSocket."
     ],
     todo: [
-      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
-      "Poser un CLAUDE.md et un plan.md : le dépôt n'a aujourd'hui que son README."
+      "Lire le dépôt : son atlas.md porte l'arbre, la feuille de suivi et ce qui reste à faire."
     ],
     stack: [
       { cat: 'Langage', v: 'Python', note: "Point d'entrée run.py ; --no-telegram lance le moteur et le dashboard seuls." },
@@ -951,9 +950,7 @@ export const REPOS: Record<string, RepoData> = {
     ],
     ctxRules: [],
     ctxNever: [],
-    ctxOpen: [
-      "Le dépôt n'a ni CLAUDE.md ni plan.md : ni règles, ni interdits, ni phases à lire."
-    ],
+    ctxOpen: [],
     phases: []
   },
   clipcore: {
@@ -961,7 +958,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Clip-Core · claude/project-mvp-cfh8ir',
     titleA: 'TwitchClip', titleB: 'Factory',
     tagline: "Transforme des VODs Twitch en clips courts : les moments forts sont détectés par l'analyse du chat — vélocité, emotes, majuscules — puis découpés par ffmpeg.",
-    stats: [ { v: '72', k: 'fichiers' }, { v: '6', k: 'phases' }, { v: '0', k: 'module de test' } ],
+    stats: [ { v: '72', k: 'fichiers' }, { v: '7', k: 'phases' }, { v: '0', k: 'module de test' } ],
     does: [
       "Liste les chaînes et leurs VODs par l'API publique GraphQL de Twitch, sans compte ni clé.",
       "Télécharge le chat d'une VOD en Python, sans binaire externe.",
@@ -970,9 +967,7 @@ export const REPOS: Record<string, RepoData> = {
       "Télécharge une VOD publique par son URL, entière ou sur un intervalle."
     ],
     todo: [
-      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui.",
-      "Mettre à jour les cases de « Phases de développement » dans CLAUDE.md : aucune n'est cochée.",
-      "Porter ces phases dans un plan.md, qu'Atlas sait lire."
+      "Lire le dépôt : son atlas.md porte l'arbre, la feuille de suivi et ce qui reste à faire."
     ],
     stack: [
       { cat: 'Frontend', v: 'Next.js 14 · Tailwind · shadcn/ui', note: "Sous frontend/, App Router." },
@@ -1004,23 +999,8 @@ export const REPOS: Record<string, RepoData> = {
       "yt-dlp peut nécessiter --cookies-from-browser chrome pour VODs age-restricted"
     ],
     ctxNever: [],
-    ctxOpen: [
-      "Les phases vivent dans CLAUDE.md, cases toutes vides, alors que le README décrit un MVP qui tourne."
-    ],
-    phases: [
-      { num: 'Phase 1', status: 'à venir', title: 'Core pipeline', tone: 'frozen',
-        detail: "Téléchargement de la VOD et du chat, vélocité du chat, détection des pics, clip ffmpeg, API /analyze et /clips." },
-      { num: 'Phase 2', status: 'à venir', title: 'Frontend Browse', tone: 'frozen',
-        detail: "Pages chaînes, VODs avec statuts, curseur de sensibilité, grille de clips avec aperçu." },
-      { num: 'Phase 3', status: 'à venir', title: 'Signaux avancés', tone: 'frozen',
-        detail: "Score des emotes, taux de majuscules, RMS audio, score composite pondéré." },
-      { num: 'Phase 4', status: 'à venir', title: 'Éditeur', tone: 'frozen',
-        detail: "Modèles ffmpeg 9:16, captions Whisper incrustées, découpe avec aperçu, export CapCut." },
-      { num: 'Phase 5', status: 'à venir', title: 'Publication', tone: 'frozen',
-        detail: "OAuth TikTok, Instagram et YouTube Shorts, envoi avec métadonnées, planification." },
-      { num: 'Phase 6', status: 'à venir', title: 'Polish', tone: 'frozen',
-        detail: "Multi-compte, publication par lots, tableau de bord analytique." }
-    ]
+    ctxOpen: [],
+    phases: []
   },
   happicture: {
     label: 'Happicture',
@@ -1037,7 +1017,7 @@ export const REPOS: Record<string, RepoData> = {
       "En production sur happicture.com, en Docker derrière Caddy."
     ],
     todo: [
-      "Écrire atlas.md avec le prompt de mise en place d'ATLAS-PROMPT.md : l'arbre des fonctionnalités viendra de lui."
+      "Lire le dépôt : son atlas.md porte l'arbre, la feuille de suivi et ce qui reste à faire."
     ],
     stack: [
       { cat: 'Frontend', v: 'Next.js 14 · TypeScript · Tailwind · shadcn/ui', note: "apps/web, re-thémé au design system Happicture." },

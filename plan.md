@@ -101,6 +101,8 @@ Futuremoi, bottrading, Clip-Core et Happicture rejoignent la barre de dépôts.
 - [x] Atlas quitte le noir et la terracotta, trop proches de Happicture, pour sa palette : Black Forest, Maroon, Vanilla Custard
 - [x] Son thème passe par `buildTheme`, comme les quatre derniers dépôts : ses contrastes sont testés
 - [x] Une pastille trop pâle pour sa carte, ou pour la barre de dépôts, prend une couleur qui s'y voit
+- [x] Les six projets ont leur atlas.md, lu à 100 % par le lecteur ; les chiffres « domaines » et « fonctions » de l'en-tête suivent l'arbre affiché
+- [x] bottrading, renommé Elon sur GitHub, est lu sous son nouveau nom
 
 ## Ce qui reste, et pourquoi ce n'est pas fait
 

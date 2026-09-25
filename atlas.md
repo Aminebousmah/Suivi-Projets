@@ -17,6 +17,12 @@ Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.
 - `src/data/labels.ts — VIEWS, BLURBS`
 - `src/App.tsx`
 
+### Chiffres de l'en-tête — en ligne
+Les compteurs du projet, dont domaines et fonctions recomptés sur l'arbre affiché.
+- `src/lib/stats.ts`
+- `src/lib/__tests__/stats.test.ts`
+> Une fois atlas.md lu, les chiffres de la description figée ne disent plus vrai : Sole-Citron annonçait 44 fonctions, son atlas.md en décrit 21
+
 ### État dans l'URL — en ligne
 Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres.
 - `src/lib/url.ts`
@@ -160,7 +166,7 @@ Palette, tons de domaine, pastilles de statut et typographie, dérivés des toke
 Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.
 - `src/lib/palette.ts`
 - `src/lib/__tests__/palette.test.ts`
-> Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture
+> Atlas et les quatre derniers dépôts en viennent : Futuremoi, Elon, Clip-Core, Happicture
 > Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1
 > Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1
 > En sombre, une carte reste sombre et la couleur passe au liseré
@@ -392,7 +398,7 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 344 | — | 100% |
+| Tests au vert | 347 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
 | Dépôts suivis | 7 | — | 100% |
 | Dépôts décrits par leur atlas.md | 1 / 7 | 7 | 14% |

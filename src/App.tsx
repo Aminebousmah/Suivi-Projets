@@ -4,6 +4,7 @@ import { BLURBS, VIEWS } from './data/labels';
 import { REPOS } from './data/repos';
 import { CHROME, THEMES } from './data/themes';
 import { readableOn } from './lib/color';
+import { statsFor } from './lib/stats';
 import { useAtlasState } from './lib/useAtlasState';
 import { staticDomains } from './lib/url';
 import { useCenteredActive, useNarrow } from './lib/useMediaQuery';
@@ -254,7 +255,7 @@ export default function App() {
                 background: t.hairline,
               }}
             >
-              {repo.stats.map((s, i, all) => (
+              {statsFor(repo.stats, described.domains).map((s, i, all) => (
                 <div
                   key={s.k}
                   style={{
