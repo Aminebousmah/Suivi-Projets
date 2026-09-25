@@ -5,6 +5,10 @@ import type { Theme } from '../data/types';
 export interface RepoReader {
   onConnect?: () => void;
   loading?: boolean;
+  /** Pourquoi la dernière lecture a échoué, dit sur chaque vue et pas seulement la 06. */
+  error?: string;
+  /** Faux pour un dépôt ajouté : rien n'est écrit pour lui dans les données. */
+  written?: boolean;
 }
 
 interface Props {
@@ -20,6 +24,8 @@ interface Props {
   onConnect?: () => void;
   /** Vrai pendant que le dépôt est lu. */
   loading?: boolean;
+  error?: string;
+  written?: boolean;
 }
 
 /**
@@ -27,13 +33,31 @@ interface Props {
  * vue alimentée par la description figée ne se valent pas : le bandeau tranche,
  * et propose de lire le dépôt quand ce n'est pas encore fait.
  */
-export function SourceBadge({ t, live, what, from, hint, onConnect, loading }: Props) {
+export function SourceBadge({
+  t,
+  live,
+  what,
+  from,
+  hint,
+  onConnect,
+  loading,
+  error,
+  written = true,
+}: Props) {
+  // Un dépôt ajouté n'a rien d'écrit : on ne prétend pas le contraire.
+  const fallback = written
+    ? `${what} : écrit à la main dans src/data/repos.ts.`
+    : `${what} : rien n'est écrit pour ce dépôt dans Atlas, tout vient de ${from ?? 'ses fichiers'}.`;
   let detail: string;
+  let label = live ? 'lu dans le dépôt' : 'description figée';
   if (live) detail = `${what} : lu dans ${from} sur la branche décrite.`;
-  else if (loading) detail = `${what} : écrit à la main pour l'instant — lecture du dépôt en cours…`;
+  else if (error) {
+    label = 'lecture impossible';
+    detail = error;
+  } else if (loading) detail = `${what} : lecture du dépôt en cours…`;
   else if (onConnect)
-    detail = `${what} : écrit à la main dans src/data/repos.ts. Lisez le dépôt pour chercher ${from ?? 'ses fichiers de contexte'}.`;
-  else detail = `${what} : écrit à la main dans src/data/repos.ts.${hint ? ' ' + hint : ''}`;
+    detail = `${fallback} Lisez le dépôt pour chercher ${from ?? 'ses fichiers de contexte'}.`;
+  else detail = `${fallback}${hint ? ' ' + hint : ''}`;
 
   return (
     <div
@@ -59,7 +83,7 @@ export function SourceBadge({ t, live, what, from, hint, onConnect, loading }: P
           whiteSpace: 'nowrap',
         }}
       >
-        {live ? 'lu dans le dépôt' : 'description figée'}
+        {label}
       </span>
       <span style={{ flex: '1 1 260px', fontSize: 12, lineHeight: 1.5, color: t.inkSoft }}>
         {detail}
@@ -82,7 +106,7 @@ export function SourceBadge({ t, live, what, from, hint, onConnect, loading }: P
             color: t.onAccent,
           }}
         >
-          Lire le dépôt
+          {error ? 'Réessayer' : 'Lire le dépôt'}
         </button>
       )}
     </div>

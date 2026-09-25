@@ -55,6 +55,13 @@ export function SheetView({ t, repo, live, reader }: Props) {
           }}
         >
           <Kicker color={t.inkFaint}>Ce que le projet fait</Kicker>
+          {repo.does.length === 0 && (
+            <span style={{ fontSize: 13, lineHeight: 1.55, color: t.inkSoft }}>
+              Rien n'est encore dit de ce projet. La section « Fait » de son atlas.md le dira :
+              lancez dans le projet le prompt de mise en place d'ATLAS-PROMPT.md, puis poussez le
+              fichier.
+            </span>
+          )}
           {repo.does.map((d) => (
             <div
               key={d}
@@ -164,6 +171,12 @@ export function SheetView({ t, repo, live, reader }: Props) {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
           <Kicker color={t.inkFaint}>Comment le projet marche</Kicker>
+          {repo.stack.length === 0 ? (
+            <EmptyNote t={t}>
+              Aucune pile technique n'est écrite pour ce projet dans Atlas. L'onglet « Dépôt
+              réel » montre ses langages et ses fichiers, lus sur GitHub.
+            </EmptyNote>
+          ) : (
           <div
             style={{
               border: `1px solid ${t.line}`,
@@ -206,6 +219,7 @@ export function SheetView({ t, repo, live, reader }: Props) {
               </div>
             ))}
           </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>

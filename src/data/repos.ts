@@ -578,7 +578,7 @@ export const REPOS: Record<string, RepoData> = {
     slug: 'Aminebousmah/Suivi-Projets · main',
     titleA: 'Atlas se lit ', titleB: 'lui-même',
     tagline: "L'application de cette page, décrite dans ses propres données. Le seul dépôt dont chaque fichier cité est vérifiable ici même, depuis la vue Dépôt réel.",
-    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '56', k: 'fonctions' }, { v: '375', k: 'tests' } ],
+    stats: [ { v: '6', k: 'vues' }, { v: '5', k: 'domaines' }, { v: '56', k: 'fonctions' }, { v: '376', k: 'tests' } ],
     does: [
       "Affiche un projet GitHub sous six angles : fiche, fonctionnalités, sessions, contexte Claude, avancement, dépôt réel.",
       "Dessine l'arbre des fonctionnalités en graphe à branches explorable, du projet au fichier, avec zoom et panneau de détail.",
@@ -605,13 +605,13 @@ export const REPOS: Record<string, RepoData> = {
       { cat: 'Typographie', v: 'Marion · Manrope · JetBrains Mono', note: "Titres en Marion, Georgia à défaut. Google Fonts charge le reste, dont les polices des autres dépôts." },
       { cat: 'Données', v: 'Modules TypeScript, complétés par le dépôt', note: "src/data/repos.ts décrit chaque dépôt ; règles, interdits et phases sont relus dans le dépôt quand il est connecté." },
       { cat: 'Accès GitHub', v: 'API REST v3 depuis le navigateur', note: "Jeton facultatif, gardé en localStorage, envoyé seulement à api.github.com. Réponses mises en cache et revalidées par ETag." },
-      { cat: 'Tests', v: 'Vitest', note: "375 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
+      { cat: 'Tests', v: 'Vitest', note: "376 tests sur le graphe, l'état d'URL, le croisement des fichiers, la lecture des Markdown, le cache, l'arborescence, les sessions, le clavier, plus le rendu de chaque vue en jsdom." },
       { cat: 'Lint', v: 'oxlint', note: "La maquette d'origine sous design/ est exclue de l'analyse." },
       { cat: 'Déploiement', v: 'GitHub Pages', note: "Publié à chaque fusion dans main, une fois lint, tests et build au vert." }
     ],
     tracking: [
       { k: "Vues implémentées", v: "6 / 6", target: "6", pct: '100%', tone: 'live' },
-      { k: "Tests au vert", v: "375", target: "—", pct: '100%', tone: 'live' },
+      { k: "Tests au vert", v: "376", target: "—", pct: '100%', tone: 'live' },
       { k: "Erreurs de build", v: "0", target: "0", pct: '100%', tone: 'live' },
       { k: "Dépôts suivis", v: "7 + au choix", target: "—", pct: '100%', tone: 'live' },
       { k: "Dépôts décrits par leur atlas.md", v: "7 / 7", target: "7", pct: '100%', tone: 'live' },
@@ -630,7 +630,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Changer de dépôt remet la sélection à zéro", "La source de la palette est affichée à droite de la barre"] },
           { name: "Choix des dépôts", status: 'live', what: "Ajoute un dépôt du compte GitHub à la barre, ou en masque un, depuis le bouton « ＋ Dépôts ».",
             files: ['src/components/RepoPicker.tsx', 'src/lib/selection.ts', 'src/lib/__tests__/selection.test.ts'],
-            notes: ["Le choix est une préférence de ce navigateur : sans stockage, la barre reprend les dépôts décrits", "Un dépôt ajouté n'a rien d'écrit : son nom, puis son atlas.md une fois lu", "Un dépôt masqué reste joignable par son URL", "Lister les dépôts du compte demande un jeton ; sans lui, le panneau dit où le saisir"] },
+            notes: ["Le choix est une préférence de ce navigateur : sans stockage, la barre reprend les dépôts décrits", "Un dépôt ajouté n'a rien d'écrit : son nom, puis son atlas.md une fois lu", "Un dépôt masqué reste joignable par son URL", "Lister les dépôts du compte demande un jeton ; sans lui, le panneau dit où le saisir", "Sans atlas.md, l'arborescence réelle du dépôt tient lieu d'arbre, et la fiche dit quoi écrire"] },
           { name: "Onglets de vue", status: 'live', what: "Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.",
             files: ['src/data/labels.ts — VIEWS, BLURBS', 'src/App.tsx'] },
           { name: "Chiffres de l'en-tête", status: 'live', what: "Les compteurs du projet, dont domaines et fonctions recomptés sur l'arbre affiché.",
@@ -682,7 +682,7 @@ export const REPOS: Record<string, RepoData> = {
             notes: ["Les styles en ligne hérités de la maquette ne savent pas exprimer un survol : le bouton le porte lui-même", "C'est l'équivalent du style-hover du prototype", "Un bloc vide ne disparaît pas en silence : la note dit quel fichier le remplirait"] },
           { name: "Bandeau de provenance", status: 'live', what: "Chaque vue dit si ce qu'elle affiche vient du dépôt ou de la description figée.",
             files: ['src/components/SourceBadge.tsx'],
-            notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place", "Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit"] }
+            notes: ["Une vue lue dans le dépôt cite le fichier d'où elle vient", "Le dépôt ne remplace que ce qu'il porte vraiment : une section absente laisse la description en place", "Tant que le dépôt n'est pas lu, le bandeau porte le bouton qui le lit", "Un échec de lecture se dit sur chaque vue, avec sa cause et un bouton Réessayer", "Pour un dépôt ajouté, rien n'est écrit dans Atlas : le bandeau ne prétend pas le contraire"] }
         ] },
       { key: 'model', num: '03', name: 'Modèle et données', tone: 'c',
         role: "Ce qui décrit un dépôt, et d'où viennent les couleurs.",

@@ -75,6 +75,8 @@ export default function App() {
   const reader = {
     onConnect: !connected || source.status === 'error' ? () => connect(token) : undefined,
     loading: source.status === 'loading',
+    error: source.status === 'error' ? source.message : undefined,
+    written: !!REPOS[repoKey],
   };
 
   const disconnect = () => {
@@ -265,7 +267,8 @@ export default function App() {
                 color: t.onPrimarySoft,
               }}
             >
-              {repo.tagline}
+              {repo.tagline ||
+                (source.status === 'ready' ? (source.data.meta.description ?? '') : '')}
             </p>
           </div>
 
