@@ -75,7 +75,8 @@ function toneOf(color: string, spec: PaletteSpec): Tone {
     ink,
     inkSoft: withAlpha(ink, 0.8),
     border: color,
-    dot: color,
+    // La pastille se pose sur les cartes : une couleur trop pâle y disparaîtrait.
+    dot: contrast(color, spec.surface) >= AA_LARGE ? color : spec.ink,
     chipBg: withAlpha(ink, 0.16),
   };
 }

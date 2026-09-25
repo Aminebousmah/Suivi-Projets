@@ -17,6 +17,12 @@ Les six vues, numérotées, avec l'accroche de la vue active sous l'en-tête.
 - `src/data/labels.ts — VIEWS, BLURBS`
 - `src/App.tsx`
 
+### Chiffres de l'en-tête — en ligne
+Les compteurs du projet, dont domaines et fonctions recomptés sur l'arbre affiché.
+- `src/lib/stats.ts`
+- `src/lib/__tests__/stats.test.ts`
+> Une fois atlas.md lu, les chiffres de la description figée ne disent plus vrai : Sole-Citron annonçait 44 fonctions, son atlas.md en décrit 21
+
 ### État dans l'URL — en ligne
 Dépôt, vue, mode, domaine, fonctionnalité et zoom sérialisés en paramètres.
 - `src/lib/url.ts`
@@ -154,12 +160,13 @@ Choisit, parmi les couleurs du thème, l'encre qui contraste le plus avec un fon
 ### Thèmes par dépôt — en ligne
 Palette, tons de domaine, pastilles de statut et typographie, dérivés des tokens du dépôt décrit.
 - `src/data/themes.ts`
+> Atlas a sa propre palette — Black Forest, Maroon, Vanilla Custard — pour ne ressembler à aucun des projets qu'il montre
 
 ### Thème déduit d'une palette — en ligne
 Construit un thème complet à partir des seules couleurs qu'un projet déclare : chaque encre posée sur un fond est choisie par le contraste.
 - `src/lib/palette.ts`
 - `src/lib/__tests__/palette.test.ts`
-> Les quatre derniers dépôts en viennent : Futuremoi, bottrading, Clip-Core, Happicture
+> Atlas et les quatre derniers dépôts en viennent : Futuremoi, Elon, Clip-Core, Happicture
 > Le blanc ou le noir purs ne servent que si aucune couleur du projet n'atteint 4,5:1
 > Un statut illisible sur la page s'écrit à l'encre : l'ocre de Happicture tombait à 2,5:1
 > En sombre, une carte reste sombre et la couleur passe au liseré
@@ -383,7 +390,7 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 - `.github/workflows/pages.yml`
 - `vite.config.ts — base, manualChunks`
 > Pages sert le site sous /<dépôt>/ : le build de publication reçoit PAGES_BASE
-> Une étape reste manuelle : Settings, Pages, source « GitHub Actions »
+> Pages s'active une fois, côté GitHub : Settings, Pages, source « GitHub Actions » ; l'environnement github-pages doit autoriser main
 > Rien n'est publié sur une base rouge
 > React est livré à part : une mise à jour d'Atlas ne le fait pas retélécharger
 ## Suivi
@@ -391,13 +398,13 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 | Indicateur | Actuel | Cible | Avancement |
 | --- | --- | --- | --- |
 | Vues livrées | 6 / 6 | 6 | 100% |
-| Tests au vert | 341 | — | 100% |
+| Tests au vert | 347 | — | 100% |
 | Erreurs de build | 0 | 0 | 100% |
 | Dépôts suivis | 7 | — | 100% |
 | Dépôts décrits par leur atlas.md | 1 / 7 | 7 | 14% |
 | Fichiers du dépôt décrits | tous | tous | 100% |
 | Données lues depuis le dépôt | large | complet | 95% |
-| Application publiée | workflow prêt | en ligne | 80% |
+| Application publiée | en ligne | en ligne | 100% |
 
 ## Fait
 
@@ -410,11 +417,11 @@ GitHub Pages à chaque poussée sur main, à condition que lint, tests et build 
 - Garde les réponses GitHub en cache et les revalide par ETag, pour épargner le quota.
 - Lit les fichiers de session Claude Code déposés dans la page, sans qu'ils en sortent.
 - Se lit aussi bien sur un téléphone que sur un grand écran, sans débordement.
+- Est publié sur GitHub Pages à chaque fusion dans main.
 - Suit sept projets réels, chacun dans la palette qu'il déclare, avec seulement des faits lus dans ses fichiers.
 
 ## À faire
 
-- Activer GitHub Pages dans les réglages du dépôt, puis fusionner la branche dans main pour publier.
 - Ouvrir Atlas à n'importe quel dépôt saisi par l'utilisateur, plutôt qu'aux sept décrits ici.
 - Lancer le prompt de mise en place dans les six autres projets et pousser leur atlas.md.
 - Rapprocher les sessions du croisement : dire quelles fonctionnalités une session a fait avancer.

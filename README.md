@@ -122,9 +122,9 @@ seul écart assumé avec la maquette, qui partageait l'écran en deux moitiés �
 
 ## État du projet
 
-Les sept phases de `plan.md` sont livrées. Il reste deux gestes, hors du dépôt, pour que
-le site soit en ligne : activer GitHub Pages dans les réglages, et fusionner la branche
-de travail dans `main`. `plan.md` dit aussi ce qui n'a pas été fait, et pourquoi.
+Les onze phases de `plan.md` sont livrées, et le site est en ligne :
+https://aminebousmah.github.io/Suivi-Projets/. `plan.md` dit aussi ce qui n'a pas été
+fait, et pourquoi.
 
 ## Publication
 
@@ -134,8 +134,9 @@ publié sur une base rouge. Le build de publication reçoit `PAGES_BASE`, car Pa
 le site sous `/<dépôt>/` et non à la racine — `npm run build:pages` reproduit ce build
 en local.
 
-Une étape reste manuelle, côté GitHub : **Settings → Pages → Source : GitHub Actions**.
-Tant qu'elle n'est pas faite, le workflow échoue au moment du déploiement.
+Deux réglages se font une fois, côté GitHub : **Settings → Pages → Source : GitHub
+Actions**, et `main` comme branche par défaut, autorisée dans **Settings → Environments →
+github-pages**. Sans eux, le workflow échoue au moment du déploiement.
 
 ## Cache et quota
 
@@ -275,7 +276,7 @@ Tout le style vient de `src/data/themes.ts` : un thème par dépôt, avec sa pal
 tons de domaine, ses pastilles de statut et sa typographie. Les composants ne codent
 aucune couleur en dur — ils lisent le thème actif.
 
-Polices : DM Serif Display, Manrope et JetBrains Mono, plus Sora et Space Grotesk pour
+Polices : Marion (Georgia à défaut) pour les titres d’Atlas ; DM Serif Display, Manrope et JetBrains Mono, plus Sora et Space Grotesk pour
 Happicture et bottrading, chargées depuis Google Fonts dans `index.html`.
 
 ## Données
