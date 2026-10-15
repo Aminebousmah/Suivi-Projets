@@ -1,8 +1,7 @@
 # Atlas
 
 Application de visualisation de projets GitHub : pour chaque dépôt suivi, elle montre
-ce que le projet fait, l'arbre de ses fonctionnalités, l'historique des sessions Claude
-Code, le contexte que Claude lit avant d'agir, et l'avancement des phases.
+ce que le projet fait, l'arbre de ses fonctionnalités, et l'avancement des phases.
 
 
 ## Démarrage
