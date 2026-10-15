@@ -41,6 +41,7 @@ Un seul écart est assumé : dans la vue Fonctionnalités, la maquette partageai
 - Faire échouer une lecture parce qu'un fichier facultatif manque : une absence est une information, pas une panne.
 - Conserver les fichiers de session déposés d'une visite à l'autre : ce sont des conversations entières, gardées seulement le temps qu'on les regarde.
 - Laisser une requête sans délai maximal : une seule requête pendante gèle la vue entière.
+- Signer un commit au nom de Claude ou le citer en co-auteur (`Co-Authored-By`, lien de session) : le dépôt n'a qu'un contributeur, EnimaB.
 
 ## Workflow attendu
 
