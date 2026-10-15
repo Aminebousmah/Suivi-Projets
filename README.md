@@ -4,11 +4,6 @@ Application de visualisation de projets GitHub : pour chaque dépôt suivi, elle
 ce que le projet fait, l'arbre de ses fonctionnalités, l'historique des sessions Claude
 Code, le contexte que Claude lit avant d'agir, et l'avancement des phases.
 
-Sept dépôts sont suivis. Trois sont décrits en entier : **Sole-Citron** (site éditorial
-Astro), **Eleven-Fields** (dashboard Streamlit) et **Atlas** lui-même. Quatre attendent
-leur `atlas.md` : **Futuremoi** (veille freelance), **bottrading** (signaux Telegram vers
-MetaTrader 5), **Clip-Core** (clips Twitch) et **Happicture** (photos d'événement). Chacun
-porte sa propre direction artistique, dérivée de la palette qu'il déclare.
 
 ## Démarrage
 
