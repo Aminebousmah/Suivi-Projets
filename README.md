@@ -1,8 +1,8 @@
 # Atlas
 
-Tableau de bord de projets GitHub. Pour chaque dépôt suivi, Atlas montre ce que le
-projet fait, l'arbre de ses fonctionnalités, son avancement, les règles que Claude Code
-y suit, et le dépôt réel — le tout relu en direct sur GitHub.
+Application de visualisation de projets GitHub : pour chaque dépôt suivi, elle montre
+ce que le projet fait, l'arbre de ses fonctionnalités, et l'avancement des phases — le
+tout relu en direct sur GitHub.
 
 **En ligne : https://aminebousmah.github.io/Suivi-Projets/**
 
